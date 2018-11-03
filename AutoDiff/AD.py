@@ -179,10 +179,12 @@ class AutoDiff():
         return AutoDiff(np.cos(self.val), -np.sin(self.val)*self.der)
 
     ## The functions below are not required for Milestone 2
+    
+    def e(self):
+        return AutoDiff(np.exp(self.val), np.exp(self.val)*self.der)
 
     def __abs__(self):
-        return
-
+        return AutoDiff(np.abs(self.val), (self.val/np.abs(self.val))*self.der)
 
     def log(self):
         return AutoDiff(np.log(self.val), self.der/self.val)
