@@ -184,7 +184,7 @@ class AutoDiff():
         return AutoDiff(np.exp(self.val), np.exp(self.val)*self.der)
 
     def __abs__(self):
-        return AutoDiff(np.abs(self.val), (self.val/np.abs(self.val))*self.der)
+        return AutoDiff(abs(self.val), (self.val/abs(self.val))*self.der)
 
     def log(self):
         return AutoDiff(np.log(self.val), self.der/self.val)
