@@ -1,0 +1,14 @@
+[
+  "test_AD.py::test_AD_create",
+  "test_AD.py::test_AD_stack",
+  "test_AD.py::test_AutoDiff_constuctor_init",
+  "test_AD.py::test_AutoDiff_add",
+  "test_AD.py::test_AutoDiff_sub",
+  "test_AD.py::test_AutoDiff_mul",
+  "test_AD.py::test_AutoDiff_div",
+  "test_AD.py::test_AutoDiff_pow",
+  "test_AD.py::test_AutoDiff_neg",
+  "test_AD.py::test_AutoDiff_sin",
+  "test_AD.py::test_AutoDiff_cos",
+  "test_AD.py::test_AutoDiff_log"
+]
