@@ -161,7 +161,26 @@ def test_AutoDiff_cos():
 
 #Test whether taking the natural logarithm of AD instance returns the correct value
 def test_AutoDiff_log():
+    a, b = AD.AD_create([0.25, 8.0])
+    assert_array_almost_equal(b.log().val, np.array([2.07944154]), decimal = 6)
+    assert_array_equal(b.log().der, np.array([[0, 0.125]]))
+    with pytest.raises(ValueError):
+        a.log()
+        
+#Test __str__ and __repr__
+def test_AutoDiff_print():
     a, b = AD.AD_create([2.0, 8.0])
-    c = (a*b).log()
-    assert_array_almost_equal(c.val, np.array([2.77258872]), decimal = 6)
-    assert_array_equal(c.der, np.array([[0.5, 0.125]]))
+    assert str(a) == 'AutoDiff Object, val: [2.], der: [[1 0]]'
+    assert repr(b) == 'AutoDiff([8.],[[0 1]])'
+
+#Test __len__
+def test_AutoDiff_len():
+    a, b = AD.AD_create([2.0, 8.0])
+    c = AD.AD_stack([a,b])
+    assert len(c) == 2
+
+#Test __eq__
+def test_AutoDiff_eq():
+    a = AD.AutoDiff(8.0)
+    b = AD.AutoDiff(8.0)
+    assert a == b
