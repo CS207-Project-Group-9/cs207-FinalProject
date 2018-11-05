@@ -177,17 +177,40 @@ class AutoDiff():
 
     def cos(self):
         return AutoDiff(np.cos(self.val), -np.sin(self.val)*self.der)
-
+    
     ## The functions below are not required for Milestone 2
     
-    def e(self):
+    def exp(self):
         return AutoDiff(np.exp(self.val), np.exp(self.val)*self.der)
 
     def __abs__(self):
         return AutoDiff(abs(self.val), (self.val/abs(self.val))*self.der)
 
     def log(self):
-        return AutoDiff(np.log(self.val), self.der/self.val)
+        if self.val < 1:
+            raise ValueError("Cannot take log of negative value")
+        else:
+            return AutoDiff(np.log(self.val), self.der/self.val)
 
+    def __repr__(self):
+        return("{0}({1},{2})".format(self.__class__.__name__, self.val,self.der))
+    
+    def __str__(self):
+        return("AutoDiff Object, val: {0}, der: {1}".format(self.val,self.der))
+    
+    def __len__(self):
+        return len(self.val)
+    
+    def __eq__(self, other):
+        if self.val==other.val and self.der==other.der:
+            return True
+        else:
+            return False
+    
+    def get_val(self):
+        return self.val
+    
+    def get_der(self):
+        return self.der
 
 
