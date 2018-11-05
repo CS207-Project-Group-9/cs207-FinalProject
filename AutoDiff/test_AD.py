@@ -170,8 +170,10 @@ def test_AutoDiff_log():
 #Test __str__ and __repr__
 def test_AutoDiff_print():
     a, b = AD.AD_create([2.0, 8.0])
-    assert str(a) == 'AutoDiff Object, val: [2.], der: [[1 0]]'
-    assert repr(b) == 'AutoDiff([8.],[[0 1]])'
+    assert 'AutoDiff Object' in str(a)
+    assert str(a.val) == '[2.]'
+    assert 'AutoDiff' in repr(b)
+    assert repr(b.der) == 'array([[0, 1]])'
 
 #Test __len__
 def test_AutoDiff_len():
