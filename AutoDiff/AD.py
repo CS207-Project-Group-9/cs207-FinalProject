@@ -1,7 +1,7 @@
 import numpy as np
 import numbers
 
-def AD_create(vals):
+def create(vals):
     ADs = []
     num = len(vals)
     for i in range(num):
@@ -12,7 +12,7 @@ def AD_create(vals):
         ADs.append(AutoDiff(val, der))
     return ADs
 
-def AD_stack(ADs):
+def stack(ADs):
     new_val = []
     new_der = []
     for AD in ADs:
@@ -172,25 +172,8 @@ class AutoDiff():
     def __neg__(self):
         return AutoDiff(-self.val, -self.der)
 
-    def sin(self):
-        return AutoDiff(np.sin(self.val), np.cos(self.val)*self.der)
-
-    def cos(self):
-        return AutoDiff(np.cos(self.val), -np.sin(self.val)*self.der)
-    
-    ## The functions below are not required for Milestone 2
-    
-    def exp(self):
-        return AutoDiff(np.exp(self.val), np.exp(self.val)*self.der)
-
     def __abs__(self):
         return AutoDiff(abs(self.val), (self.val/abs(self.val))*self.der)
-
-    def log(self):
-        if self.val < 1:
-            raise ValueError("Cannot take log of negative value")
-        else:
-            return AutoDiff(np.log(self.val), self.der/self.val)
 
     def __repr__(self):
         return("{0}({1},{2})".format(self.__class__.__name__, self.val,self.der))
@@ -213,4 +196,49 @@ class AutoDiff():
     def get_der(self):
         return self.der
 
+    
+def sin(x):
+    try:
+        return AutoDiff(np.sin(x.val), np.cos(x.val)*x.der)
+    except AttributeError:
+        return np.sin(x)
 
+def cos(x):
+    try:
+        return AutoDiff(np.cos(x.val), -np.sin(x.val)*x.der)
+    except AttributeError:
+        return np.cos(x)
+
+def exp(x):
+    try:
+        return AutoDiff(np.exp(x.val), np.exp(x.val)*x.der)
+    except AttributeError:
+        return np.exp(x)
+
+def log(x):
+    try:
+        if x.val < 1:
+            raise ValueError("Cannot take log of negative value")
+        else:
+            return AutoDiff(np.log(x.val), x.der/x.val)
+    except AttributeError:
+        if x < 1:
+            raise ValueError("Cannot take log of negative value")
+        else:
+            return np.log(x)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        

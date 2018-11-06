@@ -1,0 +1,606 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# CS207 Project Group 9\n",
+    "# Milestone 1\n",
+    "\n",
+    "*****"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# I. Introduction"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The software implements **‘Automatic Differentiation’ (AD)**. This is a technique to computationally evaluate the derivative of a specified function. Importantly, AD is not the same as symbolic differentiation or numerical differentiation, and holds important advantages over both. Symbolic differentiation, which is equivalent to analytically solving differential equations, can find the exact solution (with machine precision), but is very computationally expensive, and so with very large functions can be infeasible. Numerical differentiation, which uses the finite-difference approximation method, is computationally efficient, but is ultimately only approximate, and can be subject to both rounding error and discretisation error, meaning that it cannot be perfectly accurate. Both of these ‘traditional’ methods of differentiation run into problems and inefficiencies when calculating higher derivatives and partial derivatives with respect to many inputs (which is an important component of gradient-based optimisation methods). \n",
+    "\n",
+    "\n",
+    "Automatic differentiation solves all these problems as it is able to solve derivatives to machine precision with comparative computational efficiency. As a result, automatic differentiation has incredibly important applications; in its ‘reverse-mode’ (discussed below), it is the basis of back-propagation, a fundamental process in neural network machine learning algorithms - as such this technique is leveraged by open-source machine learning libraries such as TensorFlow. A result of its efficient accuracy and iterative method, AD is capable of algorithmic differentiation: Because of the fact that every computer program, from mathematical algorithms to web-pages, can be expressed as a sequence and combination of arithmetic operations and elementary functions, the derivative of any computer program can be found using automatic differentiation."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# II. Background"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Automatic differentiation is essentially the iterative application of the chain-rule. As mentioned above, any function can be considered a sequence of basic arithmetic operations or elementary functions (addition, multiplication, division, subtraction, trigonometric functions, exponential, logarithms etc.) and so any function can be interpreted in the following way (albeit often less simply):\n",
+    "\t$$y = f(x) = f(g(h((x)))$$\n",
+    "\n",
+    "This can be rewritten as:\n",
+    "$$y = f(g(h(x0))) = f(g(x1)) = f(x2) = x3$$\n",
+    "\t\n",
+    "Often, this decomposition is represented as an acyclic, directed computational graph that illustrates the route from the base function x0 to y, as illustrated by the example below:\n",
+    "\n",
+    "$ x_0\\rightarrow^{h(x)}x_1\\rightarrow^{g(x)}x_2\\rightarrow^{f(x)}x_3\\rightarrow y $\n",
+    "\n",
+    "\n",
+    "\n",
+    "In forward mode, automatic differentiation works by decomposing the function into this structure, and working through each component function finding the derivative using the chain rule ‘inside out’. That is to say, dx0/dx is found first, following by dx1/dx and so on until dy/dx itself is found. All this requires initial values to be set for x0, and x0’.\n",
+    "\n",
+    "\n",
+    "Reverse mode, however, works in the opposite direction; rather than finding the derivative of the most fundamental component, and then finding the derivative of parent expressions in terms of these children components recursively until the final gradient is found, reverse mode goes the other way. It finds the derivative of each ‘child’ function in terms of its parent function recursively until the basic level derivative is found, at which point the final gradient can be found.\n",
+    "\n",
+    "\n",
+    "One way of achieving forward mode AD is to use dual numbers. These are an extension of real numbers, somewhat analogous to imaginary numbers, such that every number additionally contains a dual component, $\\epsilon$, where $\\epsilon^2$ = 0. Given any polynomial function (or, in fact, any analytic real function via its Taylor series), if we replace x with (x+x'$\\epsilon$), we find that the function will become: f(x) + f'(x)$\\epsilon$. This provides a routine to automatically compute the derivative of the function f(x), and so is used in forward AD.\n",
+    "\n",
+    "Sources: https://en.wikipedia.org/wiki/Automatic_differentiation,\n",
+    "\t   http://www.columbia.edu/~ahd2125/post/2015/12/5/\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# III. How to Use"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## _a) Installation_ "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Currently, the best way to install the package is to download or clone the package's Github repo (https://github.com/CS207-Project-Group-9/cs207-FinalProject)\n",
+    "\n",
+    "The package will soon be available on PyPI."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## _b) Usage_"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The package can be imported simply through:\n",
+    "```python\n",
+    "from AutoDiff import AD\n",
+    "```\n",
+    "\n",
+    "An alternative option that improves readability in the long run is:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# following code only for use in docs folder, to change to correct working directory:\n",
+    "import os\n",
+    "path = os.getcwd().replace('docs','')\n",
+    "os.chdir(path)\n",
+    "\n",
+    "#following code for general imports:\n",
+    "from AutoDiff.AD import AutoDiff, AD_create, AD_stack\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "###### Univariate"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "For a simple, univariate example, let's find the value of the derivate of $y=3x^2-4x$  at $x=3$.\n",
+    "\n",
+    "we create an instance of the AutoDiff object as the basic building block for the equation - in other words, a single value of the independent variable. This object can then be used with binary and unary mathematical operators to construct the full function being evaluated. For each operation, a new function value (AutoDiff.val) and derivative value (AutoDiff.der) are calculated, such that once all operations are complete for the function, the function object's 'der' attribute will be that function's derivative at the point specificied at AutoDiff object creation.\n",
+    "\n",
+    "**N.B.**: It is important to note that AutoDiff assumes that the object being initialised is elementary and as such will have a derivative value of 1. Users can pass different der values as an argument for the function if required."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[14.]])"
+      ]
+     },
+     "execution_count": 26,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "a = 3.0\n",
+    "x = AutoDiff(a)\n",
+    "y = 3*x**2 - 4*x\n",
+    "\n",
+    "y.der"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "More complex cases can be handled (N.B.: for mathematical operations that are not binary operations - such as addition, multiplication etc. - the notation is different, as the operation must be called as a method of the AutoDiff object):\n",
+    "\n",
+    "$$y = \\frac{e^{2x}|1-\\log{x}|}{\\sin{x} - \\cos{x}}$$"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[215.62712855]])"
+      ]
+     },
+     "execution_count": 27,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "x = AutoDiff(a)\n",
+    "\n",
+    "y = ((2*x).exp()*abs(1-x.log()))/(x.sin()-x.cos())\n",
+    "\n",
+    "y.der\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "##### Multivariate"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "AutoDiff is designed to handle multivariate calculus as well. For this, the additional functions **AD_create** and **AD_stack** must be used.\n",
+    "\n",
+    "AD_create is used to set up a system of AutoDiff objects for construction of a multivariable function, whilst AD_stack can be used to take in multiple independent AutoDiff objects and construct a vector of these objects such that the values of all objects can be returned at once and the objects can be altered simultaneously.\n",
+    "\n",
+    "**AD_create - for creating multiple variables for a single function**\n",
+    "\n",
+    "Multiple variables can be passed to AD_create **as a list** and it will return an object for each variable with the necessary set of partial derivative values. When finding the derivative of a function with more than one variable, these variables should _always_ be created together using AD_create, as this will ensure each variable has the correct vector of partial derivative values. Moreover, variables from unrelated functions should not be created together with AD_create. Passing both $a$ and $b$ into AD_create will create partial derivatives of $a$ with respect to $b$ and $b$ with respect to $a$ - if this is not desired then $a$ and $b$ should be created separately. Note that just like the single-variable case, AD_create will assume that each object being created is elementary and will assign a derivative value of 1 to each unless otherwise instructed by the user.\n",
+    "\n",
+    "**AD_stack - for creating a vector of independent functions**\n",
+    "\n",
+    "One can pass multiple AutoDiff objects into AD_stack **as a list** and it will return a single AutoDiff object with each of the objects values and derivatives stored as a vector. This allows one to return the derivative of all objects at once, or to manipulate each function in the same way all at once. Calling the `val` attribute of the stacked AutoDiff object will return the value of each function at the specified point. Calling the `der` attribute will return the Jacobian of the derivatives.\n",
+    "\n",
+    "**N.B.** Creating an AD_stack object for vector value functions allows each function within the vector to be altered uniformly and simultaneously (see below) - but only operations with scalars (i.e. not other AutoDiff objects) are currently supported."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "For example, let's deal with the following example of a vector-valued function:\n",
+    "\n",
+    "$\\begin{bmatrix} f_1 \\\\ f_2 \\\\ f_3 \\end{bmatrix} = \\begin{bmatrix} x^2+2y^2 \\\\ |x-\\cos{y}| \\\\ x-\\frac{y}{x-y} \\end{bmatrix}$\n",
+    "\n",
+    "at the points:\n",
+    "\n",
+    "$x = 4$, $y = 6$\n",
+    "\n",
+    "Once we've found the values and derivatives for this vector valued function $F(x,y)$, let's find the values and derivatives of another vector valued function, $G$:\n",
+    "\n",
+    "$G(x,y) = 2F(x,y)+5$"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 49,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "F function values:  [88.          3.03982971  7.        ]\n",
+      "F derivative values:\n",
+      " [[ 8.        24.       ]\n",
+      " [ 1.        -0.2794155]\n",
+      " [ 2.5       -1.       ]]\n",
+      "---------------------------\n",
+      "G Function values:  [181.          11.07965943  19.        ]\n",
+      "G Derivative values:\n",
+      " [[16.       48.      ]\n",
+      " [ 2.       -0.558831]\n",
+      " [ 5.       -2.      ]]\n"
+     ]
+    }
+   ],
+   "source": [
+    "x, y = AD_create([4,6])\n",
+    "\n",
+    "f1 = x**2 + 2*y**2\n",
+    "f2 = abs(x-y.cos())\n",
+    "f3 = x - y/(x-y)\n",
+    "\n",
+    "F = AD_stack([f1,f2,f3])\n",
+    "\n",
+    "print('F function values: ', F.val)\n",
+    "print('F derivative values:\\n', F.der)\n",
+    "\n",
+    "G = F*2+5\n",
+    "print(\"---------------------------\")\n",
+    "print('G Function values: ', G.val)\n",
+    "print('G Derivative values:\\n', G.der)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# IV. Software Organisation"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## _a) Directory Structure_"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "```\n",
+    "cs207-FinalProject\\\n",
+    "                   AutoDiff/                   \n",
+    "                            __init__.py         \n",
+    "                            __pycache__.py\n",
+    "                            AD.py\n",
+    "                            test_AD.py\n",
+    "                   docs/\n",
+    "                        milestone1.ipynb\n",
+    "                        milestone2.ipynb\n",
+    "                   README.md\n",
+    "                   requirement.txt\n",
+    "```                 "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## _b) Modules_"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "All code is contained within the **AutoDiff** module. Within here are two Python modules:\n",
+    "\n",
+    "1. AD.py: This contains all functional code for automatic differentiation. within this file there are (currently) three sub-modules:\n",
+    "    * AutoDiff - Class object that is the basic building block for forward-mode differentiation. Stores function and derivative values and has overloaded mathematical methods to allow construction of mathematical functions.\n",
+    "    * AD_create - Function that is used to create multiple AutoDiff objects that are within the same function and thus contain partial derivatives with respect to each other,\n",
+    "    * AD_stack - Function that serves to take in multiple AutoDiff objects as a list and returns a single AutoDiff object that contains the values and derivatives of all the functions given. Used for vector-valued functions.\n",
+    "2. test_AD.py: This is the test-suite for AD.py. Tests for correct function of AD_stack, AD_create, AutoDiff's constructor, and the correct function of AutoDiff's mathematical operations. Tests are run using pytest, with the assistance of numpy.testing functions `assert_array_equal` and `assert_array_almost_equal` for dealing with multivariate cases. The tests are linked with Travis CI, which provides continuous integration software testing, and Coveralls, which provides a code coverage service to ensure that all of the code is being tested.\n",
+    "\n",
+    "\n",
+    "Currently, the way to install this package is to download or clone it from the package's repo on Github (https://github.com/CS207-Project-Group-9/cs207-FinalProject)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## _c) Implementation_"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Class: AutoDiff"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "This class encapsulates the fundamental machinery of forward mode automatic differentiation, and is capable of dealing with both single and multi-variable cases.\n",
+    "\n",
+    "#### Dependencies\n",
+    "\n",
+    "- numpy (imported as np): used for numerous mathematical (e.g. trigonometric, logarithmic operations)\n",
+    "- numbers: used to ensure user passes numerical values.\n",
+    "\n",
+    "#### Attributes (Data Structures)\n",
+    "- val: array of floats (of size 1 or more)\n",
+    "    - Numeric values, indicating the value of each entry in the current AutoDiff instance. For cases with only one function, val will size 1. For vector-valued functions, val can be longer.\n",
+    "    \n",
+    "- der: 2D array of floats\n",
+    "    - Values representing the derivative value(s) in the current AutoDiff instance. The returned 2D array can be thought of as the Jacobian of all functions and variables for the AutoDiff instance. Suppose there are m elementary variables constructing n functions, all stored within the AutoDiff instance, 'der' would be a n\\*m array of elements, with the (i,j) entry representing the derivative value of the i-th AutoDiff with respect to the j-th elementary variable.\n",
+    "\n",
+    "#### Methods \n",
+    "(The following demonstrations are for the case when there is only one value in self.val. When the AD object is in higher dimension, storing the values in an array allows us to simply apply the computation to each entry.)\n",
+    "\n",
+    "0. `__init__`:\n",
+    "    - arguments: \n",
+    "        - a list/array of AD instances\n",
+    "    - sets self.val as a list of 'val' attributes of the input AD instances\n",
+    "    - combines the 'der' attributes of the input AD instances as a 2D array and save as self.der\n",
+    "\n",
+    "\n",
+    "1. `__add__` & `__radd__`: \n",
+    "    - arguments:\n",
+    "        - self\n",
+    "        - other: a float, int, or AD\n",
+    "    - returns: \n",
+    "        - if other is an AD -> a new AD instance with new.val = self.val + other.val, new.der = self.der + other.der\n",
+    "        - if other is a numeric value -> a new AD instance with new.val = self.val + other, new.der = self.der\n",
+    "\n",
+    "\n",
+    "2. `__sub__` & `__rsub__`\n",
+    "    - arguments:\n",
+    "\t\t- self\n",
+    "\t\t- other: a float, int, or AD\n",
+    "\t- returns: \n",
+    "\t\t- if other is an AD -> a new AD instance with new.val = self.val - other.val, new.der = self.der - other.der\n",
+    "\t\t- if other is a numeric value -> a new AD instance with new.val = self.val - other, new.der = self.der\n",
+    "\n",
+    "\n",
+    "3. `__mul__` & `__rmul__`\n",
+    "\t- arguments:\n",
+    "\t\t- self\n",
+    "\t\t- other: a float, int, or AD\n",
+    "\t- returns: \n",
+    "\t\t- if other is an AD -> a new AD instance with new.val = self.val \\* other.val, new.der = self.val \\* other.der + self.der \\* other.val\n",
+    "\t\t- if other is a numeric value -> a new AD instance with new.val = self.val \\* other, new.der = self.der \\* other\n",
+    "\n",
+    "\n",
+    "4. `__div__` & `__rdiv__`\n",
+    "\t- arguments:\n",
+    "\t\t- self\n",
+    "\t\t- other: a float, int, or AD\n",
+    "\t- returns: \n",
+    "\t\t- if other is an AD -> a new AD instance with new.val = self.val / other.val, new.der = (self.der \\* other.val + self.val \\* other.der)/(other.val\\*\\*2)\n",
+    "\t\t- if other is a numeric value -> a new AD instance with new.val = self.val / other, new.der = self.der / other\n",
+    "\t- raises:\n",
+    "\t\t- ZeroDivisionError when other.val = 0\n",
+    "\n",
+    "\n",
+    "5. `__pow__`\n",
+    "\t- arguments:\n",
+    "\t\t- self\n",
+    "\t\t- k: a float, int, or AD\n",
+    "\t- returns:\n",
+    "\t\t- if other is an AD -> a new AD instance with new.val = self.val \\*\\* other.val, new.der = other.val \\* self.val \\*\\* (other.val - 1) \\* self.der + log(self.val) \\* self.val \\*\\* other.val \\* other.der\n",
+    "\t\t- if other is a numeric value -> a new AD instance with new.val = self.val \\*\\* k, new.der = k \\* (self.val\\*\\*(k-1)) \\* self.der\n",
+    "\n",
+    "\n",
+    "6. `__abs__`\n",
+    "\t- arguments:\n",
+    "\t\t- self\n",
+    "\t- returns:\n",
+    "\t\t- a new AD instance with new.val = abs(self.val), new.der = sign(self.val) \\* self.der\n",
+    "\n",
+    "\n",
+    "7. `sin`\n",
+    "\t- arguments:\n",
+    "\t\t- self\n",
+    "\t- returns:\n",
+    "\t\t- a new AD instance with new.val = sin(self.val), new.der = cos(self.val) \\* self.der\n",
+    "\n",
+    "\n",
+    "8. `cos`\n",
+    "\t- arguments:\n",
+    "\t\t- self\n",
+    "\t- returns:\n",
+    "\t\t- a new AD instance with new.val = cos(self.val), new.der = -sin(self.val) \\* self.der\n",
+    "\n",
+    "9. `exp`\n",
+    "\t- arguments:\n",
+    "\t\t- self\n",
+    "\t- returns:\n",
+    "\t\t- a new AD instance with new.val = exp(self.val), new.der = exp(self.val) \\* self.der\n",
+    "\n",
+    "\n",
+    "10. `log`\n",
+    "\t- arguments:\n",
+    "\t\t- self\n",
+    "\t- returns:\n",
+    "\t\t- a new AD instance with new.val = log(self.val), new.der = self.der/self.val\n",
+    "\t- raises:\n",
+    "\t\t- exception when self.val <= 0 \n",
+    "        \n",
+    "\n",
+    "11. `get_val()`\n",
+    "    - arguments:\n",
+    "        - self\n",
+    "    - returns:\n",
+    "        - self.val\n",
+    "\n",
+    "\n",
+    "12. `get_der()`\n",
+    "    - arguments:\n",
+    "        - self\n",
+    "    - returns:\n",
+    "        - self.der\n",
+    "\n",
+    "\n",
+    "13. `__eq__`\n",
+    "    - arguments:\n",
+    "        - self\n",
+    "        - other: an AD instance\n",
+    "    - returns:\n",
+    "        - 'True' if self.val==other.val and self.der==other.der, 'False' otherwise\n",
+    "        \n",
+    "        \n",
+    "14. `__str__`\n",
+    "    - arguments:\n",
+    "        - self\n",
+    "    - returns:\n",
+    "        - a string describing the value and derivatives of the current instance\n",
+    "        \n",
+    "15. `__len__`\n",
+    "    - arguments:\n",
+    "        - self\n",
+    "    - returns:\n",
+    "        - len(self.val); number of function values stored within the AutoDiff object.\n",
+    "        \n",
+    "16. `__repr__`\n",
+    "    - arguments:\n",
+    "        - self\n",
+    "    - returns:\n",
+    "        - string describing AutoDiff(self.val,self.der)\n",
+    "\n",
+    "17. `__abs__`\n",
+    "    - arguments:\n",
+    "        - self\n",
+    "    - returns:\n",
+    "        - a new AD instance with new.val = abs(self.val), new.der = self.val/abs(self.val)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Functions: AD_create and AD_stack"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The following functions exist outside the AutoDiff class:\n",
+    "\n",
+    "1. `AD_create`\n",
+    "    - allows the users to quickly create multiple AD instances\n",
+    "    - arguments:\n",
+    "        - val: a list of values \n",
+    "        - der: optional, assigned derivative values\n",
+    "    - returns:\n",
+    "        - a list of AD objects\n",
+    "\n",
+    "\n",
+    "2. `AD_stack`\n",
+    "    - allows users to stack multiple AD instances into one high-dimentional AD instance\n",
+    "    - arguments:\n",
+    "        - ADs: a list of multiple AD instances\n",
+    "    - returns:\n",
+    "        - one AD object, with *val* = an array of *val*'s of the AD instances in the argument ADs, and *der* = an array of *der*'s of the AD instances in the argument"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Yet To Implement"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### AD_reverse\n",
+    "\n",
+    "Reverse-mode Automatic Differentiator.\n",
+    "\n",
+    "#### AD_operators\n",
+    "\n",
+    "A class used by AutoDiff and AD_reverse that contains the mathematical operations common to both methods."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# _d) Future_"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The main goal for the future is to implement reverse mode automatic differentiation. The main challenge for this goal is the determining the conceptual framework of translating reverse mode into practical, functioning code. Because many methods are likely to be shared between the two modes of AD, one way that our code will change is we will look to move shared methods into a separate class that is passed into both AutoDiff and AD_reverse.\n",
+    "\n",
+    "Another way that we may look to improve the package is by subtly altering the functionality between single-variable and multivariable cases. Currently the output of AutoDiff is generalised to vector-valued functions, such that even with one function with a single variable, the value and derivative will be returned as a list and a 2D array, each with only one item. It may improve user readability to change this."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.6.2"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
