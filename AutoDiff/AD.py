@@ -217,7 +217,7 @@ def exp(x):
 
 def log(x):
     try:
-        if self.val < 1:
+        if x.val < 1:
             raise ValueError("Cannot take log of negative value")
         else:
             return AutoDiff(np.log(x.val), x.der/x.val)
