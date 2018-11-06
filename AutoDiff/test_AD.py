@@ -152,10 +152,9 @@ def test_AutoDiff_sin():
     y = AD.sin(x)
     assert_array_almost_equal(y.val, np.array([0.84147098]), decimal = 6)
     assert_array_almost_equal(y.der, np.array([[0.54030231, 0.]]), decimal = 6)
-    with pytest.raises(AttributeError):
-        a = 6.0
-        b = AD.sin(a)
-        assert b == -0.27941549819892586
+    a = 6.0
+    b = AD.sin(a)
+    assert b == -0.27941549819892586
 
 #Test whether taking the cosine of AD instance returns the correct value
 def test_AutoDiff_cos():
@@ -163,10 +162,9 @@ def test_AutoDiff_cos():
     c = AD.cos(a*b)
     assert_array_almost_equal(c.val, np.array([-0.95765948]), decimal = 6)
     assert_array_almost_equal(c.der, np.array([[2.30322653, 0.57580663]]), decimal = 6)
-    with pytest.raises(AttributeError):
-        x = 5.0
-        y = AD.cos(x)
-        assert y == 0.2836621854632263
+    x = 5.0
+    y = AD.cos(x)
+    assert y == 0.2836621854632263
 
 #Test whether taking the natural logarithm of AD instance returns the correct value
 def test_AutoDiff_log():
@@ -175,12 +173,11 @@ def test_AutoDiff_log():
     assert_array_equal(AD.log(b).der, np.array([[0, 0.125]]))
     with pytest.raises(ValueError):
         AD.log(a)
-    with pytest.raises(AttributeError):
-        a = 5.0
-        b = 0.45
-        assert AD.log(a) == 1.6094379124341003
-        with pytest.raises(ValueError):
-            AD.log(b)
+    a = 5.0
+    b = 0.45
+    assert AD.log(a) == 1.6094379124341003
+    with pytest.raises(ValueError):
+        AD.log(b)
            
 #Test __str__ and __repr__
 def test_AutoDiff_print():
