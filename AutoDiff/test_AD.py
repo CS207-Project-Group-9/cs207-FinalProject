@@ -40,12 +40,15 @@ def test_AutoDiff_constuctor_init():
     #inputs ought not to be type other than integer, list or numpy array
     with pytest.raises(TypeError):
         AD.AutoDiff('hello','friend')
+    with pytest.raises(TypeError):
         AD.AutoDiff([5.0], 'test')
     #check if dimension of derivative input matches that of value input
     #check if dimension of derivative is higher than 2
     with pytest.raises(ValueError):
         AD.AutoDiff([1,2], [[1,0,0],[0,1,0]])
+    with pytest.raises(ValueError):
         AD.AutoDiff([1,2,3],[[1,2,3],[1,2]])
+    with pytest.raises(ValueError):
         AD.AutoDiff([[1],[2]], [[1,0,0],[0,1,0]])
         
 #Test whether addition works between AD instances, 
