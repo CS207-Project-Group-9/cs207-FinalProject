@@ -1,5 +1,5 @@
 #test_AD.py
-#Nov 4, 2018
+#Nov 6, 2018
 
 #This test suite is associated with file 'AD.py', 
 #which implements forward-mode automatic differentiation.
@@ -35,15 +35,23 @@ def test_AutoDiff_constuctor_init():
     b = AD.AutoDiff(a)
     assert_array_equal(b.val, np.array([5.0]))
     assert_array_equal(b.der, np.array([[1]]))
+    assert_array_equal(b.get_val(), np.array([5.0])) #test get_val()
+    assert_array_equal(b.get_der(), np.array([[1]])) #test get_der()
     #inputs ought not to be type other than integer, list or numpy array
     with pytest.raises(TypeError):
         AD.AutoDiff('hello','friend')
+    with pytest.raises(TypeError):
+        AD.AutoDiff([5.0], 'test')
     #check if dimension of derivative input matches that of value input
     #check if dimension of derivative is higher than 2
     with pytest.raises(ValueError):
-        AD.AutoDiff([1,2], [[1,0,0],[0,1,0]])
+        AD.AutoDiff([[1],[2]], [[1,0,0]])
+    with pytest.raises(TypeError):
+        AD.AutoDiff([1,2,3],[['a','b','c'],['d','e','f'],['g','h','i']])
+    with pytest.raises(ValueError):
         AD.AutoDiff([1,2,3],[[1,2,3],[1,2]])
-        AD.AutoDiff([1,2,3],[[1,2,3],[1,2],[1,3],[2,3]])
+    with pytest.raises(ValueError):
+        AD.AutoDiff([[1],[2]], [[1,0,0],[0,1,0]])
         
 #Test whether addition works between AD instances, 
 #and between AD instance and number, regardless of order
@@ -133,6 +141,7 @@ def test_AutoDiff_pow():
     assert_array_almost_equal(power2.der, np.array([[80.47189562, 40.23594781]]))
     with pytest.raises(TypeError):
         x ** 'hello'
+    with pytest.raises(TypeError):
         'friend' ** y
 
 #Test whether taking the negative of AD instance works
@@ -164,7 +173,11 @@ def test_AutoDiff_cos():
     assert_array_almost_equal(c.der, np.array([[2.30322653, 0.57580663]]), decimal = 6)
     x = 5.0
     y = AD.cos(x)
+<<<<<<< HEAD
     assert y == 0.2836621854632263
+=======
+    assert y == pytest.approx(0.2836621854632263)
+>>>>>>> 72ecf362e23d4508e63c50af4b222f2e7372724f
 
 #Test whether taking the natural logarithm of AD instance returns the correct value
 def test_AutoDiff_log():
@@ -182,8 +195,15 @@ def test_AutoDiff_log():
 #Test __str__ and __repr__
 def test_AutoDiff_print():
     a, b = AD.create([2.0, 8.0])
+<<<<<<< HEAD
     assert str(a) == 'AutoDiff Object, val: [2.], der: [[1 0]]'
     assert repr(b) == 'AutoDiff([8.],[[0 1]])'
+=======
+    assert 'AutoDiff Object' in str(a)
+    assert 'AutoDiff' in repr(b)
+#     assert str(a) == 'AutoDiff Object, val: [2.], der: [[1 0]]'
+#     assert repr(b) == 'AutoDiff([8.],[[0 1]])'
+>>>>>>> 72ecf362e23d4508e63c50af4b222f2e7372724f
 
 #Test __len__
 def test_AutoDiff_len():
@@ -195,4 +215,6 @@ def test_AutoDiff_len():
 def test_AutoDiff_eq():
     a = AD.AutoDiff(8.0)
     b = AD.AutoDiff(8.0)
+    c = AD.AutoDiff(5.0)
     assert a == b
+    assert (a == c) == False
