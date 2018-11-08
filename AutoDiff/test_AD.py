@@ -1,5 +1,5 @@
 #test_AD.py
-#Nov 4, 2018
+#Nov 6, 2018
 
 #This test suite is associated with file 'AD.py', 
 #which implements forward-mode automatic differentiation.
@@ -14,7 +14,7 @@ from AutoDiff import AD
 #AD_create allows for simultaneous assignment 
 #of AD instances
 def test_AD_create():
-    a, b, c = AD.AD_create([1, 2, 3])
+    a, b, c = AD.create([1, 2, 3])
     assert a.val == [1], a.der == [[1,0,0]]
     assert b.val == [2], b.der == [[0,1,0]]
     assert c.val == [3], c.der == [[0,0,1]]
@@ -23,8 +23,8 @@ def test_AD_create():
 #in the form of numpy arrays, returns 
 #values as a vector and derivatives as a matrix
 def test_AD_stack():
-    a, b, c = AD.AD_create([1, 2, 3])
-    c = AD.AD_stack([a, b, c])
+    a, b, c = AD.create([1, 2, 3])
+    c = AD.stack([a, b, c])
     assert_array_equal(c.val, np.array([1,2,3]))
     assert_array_equal(c.der, np.array([[1,0,0],[0,1,0],[0,0,1]]))
 
@@ -35,20 +35,28 @@ def test_AutoDiff_constuctor_init():
     b = AD.AutoDiff(a)
     assert_array_equal(b.val, np.array([5.0]))
     assert_array_equal(b.der, np.array([[1]]))
+    assert_array_equal(b.get_val(), np.array([5.0])) #test get_val()
+    assert_array_equal(b.get_der(), np.array([[1]])) #test get_der()
     #inputs ought not to be type other than integer, list or numpy array
     with pytest.raises(TypeError):
         AD.AutoDiff('hello','friend')
+    with pytest.raises(TypeError):
+        AD.AutoDiff([5.0], 'test')
     #check if dimension of derivative input matches that of value input
     #check if dimension of derivative is higher than 2
     with pytest.raises(ValueError):
-        AD.AutoDiff([1,2], [[1,0,0],[0,1,0]])
+        AD.AutoDiff([[1],[2]], [[1,0,0]])
+    with pytest.raises(TypeError):
+        AD.AutoDiff([1,2,3],[['a','b','c'],['d','e','f'],['g','h','i']])
+    with pytest.raises(ValueError):
         AD.AutoDiff([1,2,3],[[1,2,3],[1,2]])
-        AD.AutoDiff([1,2,3],[[1,2,3],[1,2],[1,3],[2,3]])
+    with pytest.raises(ValueError):
+        AD.AutoDiff([[1],[2]], [[1,0,0],[0,1,0]])
         
 #Test whether addition works between AD instances, 
 #and between AD instance and number, regardless of order
 def test_AutoDiff_add():
-    x, y = AD.AD_create([5.0, 7.0])
+    x, y = AD.create([5.0, 7.0])
     z = 3.0
     sum1 = x + y #AD+AD
     sum2 = x + z #AD+number
@@ -66,7 +74,7 @@ def test_AutoDiff_add():
 #Test whether subtraction works between AD instances,
 #and between AD instance and number, regardless of order
 def test_AutoDiff_sub():
-    x, y = AD.AD_create([5.0, 7.0])
+    x, y = AD.create([5.0, 7.0])
     z = 3.0
     m = 10.0
     sub1 = y - x #AD-AD
@@ -85,7 +93,7 @@ def test_AutoDiff_sub():
 #Test whether multiplication works between AD instances,
 #and between AD instance and number, regardless of order
 def test_AutoDiff_mul():
-    x, y = AD.AD_create([5.0, 7.0])
+    x, y = AD.create([5.0, 7.0])
     z = 3.0
     mul1 = x * y #AD*AD
     mul2 = x * z #AD*number
@@ -103,7 +111,7 @@ def test_AutoDiff_mul():
 #Test whether division works between AD instances,
 #and between AD instance and number, regardless of order
 def test_AutoDiff_div():
-    x, y = AD.AD_create([4.0, 8.0])
+    x, y = AD.create([4.0, 8.0])
     z = 2.0
     div1 = y / x #AD/AD
     div2 = x / z #AD/number
@@ -122,8 +130,8 @@ def test_AutoDiff_div():
 #AD instance is the base, and when AD instance is 
 #the exponent
 def test_AutoDiff_pow():
-    x, y = AD.AD_create([2.0, 3.0])
-    a, b = AD.AD_create(np.array([1.0, 2.0]))
+    x, y = AD.create([2.0, 3.0])
+    a, b = AD.create(np.array([1.0, 2.0]))
     z = 5.0
     power1 = (x*y) ** z #AD**number
     power2 = z ** (a*b) #test __rpow__: number**AD
@@ -133,11 +141,12 @@ def test_AutoDiff_pow():
     assert_array_almost_equal(power2.der, np.array([[80.47189562, 40.23594781]]))
     with pytest.raises(TypeError):
         x ** 'hello'
+    with pytest.raises(TypeError):
         'friend' ** y
 
 #Test whether taking the negative of AD instance works
 def test_AutoDiff_neg():
-    x, y = AD.AD_create([2.0, 8.0])
+    x, y = AD.create([2.0, 8.0])
     neg1 = -x
     neg2 = -(x/y)
     assert neg1.val == [-2.0]
@@ -146,41 +155,57 @@ def test_AutoDiff_neg():
     assert_array_equal(neg2.der, np.array([[-0.125, 0.03125]]))
 
 #Test whether taking the sine of AD instance returns the correct value
+#Test whether the sin() function also apply to integers
 def test_AutoDiff_sin():
     x = AD.AutoDiff(1.0, [1, 0])
-    y = x.sin()
+    y = AD.sin(x)
     assert_array_almost_equal(y.val, np.array([0.84147098]), decimal = 6)
     assert_array_almost_equal(y.der, np.array([[0.54030231, 0.]]), decimal = 6)
+    a = 6.0
+    b = AD.sin(a)
+    assert b == -0.27941549819892586
 
 #Test whether taking the cosine of AD instance returns the correct value
 def test_AutoDiff_cos():
-    a, b = AD.AD_create([2.0, 8.0])
-    c = (a*b).cos()
+    a, b = AD.create([2.0, 8.0])
+    c = AD.cos(a*b)
     assert_array_almost_equal(c.val, np.array([-0.95765948]), decimal = 6)
     assert_array_almost_equal(c.der, np.array([[2.30322653, 0.57580663]]), decimal = 6)
+    x = 5.0
+    y = AD.cos(x)
+    assert y == pytest.approx(0.2836621854632263)
 
 #Test whether taking the natural logarithm of AD instance returns the correct value
 def test_AutoDiff_log():
-    a, b = AD.AD_create([0.25, 8.0])
-    assert_array_almost_equal(b.log().val, np.array([2.07944154]), decimal = 6)
-    assert_array_equal(b.log().der, np.array([[0, 0.125]]))
+    a, b = AD.create([0.25, 8.0])
+    assert_array_almost_equal(AD.log(b).val, np.array([2.07944154]), decimal = 6)
+    assert_array_equal(AD.log(b).der, np.array([[0, 0.125]]))
     with pytest.raises(ValueError):
-        a.log()
-        
+        AD.log(a)
+    a = 5.0
+    b = 0.45
+    assert AD.log(a) == 1.6094379124341003
+    with pytest.raises(ValueError):
+        AD.log(b)
+           
 #Test __str__ and __repr__
 def test_AutoDiff_print():
-    a, b = AD.AD_create([2.0, 8.0])
+    a, b = AD.create([2.0, 8.0])
     assert 'AutoDiff Object' in str(a)
     assert 'AutoDiff' in repr(b)
+#     assert str(a) == 'AutoDiff Object, val: [2.], der: [[1 0]]'
+#     assert repr(b) == 'AutoDiff([8.],[[0 1]])'
 
 #Test __len__
 def test_AutoDiff_len():
-    a, b = AD.AD_create([2.0, 8.0])
-    c = AD.AD_stack([a,b])
+    a, b = AD.create([2.0, 8.0])
+    c = AD.stack([a,b])
     assert len(c) == 2
 
 #Test __eq__
 def test_AutoDiff_eq():
     a = AD.AutoDiff(8.0)
     b = AD.AutoDiff(8.0)
+    c = AD.AutoDiff(5.0)
     assert a == b
+    assert (a == c) == False
