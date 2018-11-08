@@ -53,7 +53,11 @@ def test_AutoDiff_constuctor_init():
     with pytest.raises(ValueError):
         AD.AutoDiff([1,2,3],[[1,2,3],[1,2]])
     with pytest.raises(ValueError):
+        AD.AutoDiff([1,2,3],[[1,0,0],[0,1,0]])
+    with pytest.raises(ValueError):
         AD.AutoDiff([[1]], [[1,0,0],[0,1,0]])
+    with pytest.raises(ValueError):
+        AD.AutoDiff([[5.0]], [[[1,0,0],[0,1,0]]])
         
 #Test whether addition works between AD instances, 
 #and between AD instance and number, regardless of order
@@ -71,6 +75,7 @@ def test_AutoDiff_add():
     assert_array_equal(sum3.der, np.array([[0, 1]]))
     with pytest.raises(TypeError):
         x + 'hello'
+    with pytest.raises(TypeError):
         'friend' + y
 
 #Test whether subtraction works between AD instances,
@@ -90,6 +95,7 @@ def test_AutoDiff_sub():
     assert_array_equal(sub3.der, np.array([[-1, 0]]))
     with pytest.raises(TypeError):
         x - 'hello'
+    with pytest.raises(TypeError):
         'friend' - y
 
 #Test whether multiplication works between AD instances,
@@ -108,6 +114,7 @@ def test_AutoDiff_mul():
     assert_array_equal(mul3.der, np.array([[0 , 3.0]]))
     with pytest.raises(TypeError):
         x * 'hello'
+    with pytest.raises(TypeError):  
         'friend' * y
     
 #Test whether division works between AD instances,
@@ -126,6 +133,7 @@ def test_AutoDiff_div():
     assert_array_equal(div3.der, np.array([[0, -0.03125]]))
     with pytest.raises(TypeError):
         x / 'hello'
+    with pytest.raises(TypeError):
         'friend' / y
     
 #Test whether differetiation with power works when
@@ -192,7 +200,24 @@ def test_AutoDiff_log():
     assert AD.log(x) == 1.6094379124341003
     with pytest.raises(ValueError):
         AD.log(y)
-           
+
+#Test exp()
+def test_AutoDiff_exp():
+    x, y = AD.create([2.0, 3.0])
+    z = AD.exp(x)
+    a = 5.0
+    b = AD.exp(a)
+    assert_array_almost_equal(z.val, np.array([7.3890561]))
+    assert_array_almost_equal(z.der, np.array([[7.3890561, 0. ]]))
+    assert b == 148.4131591025766
+
+#Test __abs__
+def test_AutoDiff_abs():
+    a = AD.AutoDiff(-8)
+    b = abs(a)
+    assert b.val == [8]
+    assert b.der == [[-1.]]
+        
 #Test __str__ and __repr__
 def test_AutoDiff_print():
     a, b = AD.create([2.0, 8.0])
