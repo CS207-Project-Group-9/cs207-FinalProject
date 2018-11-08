@@ -35,15 +35,18 @@ def test_AutoDiff_constuctor_init():
     b = AD.AutoDiff(a)
     assert_array_equal(b.val, np.array([5.0]))
     assert_array_equal(b.der, np.array([[1]]))
+    assert_array_equal(b.get_val(), np.array([5.0])) #test get_val()
+    assert_array_equal(b.get_der(), np.array([[1]])) #test get_der()
     #inputs ought not to be type other than integer, list or numpy array
     with pytest.raises(TypeError):
         AD.AutoDiff('hello','friend')
+        AD.AutoDiff([5.0], 'test')
     #check if dimension of derivative input matches that of value input
     #check if dimension of derivative is higher than 2
     with pytest.raises(ValueError):
         AD.AutoDiff([1,2], [[1,0,0],[0,1,0]])
         AD.AutoDiff([1,2,3],[[1,2,3],[1,2]])
-        AD.AutoDiff([1,2,3],[[1,2,3],[1,2],[1,3],[2,3]])
+        AD.AutoDiff([[1],[2]], [[1,0,0],[0,1,0]])
         
 #Test whether addition works between AD instances, 
 #and between AD instance and number, regardless of order
@@ -133,6 +136,7 @@ def test_AutoDiff_pow():
     assert_array_almost_equal(power2.der, np.array([[80.47189562, 40.23594781]]))
     with pytest.raises(TypeError):
         x ** 'hello'
+    with pytest.raises(TypeError):
         'friend' ** y
 
 #Test whether taking the negative of AD instance works
@@ -197,4 +201,6 @@ def test_AutoDiff_len():
 def test_AutoDiff_eq():
     a = AD.AutoDiff(8.0)
     b = AD.AutoDiff(8.0)
+    c = AD.AutoDiff(5.0)
     assert a == b
+    assert (a == c) == False
