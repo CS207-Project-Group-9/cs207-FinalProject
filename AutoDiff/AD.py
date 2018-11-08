@@ -160,14 +160,20 @@ class AutoDiff():
             # if other is not a number, a TypeError will be raised
 
     def __pow__(self,exp):
-        if not isinstance(exp,numbers.Number):
-            raise TypeError('Exponent needs to be a number.')
-        return AutoDiff(self.val**exp, exp*(self.val**(exp-1))*self.der)
+        try: # assume exp is of AutoDiff type
+        	return AutoDiff(self.val**exp.val,
+        		(self.val**exp.val) * (self.der*exp.val/self.val + exp.der*np.log(self.val)))
+        except AttributeError: # assume other is a number
+        	return AutoDiff(self.val**exp, exp*(self.val**(exp-1))*self.der)
+        	# if other is not a number, a TypeError will be raised
 
     def __rpow__(self,base):
-        if not isinstance(base,numbers.Number):
-            raise TypeError('Base needs to be a number.')
-        return AutoDiff(base**self.val, np.log(base)*(base**self.val)*self.der)
+        try: # assume exp is of AutoDiff type
+        	return AutoDiff(base.val**self.val,
+        		(base.val**self.val) * (base.der*self.val/base.val + self.der*np.log(base.val)))
+        except AttributeError: # assume other is a number
+       		return AutoDiff(base**self.val, np.log(base)*(base**self.val)*self.der)
+       		# if other is not a number, a TypeError will be raised
 
     def __neg__(self):
         return AutoDiff(-self.val, -self.der)
@@ -217,12 +223,12 @@ def exp(x):
 
 def log(x):
     try:
-        if x.val < 1:
+        if x.val < 0:
             raise ValueError("Cannot take log of negative value")
         else:
             return AutoDiff(np.log(x.val), x.der/x.val)
     except AttributeError:
-        if x < 1:
+        if x < 0:
             raise ValueError("Cannot take log of negative value")
         else:
             return np.log(x)
