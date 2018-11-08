@@ -47,11 +47,13 @@ def test_AutoDiff_constuctor_init():
     with pytest.raises(ValueError):
         AD.AutoDiff([[1],[2]], [[1,0,0]])
     with pytest.raises(TypeError):
+        AD.AutoDiff([[1],[2]], [['a','b','c'],['d','e','f']])
+    with pytest.raises(TypeError):
         AD.AutoDiff([1,2,3],[['a','b','c'],['d','e','f'],['g','h','i']])
     with pytest.raises(ValueError):
         AD.AutoDiff([1,2,3],[[1,2,3],[1,2]])
     with pytest.raises(ValueError):
-        AD.AutoDiff([[1],[2]], [[1,0,0],[0,1,0]])
+        AD.AutoDiff([[1]], [[1,0,0],[0,1,0]])
         
 #Test whether addition works between AD instances, 
 #and between AD instance and number, regardless of order
@@ -135,10 +137,13 @@ def test_AutoDiff_pow():
     z = 5.0
     power1 = (x*y) ** z #AD**number
     power2 = z ** (a*b) #test __rpow__: number**AD
+    power3 = x**y
     assert power1.val == [7776.0]
     assert_array_equal(power1.der, np.array([[19440., 12960.]]))
     assert power2.val == [25.0]
     assert_array_almost_equal(power2.der, np.array([[80.47189562, 40.23594781]]))
+    assert power3.val == [8.0]
+    assert_array_almost_equal(power3.der, np.array([[12., 5.54517744]]))
     with pytest.raises(TypeError):
         x ** 'hello'
     with pytest.raises(TypeError):
@@ -173,37 +178,28 @@ def test_AutoDiff_cos():
     assert_array_almost_equal(c.der, np.array([[2.30322653, 0.57580663]]), decimal = 6)
     x = 5.0
     y = AD.cos(x)
-<<<<<<< HEAD
-    assert y == 0.2836621854632263
-=======
     assert y == pytest.approx(0.2836621854632263)
->>>>>>> 72ecf362e23d4508e63c50af4b222f2e7372724f
 
 #Test whether taking the natural logarithm of AD instance returns the correct value
 def test_AutoDiff_log():
-    a, b = AD.create([0.25, 8.0])
+    a, b = AD.create([-4.0, 8.0])
     assert_array_almost_equal(AD.log(b).val, np.array([2.07944154]), decimal = 6)
     assert_array_equal(AD.log(b).der, np.array([[0, 0.125]]))
     with pytest.raises(ValueError):
         AD.log(a)
-    a = 5.0
-    b = 0.45
-    assert AD.log(a) == 1.6094379124341003
+    x = 5.0
+    y = -4.0
+    assert AD.log(x) == 1.6094379124341003
     with pytest.raises(ValueError):
-        AD.log(b)
+        AD.log(y)
            
 #Test __str__ and __repr__
 def test_AutoDiff_print():
     a, b = AD.create([2.0, 8.0])
-<<<<<<< HEAD
-    assert str(a) == 'AutoDiff Object, val: [2.], der: [[1 0]]'
-    assert repr(b) == 'AutoDiff([8.],[[0 1]])'
-=======
     assert 'AutoDiff Object' in str(a)
     assert 'AutoDiff' in repr(b)
 #     assert str(a) == 'AutoDiff Object, val: [2.], der: [[1 0]]'
 #     assert repr(b) == 'AutoDiff([8.],[[0 1]])'
->>>>>>> 72ecf362e23d4508e63c50af4b222f2e7372724f
 
 #Test __len__
 def test_AutoDiff_len():

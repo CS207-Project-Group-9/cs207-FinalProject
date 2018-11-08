@@ -10,5 +10,8 @@
   "test_AD.py::test_AutoDiff_neg",
   "test_AD.py::test_AutoDiff_sin",
   "test_AD.py::test_AutoDiff_cos",
-  "test_AD.py::test_AutoDiff_log"
+  "test_AD.py::test_AutoDiff_log",
+  "test_AD.py::test_AutoDiff_print",
+  "test_AD.py::test_AutoDiff_len",
+  "test_AD.py::test_AutoDiff_eq"
 ]

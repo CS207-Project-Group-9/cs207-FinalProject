@@ -32,29 +32,6 @@ class AutoDiff():
                 raise TypeError('First argument needs to be consisted of numbers')
         self.val = val
 
-        '''
-        ## store der in a 2D array
-        der = np.array([der])
-        # check that der is not over 2D
-        if der.ndim >= 3:
-            raise ValueError('Second argument cannot be more than 2-D')
-        # check that der dimension matches the val dimension
-        try:
-            der = der.reshape(len(val),-1)
-        except ValueError:
-            raise ValueError('Input dimensions do not match')
-        # check if der is a 2D list of weird shape
-        # e.g. [[1,2,3],[1,2]]
-        if type(der[0]) == list:
-            raise ValueError('Input dimensions do not match!')
-        # check data type
-        for i in der:
-            for j in i:
-                if not isinstance(j,numbers.Number):
-                    raise TypeError('Second argument needs to be consisted of numbers')
-        self.der = der
-        '''
-
         ## store der in a 2D array
         ## der input is a single value
         if np.array(der).ndim == 0:
