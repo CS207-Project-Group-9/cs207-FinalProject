@@ -60,7 +60,7 @@ def test_AutoDiff_constuctor_init():
         AD.AutoDiff([[5.0]], [[[1,0,0],[0,1,0]]])
     with pytest.raises(ValueError):
         AD.AutoDiff([1,2], [1,2,3,4])
-     with pytest.raises(ValueError):
+    with pytest.raises(ValueError):
         AD.AutoDiff([1,2], ['a','b'])
         
 #Test whether addition works between AD instances, 
