@@ -47,6 +47,8 @@ def test_AutoDiff_constuctor_init():
     with pytest.raises(ValueError):
         AD.AutoDiff([[1],[2]], [[1,0,0]])
     with pytest.raises(TypeError):
+        AD.AutoDiff([[1],[2]], [['a','b','c'],['d','e','f']])
+    with pytest.raises(TypeError):
         AD.AutoDiff([1,2,3],[['a','b','c'],['d','e','f'],['g','h','i']])
     with pytest.raises(ValueError):
         AD.AutoDiff([1,2,3],[[1,2,3],[1,2]])
@@ -135,10 +137,13 @@ def test_AutoDiff_pow():
     z = 5.0
     power1 = (x*y) ** z #AD**number
     power2 = z ** (a*b) #test __rpow__: number**AD
+    power3 = x**y
     assert power1.val == [7776.0]
     assert_array_equal(power1.der, np.array([[19440., 12960.]]))
     assert power2.val == [25.0]
     assert_array_almost_equal(power2.der, np.array([[80.47189562, 40.23594781]]))
+    assert power3.val == [8.0]
+    assert_array_almost_equal(power3.der, np.array([[12., 5.54517744]]))
     with pytest.raises(TypeError):
         x ** 'hello'
     with pytest.raises(TypeError):
@@ -177,16 +182,16 @@ def test_AutoDiff_cos():
 
 #Test whether taking the natural logarithm of AD instance returns the correct value
 def test_AutoDiff_log():
-    a, b = AD.create([0.25, 8.0])
+    a, b = AD.create([-4.0, 8.0])
     assert_array_almost_equal(AD.log(b).val, np.array([2.07944154]), decimal = 6)
     assert_array_equal(AD.log(b).der, np.array([[0, 0.125]]))
     with pytest.raises(ValueError):
         AD.log(a)
-    a = 5.0
-    b = 0.45
-    assert AD.log(a) == 1.6094379124341003
+    x = 5.0
+    y = -4.0
+    assert AD.log(x) == 1.6094379124341003
     with pytest.raises(ValueError):
-        AD.log(b)
+        AD.log(y)
            
 #Test __str__ and __repr__
 def test_AutoDiff_print():
