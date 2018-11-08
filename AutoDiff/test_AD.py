@@ -51,7 +51,7 @@ def test_AutoDiff_constuctor_init():
     with pytest.raises(ValueError):
         AD.AutoDiff([1,2,3],[[1,2,3],[1,2]])
     with pytest.raises(ValueError):
-        AD.AutoDiff([[1],[2]], [[1,0,0],[0,1,0]])
+        AD.AutoDiff([[1]], [[1,0,0],[0,1,0]])
         
 #Test whether addition works between AD instances, 
 #and between AD instance and number, regardless of order
