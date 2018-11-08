@@ -223,12 +223,12 @@ def exp(x):
 
 def log(x):
     try:
-        if x.val < 0:
+        if x.val <= 0:
             raise ValueError("Cannot take log of negative value")
         else:
             return AutoDiff(np.log(x.val), x.der/x.val)
     except AttributeError:
-        if x < 0:
+        if x <= 0:
             raise ValueError("Cannot take log of negative value")
         else:
             return np.log(x)
