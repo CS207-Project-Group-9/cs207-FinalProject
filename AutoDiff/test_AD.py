@@ -46,7 +46,7 @@ def test_AutoDiff_constuctor_init():
     #check if dimension of derivative is higher than 2
     with pytest.raises(ValueError):
         AD.AutoDiff([[1],[2]], [[1,0,0]])
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         AD.AutoDiff([1,2,3],[['a','b','c'],['d','e','f'],['g','h','i']])
     with pytest.raises(ValueError):
         AD.AutoDiff([1,2,3],[[1,2,3],[1,2]])
