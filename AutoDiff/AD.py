@@ -52,9 +52,9 @@ class AutoDiff():
             else:
                 raise ValueError('Input dimensions do not match.')
         # check variable type
-         for i in der.reshape(-1):
-                if not isinstance(i,numbers.Number):
-                    raise TypeError('Arguments need to be consisted of numbers.')
+        for i in der.reshape(-1):
+            if not isinstance(i,numbers.Number):
+                raise TypeError('Arguments need to be consisted of numbers.')
         # store variable as attribute
         self.der = der
     
