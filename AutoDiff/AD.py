@@ -25,82 +25,38 @@ def stack(ADs):
 
 class AutoDiff():
     def __init__(self,val,der=1):
-        ## store val in a 1D array
+        ## process val
+        # check dimension
+        if np.array(val).ndim > 1:
+            raise ValueError('First argument cannot be 2D or higher.')
+        # check variable type
         val = np.array([val]).reshape(-1) 
         for i in val:
             if not isinstance(i,numbers.Number):
-                raise TypeError('First argument needs to be consisted of numbers')
+                raise TypeError('Arguments need to be consisted of numbers.')
+        # store variable as attribute
         self.val = val
 
-        '''
-        ## store der in a 2D array
-        der = np.array([der])
-        # check that der is not over 2D
-        if der.ndim >= 3:
-            raise ValueError('Second argument cannot be more than 2-D')
-        # check that der dimension matches the val dimension
-        try:
-            der = der.reshape(len(val),-1)
-        except ValueError:
-            raise ValueError('Input dimensions do not match')
-        # check if der is a 2D list of weird shape
-        # e.g. [[1,2,3],[1,2]]
-        if type(der[0]) == list:
-            raise ValueError('Input dimensions do not match!')
-        # check data type
-        for i in der:
-            for j in i:
-                if not isinstance(j,numbers.Number):
-                    raise TypeError('Second argument needs to be consisted of numbers')
-        self.der = der
-        '''
-
-        ## store der in a 2D array
-        ## der input is a single value
-        if np.array(der).ndim == 0:
-            # check data type
-            if not isinstance(der,numbers.Number):
-                raise TypeError('Second argument needs to be consisted of numbers')
+        ## process der
+        # check dimension
+        if len(self.val) <= 1:
+            ## scaler function
+            if np.array(der).ndim <= 1 or np.shape(der)[0] == 1:
+                der = np.array([[der]]).reshape(1,-1)
             else:
-                # store in 2D array
-                self.der = np.array([[der]])
-        
-        ## der input is a vector
-        elif np.array(der).ndim == 1:
-            # check if der is a 2D list of weird shape
-            # e.g. [[1,2,3],[1,2]]
-            if type(der[0]) == list:
-                raise ValueError('Input dimensions do not match!')
-            # store in 2D array
-            der = np.array([der]).reshape(len(self.val),-1)
-            # check that der dimension matches the val dimension
-            if len(self.val) != 1 and der.shape[1] != 1:
-                raise ValueError('Input dimensions do not match')
-            # check data type
-            for i in der:
-                for j in i:
-                    if not isinstance(j,numbers.Number):
-                        raise TypeError('Second argument needs to be consisted of numbers')
-            self.der = der
-            
-        ## der input is a matrix
-        elif np.array(der).ndim == 2:
-            # store in 2D array:
-            der = np.array(der)
-            # check that der dimension matches the val dimension
-            if der.shape[0] != len(self.val):
-                raise ValueError('Input dimensions do not match')
-            # check data type
-            for i in der:
-                for j in i:
-                    if not isinstance(j,numbers.Number):
-                        raise TypeError('Second argument needs to be consisted of numbers')
-            self.der = der
-
-        ## der input is high dimensional
-        else:
-            raise ValueError('Second argument cannot be more than 2-D')
-        
+                raise ValueError('Input dimensions do not match.')
+        elif len(self.val) > 1:
+            ## vector function
+            if np.shape(der)[0] == len(self.val):
+                der = np.array([[der]]).reshape(len(self.val),-1)
+            else:
+                raise ValueError('Input dimensions do not match.')
+        # check variable type
+         for i in der.reshape(-1):
+                if not isinstance(i,numbers.Number):
+                    raise TypeError('Arguments need to be consisted of numbers.')
+        # store variable as attribute
+        self.der = der
     
     def __add__(self,other):
         try: # assume other is of AutoDiff type

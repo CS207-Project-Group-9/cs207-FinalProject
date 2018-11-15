@@ -42,26 +42,30 @@ def test_AutoDiff_constuctor_init():
         AD.AutoDiff('hello','friend')
     with pytest.raises(TypeError):
         AD.AutoDiff([5.0], 'test')
-    #check if dimension of derivative input matches that of value input
-    #check if dimension of derivative is higher than 2
+    #check maximal dimensions of val and der
     with pytest.raises(ValueError):
-        AD.AutoDiff([[1],[2]], [[1,0,0]])
+        AD.AutoDiff([[1],[2]], [[1,0],[0,1]])
+    with pytest.raises(ValueError):
+        AD.AutoDiff([[5.0]], [[[1,0,0],[0,1,0]]])
+    #check if dimension of derivative input matches that of value input
+    with pytest.raises(ValueError):
+        AD.AutoDiff([1], [[1],[2]])
+    with pytest.raises(ValueError):
+        AD.AutoDiff([1,2], [1,2,3,4])
+
+    #check variable type
     with pytest.raises(TypeError):
-        AD.AutoDiff([[1],[2]], [['a','b','c'],['d','e','f']])
+        AD.AutoDiff([1,2], [['a','b','c'],['d','e','f']])
     with pytest.raises(TypeError):
-        AD.AutoDiff([1,2,3],[['a','b','c'],['d','e','f'],['g','h','i']])
+        AD.AutoDiff(['a'], [[1,2]])
+
     with pytest.raises(ValueError):
         AD.AutoDiff([1,2,3],[[1,2,3],[1,2]])
     with pytest.raises(ValueError):
         AD.AutoDiff([1,2,3],[[1,0,0],[0,1,0]])
-    with pytest.raises(ValueError):
-        AD.AutoDiff([[1]], [[1,0,0],[0,1,0]])
-    with pytest.raises(ValueError):
-        AD.AutoDiff([[5.0]], [[[1,0,0],[0,1,0]]])
-    with pytest.raises(ValueError):
-        AD.AutoDiff([1,2], [1,2,3,4])
-    with pytest.raises(TypeError):
-        AD.AutoDiff([1,2], ['a','b'])
+    
+    
+
         
 #Test whether addition works between AD instances, 
 #and between AD instance and number, regardless of order
