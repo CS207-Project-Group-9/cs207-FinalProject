@@ -228,7 +228,7 @@ def test_AutoDiff_exp():
 
 #Test __abs__
 def test_AutoDiff_abs():
-    a = AD.AutoDiff(-8)
+    a = AD.AutoDiff(-8,1)
     b = abs(a)
     assert b.val == [8]
     assert b.der == [[-1.]]
@@ -249,8 +249,8 @@ def test_AutoDiff_len():
 
 #Test __eq__
 def test_AutoDiff_eq():
-    a = AD.AutoDiff(8.0)
-    b = AD.AutoDiff(8.0)
-    c = AD.AutoDiff(5.0)
+    a = AD.AutoDiff(8.0,1)
+    b = AD.AutoDiff(8.0,1)
+    c = AD.AutoDiff(5.0,1)
     assert a == b
     assert (a == c) == False

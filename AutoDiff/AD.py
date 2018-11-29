@@ -3,7 +3,7 @@ import numbers
 
 def create(vals):
     if np.array(vals).ndim == 0:
-        return [AutoDiff(vals,[1])]
+        return AutoDiff(vals,[1])
     if np.array(vals).ndim == 1:
         ADs = []
         num_var = len(vals)
@@ -168,6 +168,12 @@ class AutoDiff():
     
     def __eq__(self, other):
         if self.val==other.val and self.der==other.der:
+            return True
+        else:
+            return False
+
+    def __ne__(self, other):
+        if self.val!=other.val or self.der!=other.der:
             return True
         else:
             return False
