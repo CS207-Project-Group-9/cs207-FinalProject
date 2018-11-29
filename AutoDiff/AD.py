@@ -2,15 +2,32 @@ import numpy as np
 import numbers
 
 def create(vals):
-    ADs = []
-    num = len(vals)
-    for i in range(num):
-        val = vals[i]
-        der = [0]*num
-        der[i] = 1
-        # print('val: {}, der: {}'.format(val,der))
-        ADs.append(AutoDiff(val, der))
-    return ADs
+    if np.array(vals).ndim == 0:
+        return [AutoDiff(vals,[1])]
+    if np.array(vals).ndim == 1:
+        ADs = []
+        num_var = len(vals)
+        for i in range(num_var):
+            val = vals[i]
+            der = [0]*num_var
+            der[i] = 1
+            ADs.append(AutoDiff(val, der))
+        return ADs
+    if np.array(vals).ndim == 2:
+        vals = np.array(vals)
+        ADs = []
+        num_var, num_dim = np.shape(vals)[0],np.shape(vals)[1]
+        for i in range(num_var):
+            AD_var = []
+            for j in range(num_dim):
+                val = vals[i,j]
+                der = [0]*num_var
+                der[i] = 1
+                AD_var.append(AutoDiff(val,der))
+            ADs.append(stack(AD_var))
+        return ADs
+    if np.array(vals).ndim > 2:
+        raise ValueError('Input is at most 2D.')
 
 def stack(ADs):
     new_val = []
@@ -24,13 +41,16 @@ def stack(ADs):
     return new_AD
 
 class AutoDiff():
-    def __init__(self,val,der=1):
+    def __init__(self,val,der):
         ## process val
         # check dimension
         if np.array(val).ndim > 1:
             raise ValueError('First argument cannot be 2D or higher.')
-        # check variable type
         val = np.array([val]).reshape(-1) 
+        if len(self.val) == 0:
+            raise ValueError('First argument cannot be empty')
+
+        # check variable type
         for i in val:
             if not isinstance(i,numbers.Number):
                 raise TypeError('Arguments need to be consisted of numbers.')
@@ -39,7 +59,7 @@ class AutoDiff():
 
         ## process der
         # check dimension
-        if len(self.val) <= 1:
+        if len(self.val) = 1:
             ## scaler function
             if np.array(der).ndim <= 1 or np.shape(der)[0] == 1:
                 der = np.array([[der]]).reshape(1,-1)
