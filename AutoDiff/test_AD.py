@@ -21,8 +21,10 @@ def test_AD_create():
     assert b.val == [2], b.der == [[0,1,0]]
     assert c.val == [3], c.der == [[0,0,1]]
     a, b = AD.create([[1, 2],[3, 4]])
-    assert a.val == [1, 2], a.der == [[1, 0], [1, 0]]
-    assert b.val == [3, 4], b.der == [[0, 1], [0, 1]]
+    assert_array_equal(a.val, np.array([1,2]))
+    assert_array_equal(a.der, np.array([[1,0],[1,0]]))
+    assert_array_equal(b.val, np.array([3,4]))
+    assert_array_equal(b.der, np.array([[0,1],[0,1]]))
 
 
 
@@ -254,3 +256,15 @@ def test_AutoDiff_eq():
     c = AD.AutoDiff(5.0,1)
     assert a == b
     assert (a == c) == False
+
+def test_AutoDiff_ne():
+    a = AD.AutoDiff(8.0,1)
+    b = AD.AutoDiff(8.0,1)
+    c = AD.AutoDiff(5.0,1)
+    assert a != c
+    assert (a != b) == False
+
+
+
+
+

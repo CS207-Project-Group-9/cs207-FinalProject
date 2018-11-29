@@ -34,10 +34,10 @@ class rAD:
         return "AutoDiff Objec, val: {0}, der: {1}".format(self.val, self.grad())
     
     def __eq__(self, other):
-    if self.val == other.val and self.der == other.der:
-        return True
-    else:
-        return False
+        if self.val == other.val and self.der == other.der:
+            return True
+        else:
+            return False
 
     def __ne__(self, other):
         if self.val == other.val and self.der == other.der:
