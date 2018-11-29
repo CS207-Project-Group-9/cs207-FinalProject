@@ -15,7 +15,7 @@ from AutoDiff import AD
 #of AD instances
 def test_AD_create():
     a = AD.create(3)
-    assert a.val = [3], a,der = [[1]]
+    assert a.val == [3], a,der == [[1]]
     a, b, c = AD.create([1, 2, 3])
     assert a.val == [1], a.der == [[1,0,0]]
     assert b.val == [2], b.der == [[0,1,0]]
