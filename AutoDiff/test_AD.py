@@ -14,10 +14,17 @@ from AutoDiff import AD
 #AD_create allows for simultaneous assignment 
 #of AD instances
 def test_AD_create():
+    a = AD.create(3)
+    assert a.val = [3], a,der = [[1]]
     a, b, c = AD.create([1, 2, 3])
     assert a.val == [1], a.der == [[1,0,0]]
     assert b.val == [2], b.der == [[0,1,0]]
     assert c.val == [3], c.der == [[0,0,1]]
+    a, b = AD.create([[1, 2],[3, 4]])
+    assert a.val == [1, 2], a.der == [[1, 0], [1, 0]]
+    assert b.val == [3, 4], b.der == [[0, 1], [0, 1]]
+
+
 
 #AD_stack takes in multiple AD instances
 #in the form of numpy arrays, returns 
@@ -32,7 +39,7 @@ def test_AD_stack():
 #returns proper values, derivatives, and errors
 def test_AutoDiff_constuctor_init():
     a = 5.0
-    b = AD.AutoDiff(a)
+    b = AD.AutoDiff(a,1)
     assert_array_equal(b.val, np.array([5.0]))
     assert_array_equal(b.der, np.array([[1]]))
     assert_array_equal(b.get_val(), np.array([5.0])) #test get_val()

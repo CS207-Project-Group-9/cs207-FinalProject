@@ -47,7 +47,7 @@ class AutoDiff():
         if np.array(val).ndim > 1:
             raise ValueError('First argument cannot be 2D or higher.')
         val = np.array([val]).reshape(-1) 
-        if len(self.val) == 0:
+        if len(val) == 0:
             raise ValueError('First argument cannot be empty')
 
         # check variable type
