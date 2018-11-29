@@ -59,7 +59,7 @@ class AutoDiff():
 
         ## process der
         # check dimension
-        if len(self.val) = 1:
+        if len(self.val) == 1:
             ## scaler function
             if np.array(der).ndim <= 1 or np.shape(der)[0] == 1:
                 der = np.array([[der]]).reshape(1,-1)
