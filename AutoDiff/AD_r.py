@@ -3,29 +3,28 @@ import math
 class rAD:
     def __init__(self, value):
         self.val = value
-        self.children = [] # list of (weight,var), s.t. var is built upon self
+        self.children = [] # list of (w,a), s.t. rAD is built upon self
         self.der = None
 
     def grad(self):
         if self.der is None:
-            self.der = sum(weight * var.grad()
-                                  for weight, var in self.children)
+            self.der = sum(w*a.grad() for w,a in self.children)
         return self.der
 
     def __add__(self, other):
         # self + other = z
         # dz/dself = 1 * self.grad_value
         # dz/dother = 1 * self.grad_value
-        z = rAD(self.val + other.val)
-        self.children.append((1.0, z))
-        other.children.append((1.0, z))
-        return z
+        ad = rAD(self.val + other.val)
+        self.children.append((1.0, ad))
+        other.children.append((1.0, ad))
+        return ad
 
     def __mul__(self, other):
-        z = rAD(self.val * other.val)
-        self.children.append((other.val, z))
-        other.children.append((self.val, z))
-        return z
+        ad = rAD(self.val * other.val)
+        self.children.append((other.val, ad))
+        other.children.append((self.val, ad))
+        return ad
 
     def __neg__(self):
         return rAD(-self.val, -self.grad())
@@ -41,9 +40,43 @@ class rAD:
 
 
 def sin(x):
-    z = rAD(math.sin(x.val))
-    x.children.append((math.cos(x.val), z))
-    return z
+    try:
+        ad = rAD(np.sin(x.val))
+        x.children.append((np.cos(x.val),ad))
+        return ad
+    except AttributeError:
+        return np.sin(x)
+
+def cos(x):
+    try:
+        ad = rAD(np.cos(x.val))
+        x.children.append((-np.sin(x.val),ad))
+        return ad
+    except AttributeError:
+        return np.cos(x)
+
+def exp(x):
+    try:
+        ad = rAD(np.exp(x.val))
+        x.children.append((np.exp(x.val)*x.grad(),ad))
+        return ad
+    except AttributeError:
+        return np.exp(x)       
+
+def log(x): 
+    try:
+        if x.val <= 0:
+            raise ValueError("Cannot take log of negative value")
+        else:
+            ad = rAD(np.log(x.val))
+            x.children.append((x.grad()/x.val,ad))
+            return ad
+    except AttributeError:
+        if x <= 0:
+            raise ValueError("Cannot take log of negative value")
+        else:
+            return np.log(x)
+
 
 x = rAD(0.5)
 y = rAD(4.2)
