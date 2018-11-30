@@ -130,7 +130,7 @@ class AutoDiff():
 
     def __rtruediv__(self,other): # other/self
         try: # assume other is of AutoDiff type
-            return AutoDiff(other.val/self.val,other.val/self.der-other.val*self.der/(self.val**2))
+            return AutoDiff(other.val/self.val,other.der/self.val-other.val*self.der/(self.val**2))
         except AttributeError: # assume other is a number
             return AutoDiff(other/self.val,-other*self.der/(self.val**2))
             # if other is not a number, a TypeError will be raised

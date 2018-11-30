@@ -1,3 +1,5 @@
+import numpy as np
+
 class rAD:
     def __init__(self, value):
         self.val = value
@@ -10,19 +12,114 @@ class rAD:
         return self.der
 
     def __add__(self, other):
-        # self + other = z
-        # dz/dself = 1 * self.grad_value
-        # dz/dother = 1 * self.grad_value
-        ad = rAD(self.val + other.val)
-        self.children.append((1.0, ad))
-        other.children.append((1.0, ad))
-        return ad
+        try:
+            ad = rAD(self.val + other.val)
+            self.children.append((1.0, ad))
+            other.children.append((1.0, ad))
+            return ad
+        except AttributeError:
+            ad = rAD(self.val + other)
+            self.children.append((1.0, ad))
+            return ad
+
+    def __radd__(self, other):
+        try:
+            ad = rAD(self.val + other.val)
+            self.children.append((1.0, ad))
+            other.children.append((1.0, ad))
+            return ad
+        except AttributeError:
+            ad = rAD(self.val + other)
+            self.children.append((1.0, ad))
+            return ad
+
+    def __sub__(self, other):
+        try:
+            ad = rAD(self.val - other.val)
+            self.children.append((1.0, ad))
+            other.children.append((-1.0, ad))
+            return ad
+        except AttributeError:
+            ad = rAD(self.val - other)
+            self.children.append((1.0, ad))
+            return ad
+
+    def __rsub__(self, other):
+        try:
+            ad = rAD(other.val - self.val)
+            self.children.append((-1.0, ad))
+            other.children.append((1.0, ad))
+            return ad
+        except AttributeError:
+            ad = rAD(other - self.val)
+            self.children.append((-1.0, ad))
+            return ad
 
     def __mul__(self, other):
-        ad = rAD(self.val * other.val)
-        self.children.append((other.val, ad))
-        other.children.append((self.val, ad))
-        return ad
+        try:
+            ad = rAD(self.val * other.val)
+            self.children.append((other.val, ad))
+            other.children.append((self.val, ad))
+            return ad
+        except AttributeError:
+            ad = rAD(self.val * other)
+            self.children.append((other, ad))
+            return ad
+
+    def __rmul__(self, other):
+        try:
+            ad = rAD(self.val * other.val)
+            self.children.append((other.val, ad))
+            other.children.append((self.val, ad))
+            return ad
+        except AttributeError:
+            ad = rAD(self.val * other)
+            self.children.append((other, ad))
+            return ad
+
+    def __truediv__(self, other):
+        try:
+            ad = rAD(self.val / other.val)
+            self.children.append((1/other.val, ad))
+            other.children.append((-self.val/(other.val**2), ad))
+            return ad
+        except AttributeError:
+            ad = rAD(self.val / other)
+            self.children.append((1/other, ad))
+            return ad
+
+    def __rtruediv__(self, other):
+        try:
+            ad = rAD(self.val / other.val)
+            self.children.append((-other.val/(self.val**2), ad))
+            other.children.append((1/self.val, ad))
+            return ad
+        except AttributeError:
+            ad = rAD(self.val / other)
+            self.children.append((1/other, ad))
+            return ad
+
+    def __pow__(self, other):
+        try:
+            ad = rAD(self.val ** other.val)
+            self.children.append((self.val**(other.val-1)*other.val, ad))
+            other.children.append((self.val**other.val*np.log(self.val), ad))
+            return ad
+        except AttributeError:
+            ad = rAD(self.val ** other)
+            self.children.append((self.val**(other-1)*other, ad))
+            return ad
+
+    def __rpow__(self, other):
+        try:
+            ad = rAD(self.val ** other.val)
+            self.children.append((other.val**self.val*np.log(other.val), ad))
+            other.children.append((other.val**(self.val-1)*self.val, ad))
+            return ad
+        except AttributeError:
+            ad = rAD(self.val ** other)
+            self.children.append((other**self.val*np.log(other), ad))
+            return ad
 
     def __neg__(self):
         return rAD(-self.val, -self.grad())
@@ -86,24 +183,24 @@ def log(x):
         else:
             return np.log(x)
 
-
-x = rAD(0.5)
-y = rAD(4.2)
-z = x * y + sin(x)
-z.outer()
-# z.der = 1.0 #the last (outermost) var
-
-
-
-print('x: {}, {}, {}'.format(x.val, x.der, x.grad()))
-print('y: {}, {}, {}'.format(y.val, y.der, y.grad()))
-print('z: {}, {}, {}'.format(z.val, z.der, z.grad()))
-print('x: ', str(x))
-print('y: ', str(y))
-print('z: ', str(z))
+if __name__ == "__main__":
+    x = rAD(0.5)
+    y = rAD(4.2)
+    z = x * y + sin(x)
+    z.outer()
+    # z.der = 1.0 #the last (outermost) var
 
 
 
-assert abs(z.val - 2.579425538604203) <= 1e-15
-assert abs(x.grad() - (y.val + math.cos(x.val))) <= 1e-15
-assert abs(y.grad() - x.val) <= 1e-15
+    print('x: {}, {}, {}'.format(x.val, x.der, x.grad()))
+    print('y: {}, {}, {}'.format(y.val, y.der, y.grad()))
+    print('z: {}, {}, {}'.format(z.val, z.der, z.grad()))
+    print('x: ', str(x))
+    print('y: ', str(y))
+    print('z: ', str(z))
+
+
+
+    assert abs(z.val - 2.579425538604203) <= 1e-15
+    assert abs(x.grad() - (y.val + math.cos(x.val))) <= 1e-15
+    assert abs(y.grad() - x.val) <= 1e-15
