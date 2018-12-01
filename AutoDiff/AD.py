@@ -4,7 +4,7 @@ import numbers
 def create(vals):
     if np.array(vals).ndim == 0:
         return AutoDiff(vals,[1])
-    if np.array(vals).ndim == 1:
+    elif np.array(vals).ndim == 1:
         ADs = []
         num_var = len(vals)
         for i in range(num_var):
@@ -13,7 +13,7 @@ def create(vals):
             der[i] = 1
             ADs.append(AutoDiff(val, der))
         return ADs
-    if np.array(vals).ndim == 2:
+    elif np.array(vals).ndim == 2:
         vals = np.array(vals)
         ADs = []
         num_var, num_dim = np.shape(vals)[0],np.shape(vals)[1]
@@ -26,7 +26,7 @@ def create(vals):
                 AD_var.append(AutoDiff(val,der))
             ADs.append(stack(AD_var))
         return ADs
-    if np.array(vals).ndim > 2:
+    elif np.array(vals).ndim > 2:
         raise ValueError('Input is at most 2D.')
 
 def stack(ADs):
@@ -48,7 +48,7 @@ class AutoDiff():
             raise ValueError('First argument cannot be 2D or higher.')
         val = np.array([val]).reshape(-1) 
         if len(val) == 0:
-            raise ValueError('First argument cannot be empty')
+            raise ValueError('First argument cannot be empty.')
 
         # check variable type
         for i in val:

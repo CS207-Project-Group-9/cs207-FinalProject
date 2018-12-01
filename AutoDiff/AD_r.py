@@ -1,9 +1,16 @@
 import numpy as np
+import numbers
 
 class rAD:
-    def __init__(self, value):
-        self.val = value
-        self.children = [] # list of (w,a), s.t. rAD is built upon self
+    def __init__(self, vals):
+        # check dimension of 'value'
+        if np.array(vals).ndim > 1:
+            raise ValueError('Input should be a scaler or a vector of numbers.')
+        for i in np.array([vals]).reshape(-1):
+            if not isinstance(i,numbers.Number):
+                raise TypeError('Input should be a scaler or a vector of numbers.')
+        self.val = vals
+        self.children = []
         self.der = None
 
     def grad(self):
@@ -90,13 +97,13 @@ class rAD:
 
     def __rtruediv__(self, other):
         try:
-            ad = rAD(self.val / other.val)
+            ad = rAD(other.val / self.val)
             self.children.append((-other.val/(self.val**2), ad))
             other.children.append((1/self.val, ad))
             return ad
         except AttributeError:
-            ad = rAD(self.val / other)
-            self.children.append((1/other, ad))
+            ad = rAD(other / self.val)
+            self.children.append((-other/(self.val**2), ad))
             return ad
 
     def __pow__(self, other):
@@ -117,7 +124,7 @@ class rAD:
             other.children.append((other.val**(self.val-1)*self.val, ad))
             return ad
         except AttributeError:
-            ad = rAD(self.val ** other)
+            ad = rAD(other ** self.val)
             self.children.append((other**self.val*np.log(other), ad))
             return ad
 
@@ -182,6 +189,15 @@ def log(x):
             raise ValueError("Cannot take log of negative value")
         else:
             return np.log(x)
+
+def reset_der(rADs):
+    try:
+        rADs.der = None
+        rADs.children = []
+    except AttributeError:
+        for rAD in rADs:
+            rAD.der = None
+            rAD.children = []
 
 if __name__ == "__main__":
     x = rAD(0.5)
