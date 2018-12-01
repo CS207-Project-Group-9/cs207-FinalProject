@@ -130,13 +130,17 @@ class rAD:
             return ad
 
     def __neg__(self):
-        return rAD(-self.val, -self.grad())
+        new = rAD(-self.val)
+        self.children.append((-1.0, new))
+        return new
 
     def __abs__(self):
-        return rAD(abs(self.val),(self.val/abs(self.val))*self.grad())
+        new = rAD(abs(self.val))
+        self.children.append((self.val/abs(self.val), new))
+        return new
 
     def __str__(self):
-        return "AutoDiff Objec, val: {0}, der: {1}".format(self.val, self.grad())
+        return "AutoDiff Object, val: {0}, der: {1}".format(self.val, self.grad())
     
     def __eq__(self, other):
         if self.val == other.val and self.der == other.der:
