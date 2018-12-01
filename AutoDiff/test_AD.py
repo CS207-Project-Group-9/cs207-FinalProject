@@ -8,16 +8,28 @@
 import pytest
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal
-#import AD
-from AutoDiff import AD
+
+try:
+    from AutoDiff import AD
+    from AutoDiff import AD_r
+except ModuleNotFoundError: pass
 
 #AD_create allows for simultaneous assignment 
 #of AD instances
 def test_AD_create():
+    a = AD.create(3)
+    assert a.val == [3], a.der == [[1]]
     a, b, c = AD.create([1, 2, 3])
     assert a.val == [1], a.der == [[1,0,0]]
     assert b.val == [2], b.der == [[0,1,0]]
     assert c.val == [3], c.der == [[0,0,1]]
+    a, b = AD.create([[1, 2],[3, 4]])
+    assert_array_equal(a.val, np.array([1,2]))
+    assert_array_equal(a.der, np.array([[1,0],[1,0]]))
+    assert_array_equal(b.val, np.array([3,4]))
+    assert_array_equal(b.der, np.array([[0,1],[0,1]]))
+
+
 
 #AD_stack takes in multiple AD instances
 #in the form of numpy arrays, returns 
@@ -30,34 +42,39 @@ def test_AD_stack():
 
 #Test whether constructor of AutoDiff class 
 #returns proper values, derivatives, and errors
-def test_AutoDiff_constuctor_init():
+def test_AutoDiff_constructor_init():
     a = 5.0
-    b = AD.AutoDiff(a)
+    b = AD.AutoDiff(a,1)
     assert_array_equal(b.val, np.array([5.0]))
     assert_array_equal(b.der, np.array([[1]]))
     assert_array_equal(b.get_val(), np.array([5.0])) #test get_val()
     assert_array_equal(b.get_der(), np.array([[1]])) #test get_der()
-    #inputs ought not to be type other than integer, list or numpy array
+    #inputs ought not to be type other than scaler, list or array of numbers
     with pytest.raises(TypeError):
         AD.AutoDiff('hello','friend')
     with pytest.raises(TypeError):
         AD.AutoDiff([5.0], 'test')
-    #check if dimension of derivative input matches that of value input
-    #check if dimension of derivative is higher than 2
+    #check maximal dimensions of val and der
     with pytest.raises(ValueError):
-        AD.AutoDiff([[1],[2]], [[1,0,0]])
+        AD.AutoDiff([[1],[2]], [[1,0],[0,1]])
+    with pytest.raises(ValueError):
+        AD.AutoDiff([[5.0]], [[[1,0,0],[0,1,0]]])
+    #check if dimension of derivative input matches that of value input
+    with pytest.raises(ValueError):
+        AD.AutoDiff([1], [[1],[2]])
+    with pytest.raises(ValueError):
+        AD.AutoDiff([1,2], [1,2,3,4])
+
+    #check variable type
     with pytest.raises(TypeError):
-        AD.AutoDiff([[1],[2]], [['a','b','c'],['d','e','f']])
+        AD.AutoDiff([1,2], [['a','b','c'],['d','e','f']])
     with pytest.raises(TypeError):
-        AD.AutoDiff([1,2,3],[['a','b','c'],['d','e','f'],['g','h','i']])
+        AD.AutoDiff(['a'], [[1,2]])
+
     with pytest.raises(ValueError):
         AD.AutoDiff([1,2,3],[[1,2,3],[1,2]])
     with pytest.raises(ValueError):
         AD.AutoDiff([1,2,3],[[1,0,0],[0,1,0]])
-    with pytest.raises(ValueError):
-        AD.AutoDiff([[1]], [[1,0,0],[0,1,0]])
-    with pytest.raises(ValueError):
-        AD.AutoDiff([[5.0]], [[[1,0,0],[0,1,0]]])
         
 #Test whether addition works between AD instances, 
 #and between AD instance and number, regardless of order
@@ -213,7 +230,7 @@ def test_AutoDiff_exp():
 
 #Test __abs__
 def test_AutoDiff_abs():
-    a = AD.AutoDiff(-8)
+    a = AD.AutoDiff(-8,1)
     b = abs(a)
     assert b.val == [8]
     assert b.der == [[-1.]]
@@ -234,8 +251,243 @@ def test_AutoDiff_len():
 
 #Test __eq__
 def test_AutoDiff_eq():
-    a = AD.AutoDiff(8.0)
-    b = AD.AutoDiff(8.0)
-    c = AD.AutoDiff(5.0)
+    a = AD.AutoDiff(8.0,1)
+    b = AD.AutoDiff(8.0,1)
+    c = AD.AutoDiff(5.0,1)
     assert a == b
     assert (a == c) == False
+
+#Test __ne__
+def test_AutoDiff_ne():
+    a = AD.AutoDiff(8.0,1)
+    b = AD.AutoDiff(8.0,1)
+    c = AD.AutoDiff(5.0,1)
+    assert a != c
+    assert (a != b) == False
+
+#Test whether constructor of rAD class returns proper
+#values, children, derivatives, and errors
+def test_rAD_constructor_init():
+    a = AD_r.rAD(8)
+    assert a.val == 8
+    assert a.children == []
+    assert a.der == None
+    #inputs ought not to be type other than scaler, list or array of numbers
+    with pytest.raises(TypeError):
+        AD_r.rAD('test')
+    #inputs ought not be matrix or of higher order dimension
+    with pytest.raises(ValueError):
+        AD_r.rAD([[1,2],[3,4]])
+
+#Test whether the reset_der function correctly resets the 
+#derivatives and children of the given rAD objects
+def test_rAD_reset_der():
+    #reset_der works on single rAD object
+    x = AD_r.rAD(8)
+    z = x ** 2
+    z.outer()
+    x.grad()
+    AD_r.reset_der(x)
+    assert x.children == []
+    assert x.der == None
+    #reset_der works on a list/array of rAD objects
+    x, y = AD_r.rAD(8), AD_r.rAD(5)
+    z = x * y
+    z.outer()
+    x.grad()
+    y.grad()
+    AD_r.reset_der([x,y])
+    assert x.children == []
+    assert x.der == None
+    assert y.children == []
+    assert y.der == None
+
+#Test whether addition works between rAD instances, 
+#and between rAD instance and number, regardless of order
+def test_rAD_add():
+    x, y, z = AD_r.rAD(5.0), AD_r.rAD(7.0), 3.0
+    #rAD+rAD
+    sum1 = x + y
+    sum1.outer()
+    assert sum1.val == 12.0
+    assert x.grad() == 1
+    assert y.grad() == 1
+    AD_r.reset_der([x,y])
+    #rAD+number
+    sum2 = x + z
+    sum2.outer()
+    assert sum2.val == 8.0
+    assert x.grad() == 1
+    #number+rAD <- test __radd__
+    sum3 = z + y
+    sum3.outer()
+    assert sum3.val == 10.0
+    assert y.grad() == 1
+    #rAD cannot be added to non-rAD and non-numeric types
+    with pytest.raises(TypeError):
+        x + 'hello'
+    with pytest.raises(TypeError):
+        'friend' + y
+
+#Test whether subtraction works between rAD instances, 
+#and between rAD instance and number, regardless of order
+def test_rAD_sub():
+    x, y, z = AD_r.rAD(5.0), AD_r.rAD(7.0), 3.0
+    #rAD-rAD
+    sub1 = y - x
+    sub1.outer()
+    assert sub1.val == 2.0
+    assert x.grad() == -1
+    assert y.grad() == 1
+    AD_r.reset_der([x,y])
+    #rAD+number
+    sub2 = x - z
+    sub2.outer()
+    assert sub2.val == 2.0
+    assert x.grad() == 1
+    #number+rAD <- test __rsub__
+    sub3 = z - y
+    sub3.outer()
+    assert sub3.val == -4.0
+    assert y.grad() == -1
+    #rAD cannot subtract or be subtracted by non-rAD and non-numeric types
+    with pytest.raises(TypeError):
+        x - 'hello'
+    with pytest.raises(TypeError):
+        'friend' - y
+
+#Test whether multiplication works between AD instances,
+#and between AD instance and number, regardless of order
+def test_rAD_mul():
+    x, y, z = AD_r.rAD(5.0), AD_r.rAD(7.0), 3.0
+    #rAD*rAD
+    mul1 = x * y
+    mul1.outer()
+    assert mul1.val == 35.0
+    assert x.grad() == 7.0
+    assert y.grad() == 5.0
+    AD_r.reset_der([x,y])
+    #rAD*number
+    mul2 = x * z
+    mul2.outer()
+    assert mul2.val == 15.0
+    assert x.grad() == 3.0
+    #number*rAD <- test __rmul__
+    mul3 = z * y
+    mul3.outer()
+    assert mul3.val == 21.0
+    assert y.grad() == 3.0
+    #rAD cannot be multiplied with non-rAD and non-numeric types
+    with pytest.raises(TypeError):
+        x * 'hello'
+    with pytest.raises(TypeError):  
+        'friend' * y
+
+#Test whether division works between rAD instances, 
+#and between rAD instance and number, regardless of order
+def test_rAD_div():
+    x, y, z = AD_r.rAD(4.0), AD_r.rAD(8.0), 2.0
+    #rAD-rAD
+    div1 = y / x
+    div1.outer()
+    assert div1.val == 2.0
+    assert x.grad() == -0.5
+    assert y.grad() == 0.25
+    AD_r.reset_der([x,y])
+    #rAD+number
+    div2 = x / z
+    div2.outer()
+    assert div2.val == 2.0
+    assert x.grad() == 0.5
+    #number+rAD <- test __rsub__
+    div3 = z / y
+    div3.outer()
+    assert div3.val == 0.25
+    assert y.grad() == -0.03125
+    #rAD cannot subtract or be subtracted by non-rAD and non-numeric types
+    with pytest.raises(TypeError):
+        x / 'hello'
+    with pytest.raises(TypeError):
+        'friend' / y
+
+#Test whether power works between rAD instances, 
+#and between rAD instance and number, regardless of order
+def test_rAD_pow():
+    x, y, z = AD_r.rAD(2.0), AD_r.rAD(3.0), 5.0
+    a, b = AD_r.rAD(1.0), AD_r.rAD(2.0)
+    #rAD**rAD
+    pow1 = x ** y
+    pow1.outer()
+    assert pow1.val == 8.0
+    assert_array_almost_equal(np.array([x.grad(), y.grad()]),
+        np.array([12., 5.54517744]))
+    AD_r.reset_der([x,y])
+    #rAD**number
+    pow2 = (x * y) ** z
+    pow2.outer()
+    assert pow2.val == 7776.0
+    assert_array_almost_equal(np.array([x.grad(), y.grad()]),
+        np.array([19440., 12960.]))
+    #number**rAD <- test __rpow__
+    pow3 = z ** (a * b)
+    pow3.outer()
+    assert pow3.val == 25.0
+    assert_array_almost_equal(np.array([a.grad(), b.grad()]),
+        np.array([80.47189562, 40.23594781]))
+    #user cannot compute power between rAD with non-rAD and non-numeric types
+    with pytest.raises(TypeError):
+        x / 'hello'
+    with pytest.raises(TypeError):
+        'friend' / y
+
+#Test whether taking the negative of rAD instance works
+def test_rAD_neg():
+    x = AD_r.rAD(6.5)
+    y = AD_r.rAD(3.0)
+    z = -x - AD_r.cos(y)
+    assert x.grad() == -1.0 
+    assert_array_almost_equal(np.array(y.grad()), np.array(0.1411200080598672)) 
+    assert_array_almost_equal(np.array(z.val), np.array(-5.510007503399555))
+
+#Test rAD abs()
+def test_rAD_abs():
+    x = AD_r.rAD(-6.5)
+    y = AD_r.rAD(3.0)
+    z = abs(x)*AD_r.sin(y)
+    z.outer()
+    assert_array_almost_equal(np.array(z.val), np.array(0.9172800523891369))
+    assert_array_almost_equal(np.array(x.grad()), np.array(-0.1411200080598672))
+    assert_array_almost_equal(np.array(y.grad()), np.array(-6.4349512279028955))
+    
+#Test str() of rAD
+def test_rAD_str():
+    x = AD_r.rAD(-6.5)
+    assert str(x) == 'AutoDiff Object, val: -6.5, der: 0'
+
+if __name__ == "__main__":
+    import AD
+    import AD_r
+    test_AD_create()
+    test_AD_stack()
+    test_AutoDiff_constructor_init()
+    test_AutoDiff_add()
+    test_AutoDiff_sub()
+    test_AutoDiff_mul()
+    test_AutoDiff_div()
+    test_AutoDiff_pow()
+    test_AutoDiff_neg()
+    test_AutoDiff_sin()
+    test_AutoDiff_cos()
+    test_AutoDiff_log()
+    test_AutoDiff_exp()
+    test_AutoDiff_abs()
+    test_AutoDiff_print()
+    test_AutoDiff_len()
+    test_AutoDiff_eq()
+    test_rAD_constructor_init()
+    test_rAD_reset_der()
+    test_rAD_add()
+    test_rAD_sub()
+    test_rAD_mul()
+    test_rAD_div()
+    test_rAD_pow()
