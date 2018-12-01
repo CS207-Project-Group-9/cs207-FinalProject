@@ -444,9 +444,9 @@ def test_rAD_pow():
 def test_rAD_neg():
     x = AD_r.rAD(6.5)
     y = AD_r.rAD(3.0)
-    a = -x
     z = -x - AD_r.cos(y)
-    assert a.grad() == -1.0 
+    z.outer()
+    assert x.grad() == -1.0 
     assert_array_almost_equal(np.array(y.grad()), np.array(0.1411200080598672)) 
     assert_array_almost_equal(np.array(z.val), np.array(-5.510007503399555))
 
