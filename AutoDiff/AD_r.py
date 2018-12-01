@@ -1,5 +1,6 @@
 import numpy as np
 import numbers
+import math
 
 class rAD:
     def __init__(self, vals):
