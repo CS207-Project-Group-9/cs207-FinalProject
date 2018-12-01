@@ -204,24 +204,25 @@ def reset_der(rADs):
             rAD.der = None
             rAD.children = []
 
-if __name__ == "__main__":
-    x = rAD(0.5)
-    y = rAD(4.2)
-    z = x * y + sin(x)
-    z.outer()
-    # z.der = 1.0 #the last (outermost) var
-
-
-
-    print('x: {}, {}, {}'.format(x.val, x.der, x.grad()))
-    print('y: {}, {}, {}'.format(y.val, y.der, y.grad()))
-    print('z: {}, {}, {}'.format(z.val, z.der, z.grad()))
-    print('x: ', str(x))
-    print('y: ', str(y))
-    print('z: ', str(z))
-
-
-
-    assert abs(z.val - 2.579425538604203) <= 1e-15
-    assert abs(x.grad() - (y.val + math.cos(x.val))) <= 1e-15
-    assert abs(y.grad() - x.val) <= 1e-15
+##if __name__ == "__main__":
+##    x = rAD(0.5)
+##    y = rAD(4.2)
+##    z = x * y + sin(x)
+##    z.outer()
+##    # z.der = 1.0 #the last (outermost) var
+##
+##
+##
+##    print('x: {}, {}, {}'.format(x.val, x.der, x.grad()))
+##    print('y: {}, {}, {}'.format(y.val, y.der, y.grad()))
+##    print('z: {}, {}, {}'.format(z.val, z.der, z.grad()))
+##    print('x: ', str(x))
+##    print('y: ', str(y))
+##    print('z: ', str(z))
+##
+##
+##
+##    assert abs(z.val - 2.579425538604203) <= 1e-15
+##    assert abs(x.grad() - (y.val + math.cos(x.val))) <= 1e-15
+##    assert abs(y.grad() - x.val) <= 1e-15
+##
