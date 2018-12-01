@@ -75,9 +75,6 @@ def test_AutoDiff_constructor_init():
         AD.AutoDiff([1,2,3],[[1,2,3],[1,2]])
     with pytest.raises(ValueError):
         AD.AutoDiff([1,2,3],[[1,0,0],[0,1,0]])
-    
-    
-
         
 #Test whether addition works between AD instances, 
 #and between AD instance and number, regardless of order
@@ -443,6 +440,30 @@ def test_rAD_pow():
     with pytest.raises(TypeError):
         'friend' / y
 
+#Test whether taking the negative of rAD instance works
+def test_rAD_neg():
+    x = AD_r.rAD(6.5)
+    y = AD_r.rAD(3.0)
+    z = -x - AD_r.cos(y)
+    assert x.grad() == -1.0 
+    assert_array_almost_equal(np.array(y.grad()), np.array(0.1411200080598672)) 
+    assert_array_almost_equal(np.array(z.val), np.array(-5.510007503399555))
+
+#Test rAD abs()
+def test_rAD_abs():
+    x = AD_r.rAD(-6.5)
+    y = AD_r.rAD(3.0)
+    z = abs(x)*AD_r.sin(y)
+    z.outer()
+    assert_array_almost_equal(np.array(z.val), np.array(0.9172800523891369))
+    assert_array_almost_equal(np.array(x.grad()), np.array(-0.1411200080598672))
+    assert_array_almost_equal(np.array(y.grad()), np.array(-6.4349512279028955))
+    
+#Test str() of rAD
+def test_rAD_str():
+    x = AD_r.rAD(-6.5)
+    assert str(x) == 'AutoDiff Object, val: -6.5, der: 0'
+
 if __name__ == "__main__":
     import AD
     import AD_r
@@ -470,6 +491,3 @@ if __name__ == "__main__":
     test_rAD_mul()
     test_rAD_div()
     test_rAD_pow()
-
-
-
