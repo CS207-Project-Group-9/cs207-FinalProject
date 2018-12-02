@@ -496,7 +496,7 @@ def test_combined_arctan():
     c = AutoDiff.arctan(a) + b
     c.outer()
     assert_array_almost_equal(f.val, np.array(0.04145679))
-    assert_array_almost_equal(f.val, np.array(c.val))
+    assert_array_almost_equal(f.val, np.array(c.val), decimal = 4)
     assert_array_almost_equal(f.der[0][0], np.array(0.91743119))
     assert_array_almost_equal(f.der[0][0], np.array(a.grad()))
     assert_array_almost_equal(f.der[0][1], np.array(b.grad()))
