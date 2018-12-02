@@ -444,6 +444,82 @@ def test_combined_cos():
     assert y == pytest.approx(0.2836621854632263)
     # rAD
 
+#Test inverse sine
+def test_combined_arcsin():
+    #test fAD
+    x, y = AutoDiff.create([0.25, -0.10])
+    f = AutoDiff.arcsin(x) + AutoDiff.arcsin(y)
+    #test numeric
+    z = 1.0
+    #test rAD
+    a = AutoDiff.rAD(0.25)
+    b = AutoDiff.rAD(-0.10)
+    c = AutoDiff.arcsin(a) + AutoDiff.arcsin(b)
+    c.outer()
+    assert_array_almost_equal(f.val, np.array(0.15251283))
+    assert_array_almost_equal(f.val, np.array(c.val))
+    assert_array_almost_equal(f.der[0][0], np.array(1.03279556))
+    assert_array_almost_equal(f.der[0][0], np.array(a.grad()))
+    assert_array_almost_equal(f.der[0][1], np.array(b.grad()))
+    assert_array_almost_equal(np.array(AutoDiff.arcsin(z)), np.array(1.5707963267948966))
+
+#Test inverse cosine
+def test_combined_arccos():
+    #test fAD
+    x, y = AutoDiff.create([0.40, -0.55])
+    f = AutoDiff.arccos(x) + AutoDiff.arccos(y)
+    #test numeric
+    z = 0.5
+    #test rAD
+    a = AutoDiff.rAD(0.40)
+    b = AutoDiff.rAD(-0.55)
+    c = AutoDiff.arccos(a) + AutoDiff.arccos(b)
+    c.outer()
+    assert_array_almost_equal(f.val, np.array(3.31244005))
+    assert_array_almost_equal(f.val, np.array(c.val))
+    assert_array_almost_equal(f.der[0][0], np.array(-1.09108945))
+    assert_array_almost_equal(f.der[0][0], np.array(a.grad()))
+    assert_array_almost_equal(f.der[0][1], np.array(b.grad()))
+    assert_array_almost_equal(np.array(AutoDiff.arccos(z)), np.array(1.0471975511965976))
+
+#Test inverse tangent
+def test_combined_arctan():
+    #test fAD
+    x, y = AutoDiff.create([0.30, -0.25])
+    f = AutoDiff.arctan(x) + y
+    #test numeric
+    z = 0.1
+    #test rAD
+    a = AutoDiff.rAD(0.30)
+    b = AutoDiff.rAD(-0.25)
+    c = AutoDiff.arctan(a) + b
+    c.outer()
+    assert_array_almost_equal(f.val, np.array(0.04145679))
+    assert_array_almost_equal(f.val, np.array(c.val))
+    assert_array_almost_equal(f.der[0][0], np.array(0.91743119))
+    assert_array_almost_equal(f.der[0][0], np.array(a.grad()))
+    assert_array_almost_equal(f.der[0][1], np.array(b.grad()))
+    assert_array_almost_equal(np.array(AutoDiff.arccos(z)), np.array(1.4706289056333368))
+
+#Test hyperbolic sine
+def test_combined_sinh():
+    #test fAD
+    x, y = AutoDiff.create([5, -8.5])
+    f = AutoDiff.sinh(x) + y
+    #test numeric
+    z = 2
+    #test rAD
+    a = AutoDiff.rAD(5)
+    b = AutoDiff.rAD(-8.5)
+    c = AutoDiff.arctan(a) + b
+    c.outer()
+    assert_array_almost_equal(f.val, np.array(65.70321058))
+    assert_array_almost_equal(f.val, np.array(c.val))
+    assert_array_almost_equal(f.der[0][0], np.array(74.20994852))
+    assert_array_almost_equal(f.der[0][0], np.array(a.grad()))
+    assert_array_almost_equal(f.der[0][1], np.array(b.grad()))
+    assert_array_almost_equal(np.array(AutoDiff.arccos(z)), np.array(3.6268604078470186))
+
 #Test whether taking the natural logarithm of AD instance returns the correct value
 def test_combined_log():
     # fAD
@@ -504,6 +580,10 @@ if __name__ == "__main__":
 	test_combined_cos()
 	test_combined_log()
 	test_combined_exp()
+
+	test_combined_arcsin()
+	test_combined_arccos()
+	test_combined_arctan()
 
 
 
