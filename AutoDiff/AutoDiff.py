@@ -323,7 +323,7 @@ class rAD:
         return new
 
     def __str__(self):
-        return "AutoDiff Object, val: {0}, der: {1}".format(self.val, self.grad())
+        return "rAD Object, val: {0}, der: {1}".format(self.val, self.grad())
 
     def __eq__(self, other):
         if self.val == other.val and self.der == other.der:
@@ -362,6 +362,62 @@ def cos(x):
         except AttributeError: # x <- numeric
             return np.cos(x)
 
+def arcsin(x):
+    try:
+        #if x is an rAD object
+        new = rAD(np.arcsin(x.val))
+        x.children.append(((1/np.sqrt(1 - x.val*x.val)), new))
+        return new
+    except AttributeError:
+        try:
+            #if x is an fAD object
+            return fAD(np.arcsin(x.val), (1/np.sqrt(1 - x.val*x.val)*x.der))
+        except AttributeError:
+            #if x is a number
+            return np.arcsin(x)
+
+def arccos(x):
+    try:
+        #if x is an rAD object
+        new = rAD(np.arccos(x.val))
+        x.children.append(((-1/np.sqrt(1-x.val*x.val)), new))
+        return new
+    except AttributeError:
+        try:
+            #if x is an fAD object
+            return fAD(np.arccos(x.val), (-1/np.sqrt(1-x.val*x.val))*x.der)
+        except AttributeError:
+            #if x is a number
+            return np.arccos(x)
+    
+def arctan(x):
+    try:
+        #if x is an rAD object
+        new = rAD(np.arctan(x.val))
+        x.children.append(((1/(1+x.val*x.val)), new))
+        return new
+    except AttributeError:
+        try:
+            #if x is an fAD object
+            return fAD(np.arctan(x.val), (1/(1+x.val*x.val))*x.der)
+        except AttributeError:
+            #if x is a number
+            return np.arctan(x)
+
+def sinh(x):
+    try:
+        #if x is an rAD object
+        new = rAD(np.sinh(x.val))
+        x.children.append((np.cosh(x.val), new))
+        return new
+    except AttributeError:
+        try:
+            #if x is an fAD object
+            return fAD(np.sinh(x.val), np.cosh(x.val)*x.der)
+        except AttributeError:
+            #if x is a number
+            return np.sinh(x)        
+
 def exp(x):
     try:  # x <- rAD
         ad = rAD(np.exp(x.val))
@@ -373,20 +429,20 @@ def exp(x):
         except AttributeError: # x <- numeric
             return np.exp(x)
 
-def log(x):
+def log(x,base=np.e):
     try: # x <- rAD
         if x.val <= 0:
             raise ValueError("Cannot take log of negative value")
         else:
-            ad = rAD(np.log(x.val))
-            x.children.append((1/x.val,ad))
+            ad = rAD(math.log(x.val,base))
+            x.children.append((1/(x.val*math.log(base)),ad))
             return ad
     except AttributeError:
         try: # x <- fAD
             if x.val <= 0:
                 raise ValueError("Cannot take log of negative value")
             else:
-                return fAD(np.log(x.val), x.der/x.val)
+                return fAD(math.log(x.val,base), x.der/(x.val*math.log(base)))
         except AttributeError: # x <- numeric
             if x <= 0:
                 raise ValueError("Cannot take log of negative value")
