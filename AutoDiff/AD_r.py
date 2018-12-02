@@ -176,7 +176,7 @@ def cos(x):
 def exp(x):
     try:
         ad = rAD(np.exp(x.val))
-        x.children.append((np.exp(x.val)*x.grad(),ad))
+        x.children.append((np.exp(x.val),ad))
         return ad
     except AttributeError:
         return np.exp(x)       
@@ -187,7 +187,7 @@ def log(x):
             raise ValueError("Cannot take log of negative value")
         else:
             ad = rAD(np.log(x.val))
-            x.children.append((x.grad()/x.val,ad))
+            x.children.append((1/x.val,ad))
             return ad
     except AttributeError:
         if x <= 0:
