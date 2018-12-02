@@ -81,88 +81,88 @@ class fAD():
 
     def __add__(self,other):
         try: # assume other is of AutoDiff type
-            return AutoDiff(self.val+other.val,self.der+other.der)
+            return fAD(self.val+other.val,self.der+other.der)
         except AttributeError: # assume other is a number
-            return AutoDiff(self.val+other,self.der)
+            return fAD(self.val+other,self.der)
             # if other is not a number, a TypeError will be raised
 
     def __radd__(self,other):
         try: # assume other is of AutoDiff type
-            return AutoDiff(self.val+other.val,self.der+other.der)
+            return fAD(self.val+other.val,self.der+other.der)
         except AttributeError: # assume other is a number
-            return AutoDiff(self.val+other,self.der)
+            return fAD(self.val+other,self.der)
             # if other is not a number, a TypeError will be raised
 
     def __sub__(self,other):
         try: # assume other is of AutoDiff type
-            return AutoDiff(self.val-other.val,self.der-other.der)
+            return fAD(self.val-other.val,self.der-other.der)
         except AttributeError: # assume other is a number
-            return AutoDiff(self.val-other,self.der)
+            return fAD(self.val-other,self.der)
             # if other is not a number, a TypeError will be raised
 
     def __rsub__(self,other):
         try: # assume other is of AutoDiff type
-            return AutoDiff(other.val-self.val,other.der-self.der)
+            return fAD(other.val-self.val,other.der-self.der)
         except AttributeError: # assume other is a number
-            return AutoDiff(other-self.val,-self.der)
+            return fAD(other-self.val,-self.der)
             # if other is not a number, a TypeError will be raised
 
 
     def __mul__(self,other):
         try: # assume other is of AutoDiff type
-             return AutoDiff(self.val*other.val,self.val*other.der+self.der*other.val)
+             return fAD(self.val*other.val,self.val*other.der+self.der*other.val)
         except AttributeError: # assume other is a number
-            return AutoDiff(self.val*other,self.der*other)
+            return fAD(self.val*other,self.der*other)
             # if other is not a number, a TypeError will be raised
 
     def __rmul__(self,other):
         try: # assume other is of AutoDiff type
-            return AutoDiff(self.val*other.val,self.val*other.der+self.der*other.val)
+            return fAD(self.val*other.val,self.val*other.der+self.der*other.val)
         except AttributeError: # assume other is a number
-            return AutoDiff(self.val*other,self.der*other)
+            return fAD(self.val*other,self.der*other)
             # if other is not a number, a TypeError will be raised
 
     def __truediv__(self,other): # self/other
         try: # assume other is of AutoDiff type
-             return AutoDiff(self.val/other.val, self.der/other.val-self.val*other.der/(other.val**2))
+             return fAD(self.val/other.val, self.der/other.val-self.val*other.der/(other.val**2))
         except AttributeError: # assume other is a number
-            return AutoDiff(self.val/other,self.der/other)
+            return fAD(self.val/other,self.der/other)
             # if other is not a number, a TypeError will be raised
 
     def __rtruediv__(self,other): # other/self
         try: # assume other is of AutoDiff type
-            return AutoDiff(other.val/self.val,other.der/self.val-other.val*self.der/(self.val**2))
+            return fAD(other.val/self.val,other.der/self.val-other.val*self.der/(self.val**2))
         except AttributeError: # assume other is a number
-            return AutoDiff(other/self.val,-other*self.der/(self.val**2))
+            return fAD(other/self.val,-other*self.der/(self.val**2))
             # if other is not a number, a TypeError will be raised
 
     def __pow__(self,exp):
         try: # assume exp is of AutoDiff type
-        	return AutoDiff(self.val**exp.val,
+        	return fAD(self.val**exp.val,
         		(self.val**exp.val) * (self.der*exp.val/self.val + exp.der*np.log(self.val)))
         except AttributeError: # assume other is a number
-        	return AutoDiff(self.val**exp, exp*(self.val**(exp-1))*self.der)
+        	return fAD(self.val**exp, exp*(self.val**(exp-1))*self.der)
         	# if other is not a number, a TypeError will be raised
 
     def __rpow__(self,base):
         try: # assume exp is of AutoDiff type
-        	return AutoDiff(base.val**self.val,
+        	return fAD(base.val**self.val,
         		(base.val**self.val) * (base.der*self.val/base.val + self.der*np.log(base.val)))
         except AttributeError: # assume other is a number
-       		return AutoDiff(base**self.val, np.log(base)*(base**self.val)*self.der)
+       		return fAD(base**self.val, np.log(base)*(base**self.val)*self.der)
        		# if other is not a number, a TypeError will be raised
 
     def __neg__(self):
-        return AutoDiff(-self.val, -self.der)
+        return fAD(-self.val, -self.der)
 
     def __abs__(self):
-        return AutoDiff(abs(self.val), (self.val/abs(self.val))*self.der)
+        return fAD(abs(self.val), (self.val/abs(self.val))*self.der)
 
     def __repr__(self):
         return("{0}({1},{2})".format(self.__class__.__name__, self.val,self.der))
 
     def __str__(self):
-        return("AutoDiff Object, val: {0}, der: {1}".format(self.val,self.der))
+        return("fAD Object, val: {0}, der: {1}".format(self.val,self.der))
 
     def __len__(self):
         return len(self.val)
@@ -184,39 +184,6 @@ class fAD():
 
     def get_der(self):
         return self.der
-
-
-def sin(x):
-    try:
-        return AutoDiff(np.sin(x.val), np.cos(x.val)*x.der)
-    except AttributeError:
-        return np.sin(x)
-
-def cos(x):
-    try:
-        return AutoDiff(np.cos(x.val), -np.sin(x.val)*x.der)
-    except AttributeError:
-        return np.cos(x)
-
-def exp(x):
-    try:
-        return AutoDiff(np.exp(x.val), np.exp(x.val)*x.der)
-    except AttributeError:
-        return np.exp(x)
-
-def log(x):
-    try:
-        if x.val <= 0:
-            raise ValueError("Cannot take log of negative value")
-        else:
-            return AutoDiff(np.log(x.val), x.der/x.val)
-    except AttributeError:
-        if x <= 0:
-            raise ValueError("Cannot take log of negative value")
-        else:
-            return np.log(x)
-
-
 
 class rAD:
     def __init__(self, vals):
@@ -374,31 +341,40 @@ class rAD:
         self.der = 1.0
 
 def sin(x):
-    try:
+    try: # x <- rAD
         ad = rAD(np.sin(x.val))
         x.children.append((np.cos(x.val),ad))
         return ad
     except AttributeError:
-        return np.sin(x)
+        try: # x <- fAD
+            return fAD(np.sin(x.val), np.cos(x.val)*x.der)
+        except AttributeError: # x <- numeric
+            return np.sin(x)
 
 def cos(x):
-    try:
+    try: # x <- rAD
         ad = rAD(np.cos(x.val))
         x.children.append((-np.sin(x.val),ad))
         return ad
-    except AttributeError:
-        return np.cos(x)
+    except AttributeError: 
+        try: # x <- fAD
+            return fAD(np.cos(x.val), -np.sin(x.val)*x.der)
+        except AttributeError: # x <- numeric
+            return np.cos(x)
 
 def exp(x):
-    try:
+    try:  # x <- rAD
         ad = rAD(np.exp(x.val))
         x.children.append((np.exp(x.val),ad))
         return ad
-    except AttributeError:
-        return np.exp(x)
+    except AttributeError: 
+        try: # x <- fAD
+            return fAD(np.exp(x.val), np.exp(x.val)*x.der)
+        except AttributeError: # x <- numeric
+            return np.exp(x)
 
 def log(x):
-    try:
+    try: # x <- rAD
         if x.val <= 0:
             raise ValueError("Cannot take log of negative value")
         else:
@@ -406,10 +382,16 @@ def log(x):
             x.children.append((1/x.val,ad))
             return ad
     except AttributeError:
-        if x <= 0:
-            raise ValueError("Cannot take log of negative value")
-        else:
-            return np.log(x)
+        try: # x <- fAD
+            if x.val <= 0:
+                raise ValueError("Cannot take log of negative value")
+            else:
+                return fAD(np.log(x.val), x.der/x.val)
+        except AttributeError: # x <- numeric
+            if x <= 0:
+                raise ValueError("Cannot take log of negative value")
+            else:
+                return np.log(x)
 
 def reset_der(rADs):
     try:
