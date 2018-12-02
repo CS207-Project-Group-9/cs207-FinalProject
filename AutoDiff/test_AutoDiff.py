@@ -512,7 +512,7 @@ def test_combined_sinh():
     #test rAD
     a = AutoDiff.rAD(5)
     b = AutoDiff.rAD(-8.5)
-    c = AutoDiff.arctan(a) + b
+    c = AutoDiff.sinh(a) + b
     c.outer()
     assert_array_almost_equal(f.val, np.array(65.70321058))
     assert_array_almost_equal(f.val, np.array(c.val), decimal = 4)
