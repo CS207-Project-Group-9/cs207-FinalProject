@@ -417,7 +417,7 @@ def test_rAD_abs():
 #Test str() of rAD
 def test_rAD_str():
     x = AutoDiff.rAD(-6.5)
-    assert str(x) == 'AutoDiff Object, val: -6.5, der: 0'
+    assert str(x) == 'rAD Object, val: -6.5, der: 0'
 
 #Test whether taking the sine of AD instance returns the correct value
 #Test whether the sin() function also apply to integers
@@ -427,6 +427,7 @@ def test_combined_sin():
     y = AutoDiff.sin(x)
     assert_array_almost_equal(y.val, np.array([0.84147098]), decimal = 6)
     assert_array_almost_equal(y.der, np.array([[0.54030231, 0.]]), decimal = 6)
+    # numeric
     a = 6.0
     b = AutoDiff.sin(a)
     assert b == -0.27941549819892586
@@ -439,6 +440,7 @@ def test_combined_cos():
     c = AutoDiff.cos(a*b)
     assert_array_almost_equal(c.val, np.array([-0.95765948]), decimal = 6)
     assert_array_almost_equal(c.der, np.array([[2.30322653, 0.57580663]]), decimal = 6)
+    # numeric
     x = 5.0
     y = AutoDiff.cos(x)
     assert y == pytest.approx(0.2836621854632263)
@@ -448,10 +450,14 @@ def test_combined_cos():
 def test_combined_log():
     # fAD
     a, b = AutoDiff.create([-4.0, 8.0])
+    new_base = 10
     assert_array_almost_equal(AutoDiff.log(b).val, np.array([2.07944154]), decimal = 6)
     assert_array_equal(AutoDiff.log(b).der, np.array([[0, 0.125]]))
+    assert_array_almost_equal(AutoDiff.log(b,new_base).val, np.array([0.90308998]), decimal = 6)
+    assert_array_almost_equal(AutoDiff.log(b,new_base).der, np.array([[0, 0.05428681]]), decimal = 6)
     with pytest.raises(ValueError):
         AutoDiff.log(a)
+    # numeric
     x = 5.0
     y = -4.0
     assert AutoDiff.log(x) == 1.6094379124341003
@@ -464,6 +470,7 @@ def test_combined_exp():
     # fAD
     x, y = AutoDiff.create([2.0, 3.0])
     z = AutoDiff.exp(x)
+    # numeric
     a = 5.0
     b = AutoDiff.exp(a)
     assert_array_almost_equal(z.val, np.array([7.3890561]))
@@ -471,39 +478,39 @@ def test_combined_exp():
     assert b == 148.4131591025766
     # rAD
 
-if __name__ == "__main__":
-	import AutoDiff
-	test_AD_create()
-	test_AD_stack()
+# if __name__ == "__main__":
+# 	import AutoDiff
+# 	test_AD_create()
+# 	test_AD_stack()
 
-	test_fAD_constructor_init()
-	test_fAD_add()
-	test_fAD_sub()
-	test_fAD_mul()
-	test_fAD_div()
-	test_fAD_pow()
-	test_fAD_neg()
-	test_fAD_abs()
-	test_fAD_print()
-	test_fAD_len()
-	test_fAD_eq()
-	test_fAD_ne()
+# 	test_fAD_constructor_init()
+# 	test_fAD_add()
+# 	test_fAD_sub()
+# 	test_fAD_mul()
+# 	test_fAD_div()
+# 	test_fAD_pow()
+# 	test_fAD_neg()
+# 	test_fAD_abs()
+# 	test_fAD_print()
+# 	test_fAD_len()
+# 	test_fAD_eq()
+# 	test_fAD_ne()
 
-	test_rAD_constructor_init()
-	test_rAD_reset_der()
-	test_rAD_add()
-	test_rAD_sub()
-	test_rAD_mul()
-	test_rAD_div()
-	test_rAD_pow()
-	test_rAD_neg()
-	test_rAD_abs()
-	test_rAD_str()
+# 	test_rAD_constructor_init()
+# 	test_rAD_reset_der()
+# 	test_rAD_add()
+# 	test_rAD_sub()
+# 	test_rAD_mul()
+# 	test_rAD_div()
+# 	test_rAD_pow()
+# 	test_rAD_neg()
+# 	test_rAD_abs()
+# 	test_rAD_str()
 
-	test_combined_sin()
-	test_combined_cos()
-	test_combined_log()
-	test_combined_exp()
+# 	test_combined_sin()
+# 	test_combined_cos()
+# 	test_combined_log()
+# 	test_combined_exp()
 
 
 
