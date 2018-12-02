@@ -500,7 +500,7 @@ def test_combined_arctan():
     assert_array_almost_equal(f.der[0][0], np.array(0.91743119))
     assert_array_almost_equal(f.der[0][0], np.array(a.grad()))
     assert_array_almost_equal(f.der[0][1], np.array(b.grad()))
-    assert_array_almost_equal(np.array(AutoDiff.arctan(z)), np.array(1.4706289056333368))
+    assert_array_almost_equal(np.array(AutoDiff.arctan(z)), np.array(0.09966865249116204))
 
 #Test hyperbolic sine
 def test_combined_sinh():
