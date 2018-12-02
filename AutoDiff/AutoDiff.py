@@ -362,6 +362,62 @@ def cos(x):
         except AttributeError: # x <- numeric
             return np.cos(x)
 
+def arcsin(x):
+    try:
+        #if x is an rAD object
+        new = rAD(np.arcsin(x.val))
+        x.children.append(((1/np.sqrt(1 - x.val*x.val)), new))
+        return new
+    except AttributeError:
+        try:
+            #if x is an fAD object
+            return fAD(np.arcsin(x.val), (1/np.sqrt(1 - x.val*x.val)*x.der))
+        except AttributeError:
+            #if x is a number
+            return np.arcsin(x)
+
+def arccos(x):
+    try:
+        #if x is an rAD object
+        new = rAD(np.arccos(x.val))
+        x.children.append(((-1/np.sqrt(1-x.val*x.val)), new))
+        return new
+    except AttributeError:
+        try:
+            #if x is an fAD object
+            return fAD(np.arccos(x.val), (-1/np.sqrt(1-x.val*x.val))*x.der)
+        except AttributeError:
+            #if x is a number
+            return np.arccos(x)
+    
+def arctan(x):
+    try:
+        #if x is an rAD object
+        new = rAD(np.arctan(x.val))
+        x.children.append(((1/(1+x.val*x.val)), new))
+        return new
+    except AttributeError:
+        try:
+            #if x is an fAD object
+            return fAD(np.arctan(x.val), (1/(1+x.val*x.val))*x.der)
+        except AttributeError:
+            #if x is a number
+            return np.arctan(x)
+
+def sinh(x):
+    try:
+        #if x is an rAD object
+        new = rAD(np.sinh(x.val))
+        x.children.append((np.cosh(x.val), new))
+        return new
+    except AttributeError:
+        try:
+            #if x is an fAD object
+            return fAD(np.sinh(x.val), np.cosh(x.val)*x.der)
+        except AttributeError:
+            #if x is a number
+            return np.sinh(x)        
+
 def exp(x):
     try:  # x <- rAD
         ad = rAD(np.exp(x.val))
