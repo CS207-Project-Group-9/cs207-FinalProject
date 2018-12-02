@@ -444,7 +444,6 @@ def test_combined_cos():
     x = 5.0
     y = AutoDiff.cos(x)
     assert y == pytest.approx(0.2836621854632263)
-    # rAD
 
 #Test inverse sine
 def test_combined_arcsin():
@@ -588,9 +587,9 @@ def test_combined_exp():
 # 	test_combined_log()
 # 	test_combined_exp()
 
-	test_combined_arcsin()
-	test_combined_arccos()
-	test_combined_arctan()
+##	test_combined_arcsin()
+##	test_combined_arccos()
+##	test_combined_arctan()
 
 
 
