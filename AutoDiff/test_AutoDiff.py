@@ -500,7 +500,7 @@ def test_combined_arctan():
     assert_array_almost_equal(f.der[0][0], np.array(0.91743119))
     assert_array_almost_equal(f.der[0][0], np.array(a.grad()))
     assert_array_almost_equal(f.der[0][1], np.array(b.grad()))
-    assert_array_almost_equal(np.array(AutoDiff.arccos(z)), np.array(1.4706289056333368))
+    assert_array_almost_equal(np.array(AutoDiff.arctan(z)), np.array(1.4706289056333368))
 
 #Test hyperbolic sine
 def test_combined_sinh():
@@ -519,7 +519,7 @@ def test_combined_sinh():
     assert_array_almost_equal(f.der[0][0], np.array(74.20994852))
     assert_array_almost_equal(f.der[0][0], np.array(a.grad()))
     assert_array_almost_equal(f.der[0][1], np.array(b.grad()))
-    assert_array_almost_equal(np.array(AutoDiff.arccos(z)), np.array(3.6268604078470186))
+    assert_array_almost_equal(np.array(AutoDiff.sinh(z)), np.array(3.6268604078470186))
 
 #Test whether taking the natural logarithm of AD instance returns the correct value
 def test_combined_log():
@@ -553,43 +553,40 @@ def test_combined_exp():
     assert b == 148.4131591025766
     # rAD
 
-# if __name__ == "__main__":
-# 	import AutoDiff
-# 	test_AD_create()
-# 	test_AD_stack()
-
-# 	test_fAD_constructor_init()
-# 	test_fAD_add()
-# 	test_fAD_sub()
-# 	test_fAD_mul()
-# 	test_fAD_div()
-# 	test_fAD_pow()
-# 	test_fAD_neg()
-# 	test_fAD_abs()
-# 	test_fAD_print()
-# 	test_fAD_len()
-# 	test_fAD_eq()
-# 	test_fAD_ne()
-
-# 	test_rAD_constructor_init()
-# 	test_rAD_reset_der()
-# 	test_rAD_add()
-# 	test_rAD_sub()
-# 	test_rAD_mul()
-# 	test_rAD_div()
-# 	test_rAD_pow()
-# 	test_rAD_neg()
-# 	test_rAD_abs()
-# 	test_rAD_str()
-
-# 	test_combined_sin()
-# 	test_combined_cos()
-# 	test_combined_log()
-# 	test_combined_exp()
-
-##	test_combined_arcsin()
-##	test_combined_arccos()
-##	test_combined_arctan()
+## if __name__ == "__main__" :
+####     import AutoDiff
+##     test_AD_create()
+##     test_AD_stack()
+##     test_fAD_constructor_init()
+##     test_fAD_add()
+##     test_fAD_sub()
+##     test_fAD_mul()
+##     test_fAD_div()
+##     test_fAD_pow()
+##     test_fAD_neg()
+##     test_fAD_abs()
+##     test_fAD_print()
+##     test_fAD_len()
+##     test_fAD_eq()
+##     test_fAD_ne()
+##     test_rAD_constructor_init()
+##     test_rAD_reset_der()
+##     test_rAD_add()
+##     test_rAD_sub()
+##     test_rAD_mul()
+##     test_rAD_div()
+##     test_rAD_pow()
+##     test_rAD_neg()
+##     test_rAD_abs()
+##     test_rAD_str()
+##     test_combined_sin()
+##     test_combined_cos()
+##     test_combined_log()
+##     test_combined_exp()
+##     test_combined_arcsin()
+##     test_combined_arccos()
+##     test_combined_arctan()
+##     test_combined_sinh()
 
 
 
