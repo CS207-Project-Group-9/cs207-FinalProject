@@ -323,7 +323,7 @@ class rAD:
         return new
 
     def __str__(self):
-        return "AutoDiff Object, val: {0}, der: {1}".format(self.val, self.grad())
+        return "rAD Object, val: {0}, der: {1}".format(self.val, self.grad())
 
     def __eq__(self, other):
         if self.val == other.val and self.der == other.der:
@@ -429,20 +429,20 @@ def exp(x):
         except AttributeError: # x <- numeric
             return np.exp(x)
 
-def log(x):
+def log(x,base=np.e):
     try: # x <- rAD
         if x.val <= 0:
             raise ValueError("Cannot take log of negative value")
         else:
-            ad = rAD(np.log(x.val))
-            x.children.append((1/x.val,ad))
+            ad = rAD(math.log(x.val,base))
+            x.children.append((1/(x.val*math.log(base)),ad))
             return ad
     except AttributeError:
         try: # x <- fAD
             if x.val <= 0:
                 raise ValueError("Cannot take log of negative value")
             else:
-                return fAD(np.log(x.val), x.der/x.val)
+                return fAD(math.log(x.val,base), x.der/(x.val*math.log(base)))
         except AttributeError: # x <- numeric
             if x <= 0:
                 raise ValueError("Cannot take log of negative value")
