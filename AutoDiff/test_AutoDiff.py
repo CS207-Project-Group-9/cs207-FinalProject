@@ -515,7 +515,7 @@ def test_combined_sinh():
     c = AutoDiff.arctan(a) + b
     c.outer()
     assert_array_almost_equal(f.val, np.array(65.70321058))
-    assert_array_almost_equal(f.val, np.array(c.val))
+    assert_array_almost_equal(f.val, np.array(c.val), decimal = 4)
     assert_array_almost_equal(f.der[0][0], np.array(74.20994852))
     assert_array_almost_equal(f.der[0][0], np.array(a.grad()))
     assert_array_almost_equal(f.der[0][1], np.array(b.grad()))
