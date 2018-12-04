@@ -13,16 +13,16 @@ try:
     from AutoDiff import AutoDiff
 except ImportError: pass
 
-#AD_create allows for simultaneous assignment 
+#AD_create_f allows for simultaneous assignment 
 #of AD instances
-def test_AD_create():
-    a = AutoDiff.create(3)
+def test_AD_create_f():
+    a = AutoDiff.create_f(3)
     assert a.val == [3], a.der == [[1]]
-    a, b, c = AutoDiff.create([1, 2, 3])
+    a, b, c = AutoDiff.create_f([1, 2, 3])
     assert a.val == [1], a.der == [[1,0,0]]
     assert b.val == [2], b.der == [[0,1,0]]
     assert c.val == [3], c.der == [[0,0,1]]
-    a, b = AutoDiff.create([[1, 2],[3, 4]])
+    a, b = AutoDiff.create_f([[1, 2],[3, 4]])
     assert_array_equal(a.val, np.array([1,2]))
     assert_array_equal(a.der, np.array([[1,0],[1,0]]))
     assert_array_equal(b.val, np.array([3,4]))
@@ -32,7 +32,7 @@ def test_AD_create():
 #in the form of numpy arrays, returns 
 #values as a vector and derivatives as a matrix
 def test_AD_stack():
-    a, b, c = AutoDiff.create([1, 2, 3])
+    a, b, c = AutoDiff.create_f([1, 2, 3])
     c = AutoDiff.stack([a, b, c])
     assert_array_equal(c.val, np.array([1,2,3]))
     assert_array_equal(c.der, np.array([[1,0,0],[0,1,0],[0,0,1]]))
@@ -76,7 +76,7 @@ def test_fAD_constructor_init():
 #Test whether addition works between AD instances, 
 #and between AD instance and number, regardless of order
 def test_fAD_add():
-    x, y = AutoDiff.create([5.0, 7.0])
+    x, y = AutoDiff.create_f([5.0, 7.0])
     z = 3.0
     sum1 = x + y #AD+AD
     sum2 = x + z #AD+number
@@ -95,7 +95,7 @@ def test_fAD_add():
 #Test whether subtraction works between AD instances,
 #and between AD instance and number, regardless of order
 def test_fAD_sub():
-    x, y = AutoDiff.create([5.0, 7.0])
+    x, y = AutoDiff.create_f([5.0, 7.0])
     z = 3.0
     m = 10.0
     sub1 = y - x #AD-AD
@@ -115,7 +115,7 @@ def test_fAD_sub():
 #Test whether multiplication works between AD instances,
 #and between AD instance and number, regardless of order
 def test_fAD_mul():
-    x, y = AutoDiff.create([5.0, 7.0])
+    x, y = AutoDiff.create_f([5.0, 7.0])
     z = 3.0
     mul1 = x * y #AD*AD
     mul2 = x * z #AD*number
@@ -134,7 +134,7 @@ def test_fAD_mul():
 #Test whether division works between AD instances,
 #and between AD instance and number, regardless of order
 def test_fAD_div():
-    x, y = AutoDiff.create([4.0, 8.0])
+    x, y = AutoDiff.create_f([4.0, 8.0])
     z = 2.0
     div1 = y / x #AD/AD
     div2 = x / z #AD/number
@@ -154,8 +154,8 @@ def test_fAD_div():
 #AD instance is the base, and when AD instance is 
 #the exponent
 def test_fAD_pow():
-    x, y = AutoDiff.create([2.0, 3.0])
-    a, b = AutoDiff.create(np.array([1.0, 2.0]))
+    x, y = AutoDiff.create_f([2.0, 3.0])
+    a, b = AutoDiff.create_f(np.array([1.0, 2.0]))
     z = 5.0
     power1 = (x*y) ** z #AD**number
     power2 = z ** (a*b) #test __rpow__: number**AD
@@ -173,7 +173,7 @@ def test_fAD_pow():
 
 #Test whether taking the negative of AD instance works
 def test_fAD_neg():
-    x, y = AutoDiff.create([2.0, 8.0])
+    x, y = AutoDiff.create_f([2.0, 8.0])
     neg1 = -x
     neg2 = -(x/y)
     assert neg1.val == [-2.0]
@@ -190,7 +190,7 @@ def test_fAD_abs():
         
 #Test __str__ and __repr__
 def test_fAD_print():
-    a, b = AutoDiff.create([2.0, 8.0])
+    a, b = AutoDiff.create_f([2.0, 8.0])
     assert 'fAD Object' in str(a)
     assert 'fAD' in repr(b)
 #     assert str(a) == 'AutoDiff Object, val: [2.], der: [[1 0]]'
@@ -198,7 +198,7 @@ def test_fAD_print():
 
 #Test __len__
 def test_fAD_len():
-    a, b = AutoDiff.create([2.0, 8.0])
+    a, b = AutoDiff.create_f([2.0, 8.0])
     c = AutoDiff.stack([a,b])
     assert len(c) == 2
 
@@ -436,7 +436,7 @@ def test_combined_sin():
 #Test whether taking the cosine of AD instance returns the correct value
 def test_combined_cos():
     # fAD
-    a, b = AutoDiff.create([2.0, 8.0])
+    a, b = AutoDiff.create_f([2.0, 8.0])
     c = AutoDiff.cos(a*b)
     assert_array_almost_equal(c.val, np.array([-0.95765948]), decimal = 6)
     assert_array_almost_equal(c.der, np.array([[2.30322653, 0.57580663]]), decimal = 6)
@@ -444,11 +444,24 @@ def test_combined_cos():
     x = 5.0
     y = AutoDiff.cos(x)
     assert y == pytest.approx(0.2836621854632263)
+    
+def test_combined_tan():
+    x = AutoDiff.fAD(5)
+    y = AutoDiff.tan(x**2)    
+    a = AutoDiff.rAD(5)
+    b = AutoDiff.tan(a**2)
+    b.outer()
+    a.grad()
+    assert(y.val[0] == np.tan(25))
+    assert(y.der[0][0] == 10/np.cos(25)**2)
+    assert(b.val == np.tan(25))
+    assert_array_almost_equal(a.der,10/np.cos(25)**2)  
+    assert(AutoDiff.tan(3) == np.tan(3))
 
 #Test inverse sine
 def test_combined_arcsin():
     #test fAD
-    x, y = AutoDiff.create([0.25, -0.10])
+    x, y = AutoDiff.create_f([0.25, -0.10])
     f = AutoDiff.arcsin(x) + AutoDiff.arcsin(y)
     #test numeric
     z = 1.0
@@ -467,7 +480,7 @@ def test_combined_arcsin():
 #Test inverse cosine
 def test_combined_arccos():
     #test fAD
-    x, y = AutoDiff.create([0.40, -0.55])
+    x, y = AutoDiff.create_f([0.40, -0.55])
     f = AutoDiff.arccos(x) + AutoDiff.arccos(y)
     #test numeric
     z = 0.5
@@ -486,7 +499,7 @@ def test_combined_arccos():
 #Test inverse tangent
 def test_combined_arctan():
     #test fAD
-    x, y = AutoDiff.create([0.30, -0.25])
+    x, y = AutoDiff.create_f([0.30, -0.25])
     f = AutoDiff.arctan(x) + y
     #test numeric
     z = 0.1
@@ -505,7 +518,7 @@ def test_combined_arctan():
 #Test hyperbolic sine
 def test_combined_sinh():
     #test fAD
-    x, y = AutoDiff.create([5, -8.5])
+    x, y = AutoDiff.create_f([5, -8.5])
     f = AutoDiff.sinh(x) + y
     #test numeric
     z = 2
@@ -521,10 +534,49 @@ def test_combined_sinh():
     assert_array_almost_equal(f.der[0][1], np.array(b.grad()))
     assert_array_almost_equal(np.array(AutoDiff.sinh(z)), np.array(3.6268604078470186))
 
+def test_combined_cosh():
+    x = AutoDiff.fAD(8)
+    y = AutoDiff.cosh(x) + x
+    a = AutoDiff.rAD(8)
+    b = AutoDiff.cosh(a) - a
+    b.outer()
+    a.grad()
+    assert y.val == np.cosh(8)+8
+    assert y.der == np.sinh(8)+1
+    assert b.val == np.cosh(8)-8
+    assert a.der == np.sinh(8)-1
+    assert AutoDiff.cosh(8) == np.cosh(8)
+
+def test_combined_tanh():
+    x = AutoDiff.fAD(3)
+    y = AutoDiff.tanh(x**2)+x**2
+    a = AutoDiff.rAD(3)
+    b = AutoDiff.tanh(a**2)+a**2
+    b.outer()
+    a.grad()
+    assert y.val == np.tanh(9)+9
+    assert y.der == 6/(np.cosh(9)**2)+6
+    assert b.val == np.tanh(9)+9
+    assert a.der == 6/(np.cosh(9)**2)+6
+    assert AutoDiff.tanh(3) == np.tanh(3)
+    
+def test_combined_sqrt():    
+    x = AutoDiff.fAD(6)
+    y = 4*AutoDiff.sqrt(x)
+    a = AutoDiff.rAD(6)
+    b = 4*AutoDiff.sqrt(a)
+    b.outer()
+    a.grad()
+    assert y.val == 4*6**0.5
+    assert_array_almost_equal(y.der,2*6**-0.5)
+    assert b.val == 4*6**0.5
+    assert_array_almost_equal(a.der,2*6**-0.5)
+    assert AutoDiff.sqrt(5) == np.sqrt(5)
+
 #Test whether taking the natural logarithm of AD instance returns the correct value
 def test_combined_log():
     # fAD
-    a, b = AutoDiff.create([-4.0, 8.0])
+    a, b = AutoDiff.create_f([-4.0, 8.0])
     new_base = 10
     assert_array_almost_equal(AutoDiff.log(b).val, np.array([2.07944154]), decimal = 6)
     assert_array_equal(AutoDiff.log(b).der, np.array([[0, 0.125]]))
@@ -543,7 +595,7 @@ def test_combined_log():
 #Test exp()
 def test_combined_exp():
     # fAD
-    x, y = AutoDiff.create([2.0, 3.0])
+    x, y = AutoDiff.create_f([2.0, 3.0])
     z = AutoDiff.exp(x)
     # numeric
     a = 5.0
@@ -555,7 +607,7 @@ def test_combined_exp():
 
 ## if __name__ == "__main__" :
 ####     import AutoDiff
-##     test_AD_create()
+##     test_AD_create_f()
 ##     test_AD_stack()
 ##     test_fAD_constructor_init()
 ##     test_fAD_add()
