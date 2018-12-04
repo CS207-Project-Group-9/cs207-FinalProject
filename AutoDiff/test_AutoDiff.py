@@ -446,16 +446,17 @@ def test_combined_cos():
     assert y == pytest.approx(0.2836621854632263)
     
 def test_combined_tan():
-    x = fAD(5)
-    y = tan(x**2)    
-    a = rAD(5)
-    b = tan(a**2)
+    x = AutoDiff.fAD(5)
+    y = AutoDiff.tan(x**2)    
+    a = AutoDiff.rAD(5)
+    b = AutoDiff.tan(a**2)
     b.outer()
     a.grad()
     assert(y.val[0] == np.tan(25))
     assert(y.der[0][0] == 10/np.cos(25)**2)
     assert(b.val == np.tan(25))
-    assert_array_almost_equal(a.der,10/np.cos(25)**2)    
+    assert_array_almost_equal(a.der,10/np.cos(25)**2)  
+    assert(AutoDiff.tan(3) == np.tan(3)
 
 #Test inverse sine
 def test_combined_arcsin():
@@ -534,40 +535,43 @@ def test_combined_sinh():
     assert_array_almost_equal(np.array(AutoDiff.sinh(z)), np.array(3.6268604078470186))
 
 def test_combined_cosh():
-    x = fAD(8)
-    y = cosh(x) + x
-    a = rAD(8)
-    b = cosh(a) - a
+    x = AutoDiff.fAD(8)
+    y = AutoDiff.cosh(x) + x
+    a = AutoDiff.rAD(8)
+    b = AutoDiff.cosh(a) - a
     b.outer()
     a.grad()
     assert y.val == np.cosh(8)+8
     assert y.der == np.sinh(8)+1
     assert b.val == np.cosh(8)-8
     assert a.der == np.sinh(8)-1
+    assert AutoDiff.cosh(8) == np.cosh(8)
 
 def test_combined_tanh():
-    x = fAD(3)
-    y = tanh(x**2)+x**2
-    a = rAD(3)
-    b = tanh(a**2)+a**2
+    x = AutoDiff.fAD(3)
+    y = AutoDiff.tanh(x**2)+x**2
+    a = AutoDiff.rAD(3)
+    b = AutoDiff.tanh(a**2)+a**2
     b.outer()
     a.grad()
     assert y.val == np.tanh(9)+9
     assert y.der == 6/(np.cosh(9)**2)+6
     assert b.val == np.tanh(9)+9
     assert a.der == 6/(np.cosh(9)**2)+6
+    assert AutoDiff.tanh(3) == np.tanh(3)
     
 def test_combined_sqrt():    
-    x = fAD(6)
-    y = 4*sqrt(x)
-    a = rAD(6)
-    b = 4*sqrt(a)
+    x = AutoDiff.fAD(6)
+    y = 4*AutoDiff.sqrt(x)
+    a = AutoDiff.rAD(6)
+    b = 4*AutoDiff.sqrt(a)
     b.outer()
     a.grad()
     assert y.val == 4*6**0.5
     assert_array_almost_equal(y.der,2*6**-0.5)
     assert b.val == 4*6**0.5
     assert_array_almost_equal(a.der,2*6**-0.5)
+    assert AutoDiff.sqrt(5) == np.sqrt(5)
 
 #Test whether taking the natural logarithm of AD instance returns the correct value
 def test_combined_log():
