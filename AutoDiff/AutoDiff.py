@@ -42,7 +42,7 @@ def stack(ADs):
     return new_AD
 
 class fAD():
-    def __init__(self,val,der):
+    def __init__(self,val,der=1):
         ## process val
         # check dimension
         if np.array(val).ndim > 1:
@@ -448,7 +448,55 @@ def log(x,base=np.e):
                 raise ValueError("Cannot take log of negative value")
             else:
                 return np.log(x)
+    
+def tan(x):
+    try: #rAD
+        ad = rAD(np.tan(x.val))
+        x.children.append((1/(np.cos(x.val)**2),ad))
+        return ad
+    except AttributeError:
+        try: #fAD
+            return fAD(np.tan(x.val), x.der/(np.cos(x.val)**2))
+        except AttributeError:
+            return np.tan(x) #numeric
 
+def cosh(x):
+    try:
+        #if x is an rAD object
+        new = rAD(np.cosh(x.val)) #
+        x.children.append((np.sinh(x.val), new))
+        return new
+    except AttributeError:
+        try:
+            #if x is an fAD object
+            return fAD(np.cosh(x.val), np.sinh(x.val)*x.der)
+        except AttributeError:
+            #if x is a number
+            return np.cosh(x) 
+def tanh(x):
+    try:
+        #if x is an rAD object
+        new = rAD(np.tanh(x.val))
+        x.children.append((1/(np.cosh(x.val)**2),new))
+        return new
+    except AttributeError:
+        try:
+            #if x is an fAD object
+            return fAD(np.tanh(x.val), (x.der/(np.cosh(x.val)**2)))
+        except AttributeError:
+            return np.tanh(x)
+        
+def sqrt(self):
+    try: # reverse
+        ad = rAD(self.val**0.5)
+        self.children.append(((self.val**(-0.5))*0.5,ad))
+        return ad
+    except AttributeError:
+        try: # forward
+            return fAD(self.val**0.5, 0.5*self.der*(self.val**(-0.5)))
+        except AttributeError:
+            return self**0.5 #just a value 
+        
 def reset_der(rADs):
     try:
         rADs.der = None
