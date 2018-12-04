@@ -456,7 +456,7 @@ def test_combined_tan():
     assert(y.der[0][0] == 10/np.cos(25)**2)
     assert(b.val == np.tan(25))
     assert_array_almost_equal(a.der,10/np.cos(25)**2)  
-    assert(AutoDiff.tan(3) == np.tan(3)
+    assert(AutoDiff.tan(3) == np.tan(3))
 
 #Test inverse sine
 def test_combined_arcsin():
