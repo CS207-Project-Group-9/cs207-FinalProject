@@ -2,7 +2,7 @@ import numpy as np
 import numbers
 import math
 
-def create(vals):
+def create_f(vals):
     if np.array(vals).ndim == 0:
         return fAD(vals,[1])
     elif np.array(vals).ndim == 1:
@@ -30,7 +30,7 @@ def create(vals):
     elif np.array(vals).ndim > 2:
         raise ValueError('Input is at most 2D.')
 
-def stack(ADs):
+def stack_f(ADs):
     new_val = []
     new_der = []
     for AD in ADs:
@@ -110,36 +110,37 @@ class fAD():
 
     def __mul__(self,other):
         try: # assume other is of AutoDiff type
-             return fAD(self.val*other.val,self.val*other.der+self.der*other.val)
+             return fAD(self.val*other.val,mul_by_row(self.val,other.der)+mul_by_row(other.val,self.der))
         except AttributeError: # assume other is a number
             return fAD(self.val*other,self.der*other)
             # if other is not a number, a TypeError will be raised
 
     def __rmul__(self,other):
         try: # assume other is of AutoDiff type
-            return fAD(self.val*other.val,self.val*other.der+self.der*other.val)
+            return fAD(self.val*other.val,mul_by_row(self.val,other.der)+mul_by_row(other.val,self.der))
         except AttributeError: # assume other is a number
             return fAD(self.val*other,self.der*other)
             # if other is not a number, a TypeError will be raised
 
     def __truediv__(self,other): # self/other
         try: # assume other is of AutoDiff type
-             return fAD(self.val/other.val, self.der/other.val-self.val*other.der/(other.val**2))
+             return fAD(self.val/other.val, mul_by_row(1/other.val,self.der)-mul_by_row(self.val/(other.val**2),other.der))
         except AttributeError: # assume other is a number
             return fAD(self.val/other,self.der/other)
             # if other is not a number, a TypeError will be raised
 
     def __rtruediv__(self,other): # other/self
         try: # assume other is of AutoDiff type
-            return fAD(other.val/self.val,other.der/self.val-other.val*self.der/(self.val**2))
+            return fAD(other.val/self.val, mul_by_row(1/self.val,other.der)-mul_by_row(other.val/(self.val**2),self.der))
         except AttributeError: # assume other is a number
-            return fAD(other/self.val,-other*self.der/(self.val**2))
+            return fAD(other/self.val,mul_by_row(-other/(self.val**2),self.der))
             # if other is not a number, a TypeError will be raised
 
     def __pow__(self,exp):
         try: # assume exp is of AutoDiff type
         	return fAD(self.val**exp.val,
-        		(self.val**exp.val) * (self.der*exp.val/self.val + exp.der*np.log(self.val)))
+        		mul_by_row(self.val**exp.val,
+                (mul_by_row(exp.val/self.val,self.der) + mul_by_row(np.log(self.val),exp.der))))
         except AttributeError: # assume other is a number
         	return fAD(self.val**exp, exp*(self.val**(exp-1))*self.der)
         	# if other is not a number, a TypeError will be raised
@@ -147,7 +148,8 @@ class fAD():
     def __rpow__(self,base):
         try: # assume exp is of AutoDiff type
         	return fAD(base.val**self.val,
-        		(base.val**self.val) * (base.der*self.val/base.val + self.der*np.log(base.val)))
+        		mul_by_row((base.val**self.val),
+                (mul_by_row(self.val/base.val,base.der) + mul_by_row(np.log(base.val),self.der))))
         except AttributeError: # assume other is a number
        		return fAD(base**self.val, np.log(base)*(base**self.val)*self.der)
        		# if other is not a number, a TypeError will be raised
@@ -156,7 +158,7 @@ class fAD():
         return fAD(-self.val, -self.der)
 
     def __abs__(self):
-        return fAD(abs(self.val), (self.val/abs(self.val))*self.der)
+        return fAD(abs(self.val), mul_by_row(self.val/abs(self.val),self.der))
 
     def __repr__(self):
         return("{0}({1},{2})".format(self.__class__.__name__, self.val,self.der))
@@ -180,10 +182,27 @@ class fAD():
             return False
 
     def get_val(self):
-        return self.val
+        if np.shape(self.val)[0] == 1:
+            return self.val[0]
+        else:
+            return self.val
 
-    def get_der(self):
-        return self.der
+    def get_jac(self):
+        if np.shape(self.der)[0] == 1 and np.shape(self.der)[1] == 1:
+            return self.der[0,0]
+        elif np.shape(self.der)[0] == 1 and np.shape(self.der)[1] > 1:
+            return self.der[0]
+        else:
+            return self.der
+
+def create_r(vals):
+    if np.array(vals).ndim == 0:
+        return rAD(vals)
+    elif np.array(vals).ndim > 2:
+        raise ValueError('Input is at most 2D.')
+    else:
+        ADs = [rAD(val) for val in vals]
+        return ADs
 
 class rAD:
     def __init__(self, vals):
@@ -193,14 +212,29 @@ class rAD:
         for i in np.array([vals]).reshape(-1):
             if not isinstance(i,numbers.Number):
                 raise TypeError('Input should be a scaler or a vector of numbers.')
-        self.val = vals
+        self.val = np.array([vals]).reshape(-1,)
         self.children = []
         self.der = None
+
 
     def grad(self):
         if self.der is None:
             self.der = sum(w*a.grad() for w,a in self.children)
         return self.der
+
+
+    def get_val(self):
+        if np.shape(self.val)[0] == 1:
+            return self.val[0]
+        else:
+            return self.val
+
+    def get_grad(self):
+        grad = self.grad()
+        if np.shape(grad)[0] == 1:
+            return grad[0]
+        else:
+            return grad
 
     def __add__(self, other):
         try:
@@ -347,7 +381,7 @@ def sin(x):
         return ad
     except AttributeError:
         try: # x <- fAD
-            return fAD(np.sin(x.val), np.cos(x.val)*x.der)
+            return fAD(np.sin(x.val), mul_by_row(np.cos(x.val),x.der))
         except AttributeError: # x <- numeric
             return np.sin(x)
 
@@ -358,7 +392,7 @@ def cos(x):
         return ad
     except AttributeError: 
         try: # x <- fAD
-            return fAD(np.cos(x.val), -np.sin(x.val)*x.der)
+            return fAD(np.cos(x.val), mul_by_row(-np.sin(x.val),x.der))
         except AttributeError: # x <- numeric
             return np.cos(x)
 
@@ -371,7 +405,7 @@ def arcsin(x):
     except AttributeError:
         try:
             #if x is an fAD object
-            return fAD(np.arcsin(x.val), (1/np.sqrt(1 - x.val*x.val)*x.der))
+            return fAD(np.arcsin(x.val), mul_by_row(1/np.sqrt(1 - x.val*x.val),x.der))
         except AttributeError:
             #if x is a number
             return np.arcsin(x)
@@ -385,7 +419,7 @@ def arccos(x):
     except AttributeError:
         try:
             #if x is an fAD object
-            return fAD(np.arccos(x.val), (-1/np.sqrt(1-x.val*x.val))*x.der)
+            return fAD(np.arccos(x.val), mul_by_row((-1/np.sqrt(1-x.val*x.val)),x.der))
         except AttributeError:
             #if x is a number
             return np.arccos(x)
@@ -399,7 +433,7 @@ def arctan(x):
     except AttributeError:
         try:
             #if x is an fAD object
-            return fAD(np.arctan(x.val), (1/(1+x.val*x.val))*x.der)
+            return fAD(np.arctan(x.val), mul_by_row((1/(1+x.val*x.val)),x.der))
         except AttributeError:
             #if x is a number
             return np.arctan(x)
@@ -413,7 +447,7 @@ def sinh(x):
     except AttributeError:
         try:
             #if x is an fAD object
-            return fAD(np.sinh(x.val), np.cosh(x.val)*x.der)
+            return fAD(np.sinh(x.val), mul_by_row(np.cosh(x.val),x.der))
         except AttributeError:
             #if x is a number
             return np.sinh(x)        
@@ -425,7 +459,7 @@ def exp(x):
         return ad
     except AttributeError: 
         try: # x <- fAD
-            return fAD(np.exp(x.val), np.exp(x.val)*x.der)
+            return fAD(np.exp(x.val), mul_by_row(np.exp(x.val),x.der))
         except AttributeError: # x <- numeric
             return np.exp(x)
 
@@ -442,7 +476,7 @@ def log(x,base=np.e):
             if x.val <= 0:
                 raise ValueError("Cannot take log of negative value")
             else:
-                return fAD(math.log(x.val,base), x.der/(x.val*math.log(base)))
+                return fAD(math.log(x.val,base), mul_by_row(1/(x.val*math.log(base)),x.der))
         except AttributeError: # x <- numeric
             if x <= 0:
                 raise ValueError("Cannot take log of negative value")
@@ -456,7 +490,7 @@ def tan(x):
         return ad
     except AttributeError:
         try: #fAD
-            return fAD(np.tan(x.val), x.der/(np.cos(x.val)**2))
+            return fAD(np.tan(x.val), mul_by_row(1/(np.cos(x.val)**2),x.der))
         except AttributeError:
             return np.tan(x) #numeric
 
@@ -469,7 +503,7 @@ def cosh(x):
     except AttributeError:
         try:
             #if x is an fAD object
-            return fAD(np.cosh(x.val), np.sinh(x.val)*x.der)
+            return fAD(np.cosh(x.val), mul_by_row(np.sinh(x.val),x.der))
         except AttributeError:
             #if x is a number
             return np.cosh(x) 
@@ -482,21 +516,28 @@ def tanh(x):
     except AttributeError:
         try:
             #if x is an fAD object
-            return fAD(np.tanh(x.val), (x.der/(np.cosh(x.val)**2)))
+            return fAD(np.tanh(x.val), mul_by_row(1/(np.cosh(x.val)**2),x.der))
         except AttributeError:
             return np.tanh(x)
         
-def sqrt(self):
+def sqrt(x):
     try: # reverse
-        ad = rAD(self.val**0.5)
-        self.children.append(((self.val**(-0.5))*0.5,ad))
+        ad = rAD(x.val**0.5)
+        x.children.append(((x.val**(-0.5))*0.5,ad))
         return ad
     except AttributeError:
         try: # forward
-            return fAD(self.val**0.5, 0.5*self.der*(self.val**(-0.5)))
+            return fAD(x.val**0.5, mul_by_row(0.5*(x.val**(-0.5)),x.der))
         except AttributeError:
-            return self**0.5 #just a value 
-        
+            return x**0.5 #just a value 
+
+def mul_by_row(val,der):
+    if np.array(der).ndim <= 1:
+        return val*der
+    else:
+        result = [val[i]*der[i] for i in range(len(val))]
+        return np.array(result)
+
 def reset_der(rADs):
     try:
         rADs.der = None
