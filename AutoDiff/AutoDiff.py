@@ -231,53 +231,56 @@ class rAD:
 
     def get_grad(self):
         grad = self.grad()
-        if np.shape(grad)[0] == 1:
-            return grad[0]
-        else:
+        try:
+            if np.shape(grad)[0] == 1: # gradient is a single value
+                return grad[0]
+            else: # gradient is an array
+                return grad
+        except IndexError: # 'outer' function
             return grad
 
     def __add__(self, other):
         try:
             ad = rAD(self.val + other.val)
-            self.children.append((1.0, ad))
-            other.children.append((1.0, ad))
+            self.children.append((np.array([1.0]*len(self.val)), ad))
+            other.children.append((np.array([1.0]*len(self.val)), ad))
             return ad
         except AttributeError:
             ad = rAD(self.val + other)
-            self.children.append((1.0, ad))
+            self.children.append((np.array([1.0]*len(self.val)), ad))
             return ad
 
     def __radd__(self, other):
         try:
             ad = rAD(self.val + other.val)
-            self.children.append((1.0, ad))
-            other.children.append((1.0, ad))
+            self.children.append((np.array([1.0]*len(self.val)), ad))
+            other.children.append((np.array([1.0]*len(self.val)), ad))
             return ad
         except AttributeError:
             ad = rAD(self.val + other)
-            self.children.append((1.0, ad))
+            self.children.append((np.array([1.0]*len(self.val)), ad))
             return ad
 
     def __sub__(self, other):
         try:
             ad = rAD(self.val - other.val)
-            self.children.append((1.0, ad))
-            other.children.append((-1.0, ad))
+            self.children.append((np.array([1.0]*len(self.val)), ad))
+            other.children.append((np.array([-1.0]*len(self.val)), ad))
             return ad
         except AttributeError:
             ad = rAD(self.val - other)
-            self.children.append((1.0, ad))
+            self.children.append((np.array([1.0]*len(self.val)), ad))
             return ad
 
     def __rsub__(self, other):
         try:
             ad = rAD(other.val - self.val)
-            self.children.append((-1.0, ad))
-            other.children.append((1.0, ad))
+            self.children.append((np.array([-1.0]*len(self.val)), ad))
+            other.children.append((np.array([1.0]*len(self.val)), ad))
             return ad
         except AttributeError:
             ad = rAD(other - self.val)
-            self.children.append((-1.0, ad))
+            self.children.append((np.array([-1.0]*len(self.val)), ad))
             return ad
 
     def __mul__(self, other):
@@ -288,7 +291,7 @@ class rAD:
             return ad
         except AttributeError:
             ad = rAD(self.val * other)
-            self.children.append((other, ad))
+            self.children.append((np.array([other]*len(self.val)), ad))
             return ad
 
     def __rmul__(self, other):
@@ -299,7 +302,7 @@ class rAD:
             return ad
         except AttributeError:
             ad = rAD(self.val * other)
-            self.children.append((other, ad))
+            self.children.append((np.array([other]*len(self.val)), ad))
             return ad
 
     def __truediv__(self, other):
@@ -310,7 +313,7 @@ class rAD:
             return ad
         except AttributeError:
             ad = rAD(self.val / other)
-            self.children.append((1/other, ad))
+            self.children.append((np.array([1/other]*len(self.val)), ad))
             return ad
 
     def __rtruediv__(self, other):
