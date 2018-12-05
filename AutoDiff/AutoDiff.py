@@ -142,7 +142,7 @@ class fAD():
         		mul_by_row(self.val**exp.val,
                 (mul_by_row(exp.val/self.val,self.der) + mul_by_row(np.log(self.val),exp.der))))
         except AttributeError: # assume other is a number
-        	return fAD(self.val**exp, exp*(self.val**(exp-1))*self.der)
+        	return fAD(self.val**exp, mul_by_row(exp*(self.val**(exp-1)),self.der))
         	# if other is not a number, a TypeError will be raised
 
     def __rpow__(self,base):
@@ -151,7 +151,7 @@ class fAD():
         		mul_by_row((base.val**self.val),
                 (mul_by_row(self.val/base.val,base.der) + mul_by_row(np.log(base.val),self.der))))
         except AttributeError: # assume other is a number
-       		return fAD(base**self.val, np.log(base)*(base**self.val)*self.der)
+       		return fAD(base**self.val, mul_by_row(np.log(base)*(base**self.val),self.der))
        		# if other is not a number, a TypeError will be raised
 
     def __neg__(self):
