@@ -45,7 +45,7 @@ def test_fAD_constructor_init():
     assert_array_equal(b.val, np.array([5.0]))
     assert_array_equal(b.der, np.array([[1]]))
     assert_array_equal(b.get_val(), np.array([5.0])) #test get_val()
-    assert_array_equal(b.get_der(), np.array([[1]])) #test get_der()
+    assert_array_equal(b.get_jac(), np.array([[1]])) #test get_der()
     #inputs ought not to be type other than scaler, list or array of numbers
     with pytest.raises(TypeError):
         AutoDiff.fAD('hello','friend')
@@ -199,7 +199,7 @@ def test_fAD_print():
 #Test __len__
 def test_fAD_len():
     a, b = AutoDiff.create_f([2.0, 8.0])
-    c = AutoDiff.stack([a,b])
+    c = AutoDiff.stack_f([a,b])
     assert len(c) == 2
 
 #Test __eq__

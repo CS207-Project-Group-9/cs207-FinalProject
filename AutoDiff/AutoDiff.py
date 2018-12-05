@@ -25,7 +25,7 @@ def create_f(vals):
                 der = [0]*num_var
                 der[i] = 1
                 AD_var.append(fAD(val,der))
-            ADs.append(stack(AD_var))
+            ADs.append(stack_f(AD_var))
         return ADs
     elif np.array(vals).ndim > 2:
         raise ValueError('Input is at most 2D.')
