@@ -21,22 +21,12 @@ def create_f(vals):
     
     Examples
     --------------
-    >>> import AutoDiff
-    >>> a = AutoDiff.create_f(3) #single variable, 0 dimension 
+    >>> from AutoDiff import AutoDiff
+    >>> a = AutoDiff.create_f(3) 
     >>> a.val
     array([3])
     >>> a.der
     array([[1]])
-
-    >>> a, b, c = AutoDiff.create_f([1, 2, 3]) #multiple variables, 1 dimension
-    >>> a.val
-    array([1])
-    >>> b.val
-    array([2])
-    >>> c.val
-    array([3])
-    >>> a.der
-    array([[1, 0, 0]])
     '''
     if np.array(vals).ndim == 0:
         return fAD(vals,[1])
@@ -122,10 +112,10 @@ class fAD():
 
     Examples
     --------------
-    >>> import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> a = fAD(5.0)
     >>> a.val
-    array([5.])
+    array([ 5.])
     >>> a.der
     array([[1]])
     '''   
@@ -171,26 +161,6 @@ class fAD():
         Support addition between:
         1. forward autodiff objects
         2. a forward autodiff object and a number
-
-        Returns
-        --------------
-        out: sum of two autodiff objects, or sum of an autodiff object and a number, as an autodiff object
-        
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>> z = 3.0
-        >>> s1 = x + y
-        >>> s1.val
-        array([12.])
-        >>> s1.der
-        array([[1, 1]])
-        >>> s2 = x + z
-        >>> s2.val
-        array([8.])
-        >>> s2.der
-        array([[1, 0]])
         '''
         try: # assume other is of AutoDiff type
             return fAD(self.val+other.val,self.der+other.der)
@@ -203,26 +173,6 @@ class fAD():
         Support addition between:
         1. forward autodiff objects
         2. a number and a forward autodiff object
-
-        Returns
-        --------------
-        out: sum of two autodiff objects, or sum of a number and an autodiff object, as an autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>> z = 3.0
-        >>> s1 = y + x
-        >>> s1.val
-        array([12.])
-        >>> s1.der
-        array([[1, 1]])
-        >>> s2 = z + y
-        >>> s2.val
-        array([10.])
-        >>> s2.der
-        array([[0, 1]])
         '''
         try: # assume other is of AutoDiff type
             return fAD(self.val+other.val,self.der+other.der)
@@ -235,27 +185,6 @@ class fAD():
         Support subtraction between:
         1. forward autodiff objects
         2. a forward autodiff object and a number
-
-        Returns
-        --------------
-        out: difference between two autodiff objects, or difference between
-            an autodiff object and a number, as an autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>> z = 3.0
-        >>> s1 = y - x
-        >>> s1.val
-        array([2.])
-        >>> s1.der
-        array([[-1,  1]])
-        >>> s2 = x - z
-        >>> s2.val
-        array([2.])
-        >>> s2.der
-        array([[1, 0]])
         '''
         try: # assume other is of AutoDiff type
             return fAD(self.val-other.val,self.der-other.der)
@@ -268,27 +197,6 @@ class fAD():
         Support subtraction between:
         1. forward autodiff objects
         2. a number and a forward autodiff object
-
-        Returns
-        --------------
-        out: difference between two autodiff objects,
-            or difference between a number and an autodiff object, as an autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>> m = 10.0
-        >>> s1 = y - x
-        >>> s1.val
-        array([2.])
-        >>> s1.der
-        array([[-1,  1]])
-        >>> s2 = m - x
-        >>> s2.val
-        array([5.])
-        >>> s2.der
-        array([[-1,  0]])
         '''
         try: # assume other is of AutoDiff type
             return fAD(other.val-self.val,other.der-self.der)
@@ -302,27 +210,6 @@ class fAD():
         Support multiplication of:
         1. forward autodiff objects
         2. a forward autodiff object and a number
-
-        Returns
-        --------------
-        out: product two autodiff objects, or product of
-            an autodiff object and a number, as an autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>> z = 3.0
-        >>> m1 = x*y
-        >>> m1.val
-        array([35.])
-        >>> m1.der
-        array([[7., 5.]])
-        >>> m2 = x*z
-        >>> m2.val
-        array([15.])
-        >>> m2.der
-        array([[3., 0.]])
         '''
         try: # assume other is of AutoDiff type
              return fAD(self.val*other.val,mul_by_row(self.val,other.der)+mul_by_row(other.val,self.der))
@@ -335,27 +222,6 @@ class fAD():
         Support multiplication of:
         1. forward autodiff objects
         2. a number and a forward autodiff 
-
-        Returns
-        --------------
-        out: product two autodiff objects, or product of a number and
-            an autodiff object, as an autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>> z = 3.0
-        >>> m1 = y*x
-        >>> m1.val
-        array([35.])
-        >>> m1.der
-        array([[7., 5.]])
-        >>> m2 = z*y
-        >>> m2.val
-        array([21.])
-        >>> m2.der
-        array([[0., 3.]])
         '''
         try: # assume other is of AutoDiff type
             return fAD(self.val*other.val,mul_by_row(self.val,other.der)+mul_by_row(other.val,self.der))
@@ -368,27 +234,6 @@ class fAD():
         Support division between:
         1. forward autodiff objects
         2. a forward autodiff and a number
-
-        Returns
-        --------------
-        out: quotient of two autodiff objects divided by one another,
-            or quotient of an autodiff object divided by a number, as an autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> x, y = AutoDiff.create_f([4.0, 8.0])
-        >>> z = 2.0
-        >>> d1 = y/x
-        >>> d1.val
-        array([2.])
-        >>> d1.der
-        array([[-0.5 ,  0.25]])
-        >>> d2 = x/z
-        >>> d2.val
-        array([2.])
-        >>> d2.der
-        array([[0.5, 0. ]])
         '''
         try: # assume other is of AutoDiff type
              return fAD(self.val/other.val, mul_by_row(1/other.val,self.der)-mul_by_row(self.val/(other.val**2),other.der))
@@ -401,27 +246,6 @@ class fAD():
         Support division between:
         1. forward autodiff objects
         2. a number and a forward autodiff object
-
-        Returns
-        --------------
-        out: quotient of two autodiff objects divided by one another,
-            or quotient of a number divided by an autodiff object, as an autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> x, y = AutoDiff.create_f([4.0, 8.0])
-        >>> z = 2.0
-        >>> d1 = y/x
-        >>> d1.val
-        array([2.])
-        >>> d1.der
-        array([[-0.5 ,  0.25]])
-        >>> d2 = z/y
-        >>> d2.val
-        array([0.25])
-        >>> d2.der
-        array([[-0.     , -0.03125]])
         '''
         try: # assume other is of AutoDiff type
             return fAD(other.val/self.val, mul_by_row(1/self.val,other.der)-mul_by_row(other.val/(self.val**2),self.der))
@@ -432,27 +256,6 @@ class fAD():
     def __pow__(self,exp):
         '''
         Support exponentiation of a forward autodiff object
-
-        Returns
-        --------------
-        out: the power of an autodiff object, with the autodiff object as base,
-            and either a number, or another autodiff object as the exponent, as an autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> x, y = AutoDiff.create_f([2.0, 3.0])
-        >>> z = 5.0
-        >>> p1 = (x*y)**z
-        >>> p1.val
-        array([7776.])
-        >>> p1.der
-        array([[19440., 12960.]])
-        >>> p2 = x**y
-        >>> p2.val
-        array([8.])
-        >>> p2.der
-        array([[12.        ,  5.54517744]])
         '''
         try: # assume exp is of AutoDiff type
         	return fAD(self.val**exp.val,
@@ -465,22 +268,6 @@ class fAD():
     def __rpow__(self,base):
         '''
         Support exponentiation of a forward autodiff object
-
-        Returns
-        --------------
-        out: the power of an autodiff object, with either a number of an autodiff object as base,
-            and an autodiff object as the exponent, as a forward autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> x, y = AutoDiff.create_f(np.array([1.0, 2.0]))
-        >>> z = 5.0
-        >>> p1 = z ** (x*y)
-        >>> p1.val
-        array([25.])
-        >>> p1.der
-        array([[80.47189562, 40.23594781]])
         '''
         try: # assume exp is of AutoDiff type
         	return fAD(base.val**self.val,
@@ -495,16 +282,6 @@ class fAD():
         Returns
         --------------
         out: the negative, or the opposite, of the autodiff object as a forward autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> x, y = AutoDiff.create_f([2.0, 8.0])
-        >>> n1 = -(x/y)
-        >>> n1.val
-        array([-0.25])
-        >>> n1.der
-        array([[-0.125  ,  0.03125]])
         '''
         return fAD(-self.val, -self.der)
 
@@ -513,16 +290,6 @@ class fAD():
         Returns
         --------------
         out: the absolute of the autodiff object as a forward autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> a = AutoDiff.fAD(-8,1)
-        >>> b = abs(a)
-        >>> b.val
-        array([8])
-        >>> b.der
-        array([[-1.]])
         '''
         return fAD(abs(self.val), mul_by_row(self.val/abs(self.val),self.der))
 
@@ -532,14 +299,6 @@ class fAD():
         --------------
         out: 'fAD(values, derivatives)'
             outputs autodiff object values, and partial derivatives
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>> f = 4*x + y
-        >>> f
-        fAD(27.0,[4 1])
         '''
         return "{0}({1},{2})".format(self.__class__.__name__, self.get_val(), self.get_jac())
 
@@ -549,14 +308,6 @@ class fAD():
         --------------
         out: "Forward-mode AutoDiff Object, value(s): values, partial derivative(s): derivatives" 
             outputs autodiff object values, and partial derivatives.
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>> f = 4*x + y
-        >>> print(f)
-        Forward-mode AutoDiff Object, value(s): 27.0, partial derivative(s): [4 1]
         '''
         return "Forward-mode AutoDiff Object, value(s): {0}, partial derivative(s): {1}".format(self.get_val(), self.get_jac())
 
@@ -565,32 +316,12 @@ class fAD():
         Returns
         --------------
         out: number of variable values 
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> a, b = AutoDiff.create_f([2.0, 8.0])
-        >>> c = AutoDiff.stack_f([a,b])
-        >>> assert len(c) == 2
         '''
         return len(self.val)
 
     def __eq__(self, other):
         '''
-        Allow comparisons between two forward autodiff objects
-    
-        Returns
-        --------------
-        out: True if two forward autodiff objects match in terms of values and partial derivatives
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> a = AutoDiff.fAD(8.0,1)
-        >>> b = AutoDiff.fAD(8.0,1)
-        >>> c = AutoDiff.fAD(5.0,1)
-        >>> assert a == b
-        >>> assert (a == c) == False
+        Allow comparisons between two equal forward autodiff objects
         '''
         if self.val==other.val and self.der==other.der:
             return True
@@ -599,12 +330,7 @@ class fAD():
 
     def __ne__(self, other):
         '''
-        Allow comparisons between two forward autodiff objects
-    
-        Returns
-        --------------
-        out: True if two forward autodiff objects do not match in terms of
-            values and/or partial derivatives
+        Allow comparisons between two unequal forward autodiff objects
         '''
         if self.val!=other.val or self.der!=other.der:
             return True
@@ -625,7 +351,7 @@ class fAD():
         Example
         --------------
         single function:
-        >>> import AutoDiff
+        >>> from AutoDiff import AutoDiff
         >>> x, y = AutoDiff.create_f([5.0, 7.0])
         >>> f = 4*x + y
         >>> f.get_val()
@@ -636,8 +362,6 @@ class fAD():
         >>> f1 = 4*x + y
         >>> f2 = x**3 - y
         >>> f = AutoDiff.stack_f([f1, f2])
-        >>> f.get_val()
-        array([ 27., 118.])
         '''
         if np.shape(self.val)[0] == 1:
             return self.val[0]
@@ -657,7 +381,7 @@ class fAD():
 
         Example
         --------------
-        >>> import AutoDiff
+        >>> from AutoDiff import AutoDiff
         >>> x, y = AutoDiff.create_f([5.0, 7.0])
         >>> f = 4*x + y
         >>> f.get_jac()
@@ -693,34 +417,14 @@ def create_r(vals):
     
     Examples
     --------------
-    
-    single variable, 0 dimension:
-    >>> import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> a = AutoDiff.create_r(2.0)
     >>> f = AutoDiff.sin(a)
     >>> f.outer()
     >>> f.get_val() #outputs function value
-    0.9092974268256817
+    0.90929742682568171
     >>> a.get_grad() #outputs df/da
-    -0.4161468365471424
-
-    multiple variables, 1 dimension: 
-    >>> a, b, c = AutoDiff.create_r([1, 2, 3])
-    >>> f = 2*a + b**3 +AutoDiff.cos(c)
-    >>> f.outer()
-    >>> f.get_val() #outputs function value
-    9.010007503399555
-    >>> a.get_grad() #outputs df/da
-    2.0
-    >>> b.get_grad() #outputs df/db
-    12.0
-
-    multiple variables, 2 dimensions:
-    >>> a, b = AutoDiff.create_r([[1, 2],[3, 4]])
-    >>> f = 2*a + b**3
-    >>> f.outer()
-    >>> f.get_val() #outputs function value
-    array([29, 68])
+    -0.41614683654714241
     '''
     if np.array(vals).ndim == 0:
         return rAD(vals)
@@ -765,24 +469,14 @@ class rAD:
 
     Examples
     --------------
-    single value input:
-    >>> import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> a = AutoDiff.rAD(5.0)
     >>> f = 2**a
     >>> f.outer()
     >>> f.get_val() #output function value
     32.0
     >>> a.get_grad() #output df/da
-    22.18070977791825
-
-    multiple values input:
-    >>> a = AutoDiff.rAD([5.0, 3.2])
-    >>> f = 2**a
-    >>> f.outer()
-    >>> f.get_val() #output function value
-    array([32.        ,  9.18958684])
-    >>> a.get_grad() #output df/da
-    array([22.18070978,  6.36973621])
+    22.180709777918249
     '''   
     def __init__(self, vals):
         # check dimension of 'value'
@@ -811,20 +505,12 @@ class rAD:
  
         Example
         --------------
-        single variable:
-        >>> import AutoDiff
+        >>> from AutoDiff import AutoDiff
         >>> a= AutoDiff.rAD([5.0])
         >>> f = 4*a
         >>> f.outer()
         >>> a.grad()
-        array([4.])
-
-        multiple variables:
-        >>> a= AutoDiff.rAD([5.0, 7.0])
-        >>> f = 4*a 
-        >>> f.outer()
-        >>> a.grad()
-        array([4., 4.])
+        array([ 4.])
         '''
         if self.der is None:
             self.der = sum(w*a.grad() for w,a in self.children)
@@ -844,7 +530,7 @@ class rAD:
 
         Example
         --------------
-        >>> import AutoDiff
+        >>> from AutoDiff import AutoDiff
         >>> x, y = AutoDiff.create_r([5.0, 7.0])
         >>> f = 4*x + y
         >>> f.outer()
@@ -872,14 +558,14 @@ class rAD:
             
         Example
         --------------
-        >>> import AutoDiff
+        >>> from AutoDiff import AutoDiff
         >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
         >>> f = 4*a + 3**b
         >>> f.outer()
         >>> a.get_grad()
-        array([4., 4.])
+        array([ 4.,  4.])
         >>> b.get_grad()
-        array([29.66253179, 88.98759538])
+        array([ 29.66253179,  88.98759538])
         '''
         grad = self.grad()
         if np.shape(grad)[0] == 1:
@@ -892,23 +578,6 @@ class rAD:
         Support addition between:
         1. reverse autodiff objects
         2. a reverse autodiff object and a number
-
-        Returns
-        --------------
-        out: sum of two autodiff objects, or sum of an autodiff object and a number, as an autodiff object
-        
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>> f = 4*(a+b) + 3**(b+5)
-        >>> f.outer()
-        >>> a.get_grad()
-        array([4., 4.])
-        >>> b.get_grad()
-        array([ 7211.99522595, 21627.98567785])
-        >>> f.get_val()
-        array([ 6577, 19707])
         '''
         try:
             ad = rAD(self.val + other.val)
@@ -925,23 +594,6 @@ class rAD:
         Support addition between:
         1. reverse autodiff objects
         2. a number and a reverse autodiff object
-
-        Returns
-        --------------
-        out: sum of two autodiff objects, or sum of a number and a reverse autodiff object, as an autodiff object
-        
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>> f = 4*(b+a) + 3**(5+b)
-        >>> f.outer()
-        >>> a.get_grad()
-        array([4., 4.])
-        >>> b.get_grad()
-        array([ 7211.99522595, 21627.98567785])
-        >>> f.get_val()
-        array([ 6577, 19707])
         '''
         try:
             ad = rAD(self.val + other.val)
@@ -958,24 +610,6 @@ class rAD:
         Support subtraction between:
         1. reverse autodiff objects
         2. a reverse autodiff object and a number
-
-        Returns
-        --------------
-        out: difference between two autodiff objects, or difference between
-            an autodiff object and a number, as an autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>> f = AutoDiff.sin(a)-6*(b-2)
-        >>> f.outer()
-        >>> a.get_grad()
-        array([ 0.54030231, -0.41614684])
-        >>> b.get_grad()
-        array([-6., -6.])
-        >>> f.get_val()
-        array([ -5.15852902, -11.09070257])
         '''
         try:
             ad = rAD(self.val - other.val)
@@ -992,24 +626,6 @@ class rAD:
         Support subtraction between:
         1. reverse autodiff objects
         2. a number and a reverse autodiff object
-
-        Returns
-        --------------
-        out: difference between two autodiff objects, or difference between
-            a number and a reverse autodiff object, as an autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>> f = AutoDiff.cos(a)-6*(8-b)
-        >>> f.outer()
-        >>> a.get_grad()
-        array([-0.84147098, -0.90929743])
-        >>> b.get_grad()
-        array([6., 6.])
-        >>> f.get_val()
-        array([-29.45969769, -24.41614684])
         '''
         try:
             ad = rAD(other.val - self.val)
@@ -1026,24 +642,6 @@ class rAD:
         Support multiplication of:
         1. reverse autodiff objects
         2. a reverse autodiff object and a number
-
-        Returns
-        --------------
-        out: product two autodiff objects, or product of
-            an autodiff object and a number, as an autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>> f = AutoDiff.cos(a)-2*(a*b)
-        >>> f.outer()
-        >>> a.get_grad()
-        array([-6.84147098, -8.90929743])
-        >>> b.get_grad()
-        array([-2., -4.])
-        >>> f.get_val()
-        array([ -5.45969769, -16.41614684])
         '''
         try:
             ad = rAD(self.val * other.val)
@@ -1060,24 +658,6 @@ class rAD:
         Support multiplication of:
         1. reverse autodiff objects
         2. a number and a reverse autodiff object
-
-        Returns
-        --------------
-        out: product two autodiff objects, or product of
-            a number and a reverse autodiff object, as an autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>> f = AutoDiff.cos(a)-2*(b*5)
-        >>> f.outer()
-        >>> a.get_grad()
-        array([-0.84147098, -0.90929743])
-        >>> b.get_grad()
-        array([-10., -10.])
-        >>> f.get_val()
-        array([-29.45969769, -40.41614684])
         '''
         try:
             ad = rAD(self.val * other.val)
@@ -1094,24 +674,6 @@ class rAD:
         Support division between:
         1. reverse autodiff objects
         2. a reverse autodiff and a number
-
-        Returns
-        --------------
-        out: quotient of two autodiff objects divided by one another,
-            or quotient of an autodiff object divided by a number, as an autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>> f = AutoDiff.tan(a/b)-2*(b/5)
-        >>> f.outer()
-        >>> a.get_grad()
-        array([0.37329717, 0.3246116 ])
-        >>> b.get_grad()
-        array([-0.52443239, -0.5623058 ])
-        >>> f.get_val()
-        array([-0.85374645, -1.05369751])
         '''
         try:
             ad = rAD(self.val / other.val)
@@ -1128,24 +690,6 @@ class rAD:
         Support division between:
         1. reverse autodiff objects
         2. a number and a reverse division between
-
-        Returns
-        --------------
-        out: quotient of two autodiff objects divided by one another,
-            or quotient of a number and a reverse autodiff object, as an autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>> f = AutoDiff.tan(a/b)-(8/b)
-        >>> f.outer()
-        >>> a.get_grad()
-        array([0.37329717, 0.3246116 ])
-        >>> b.get_grad()
-        array([0.7644565, 0.3376942])
-        >>> f.get_val()
-        array([-2.32041312, -1.45369751])
         '''
         try:
             ad = rAD(other.val / self.val)
@@ -1160,24 +704,6 @@ class rAD:
     def __pow__(self, other):
         '''
         Support exponentiation of a reverse autodiff object
-
-        Returns
-        --------------
-        out: the power of an autodiff object, with the autodiff object as base,
-            and either a number, or another autodiff object as the exponent, as an autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>> f = AutoDiff.tan(a/b)-b**3
-        >>> f.outer()
-        >>> a.get_grad()
-        array([0.37329717, 0.3246116 ])
-        >>> b.get_grad()
-        array([-27.12443239, -48.1623058 ])
-        >>> f.get_val()
-        array([-26.65374645, -63.45369751])
         '''
         try:
             ad = rAD(self.val ** other.val)
@@ -1192,24 +718,6 @@ class rAD:
     def __rpow__(self, other):
         '''
         Support exponentiation of a reverse autodiff object
-
-        Returns
-        --------------
-        out: the power of an autodiff object, with the autodiff object as base,
-            and either a number, or another autodiff object as the exponent, as an autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>> f = AutoDiff.tan(a/b)-2*(b/5)
-        >>> f.outer()
-        >>> a.get_grad()
-        array([0.37329717, 0.3246116 ])
-        >>> b.get_grad()
-        array([-0.52443239, -0.5623058 ])
-        >>> f.get_val()
-        array([-0.85374645, -1.05369751])
         '''
         try:
             ad = rAD(self.val ** other.val)
@@ -1226,19 +734,6 @@ class rAD:
         Returns
         --------------
         out: the negative, or the opposite, of the autodiff object as a reverse autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> x, y = AutoDiff.create_r([2.0, 8.0])
-        >>> f = -x/y
-        >>> f.outer()
-        >>> x.get_grad()
-        -0.125
-        >>> y.get_grad()
-        0.03125
-        >>> f.get_val()
-        -0.25
         '''
         new = rAD(-self.val)
         self.children.append((-1.0, new))
@@ -1248,16 +743,7 @@ class rAD:
         '''
         Returns
         --------------
-        out: the absolute of the autodiff object as a reverse autodiff object
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> a = AutoDiff.rAD(-8)
-        >>> f = abs(a) + 6
-        >>> f.outer()
-        >>> assert f.get_val() == 14
-         
+        out: the absolute of the autodiff object as a reverse autodiff object       
         '''
         new = rAD(abs(self.val))
         self.children.append((self.val/abs(self.val), new))
@@ -1271,34 +757,12 @@ class rAD:
             outputs autodiff object values, and gradient.
             *when print(outer function), the gradient is 1.0, please print(variables)
             to output gradient of variable with respect to function"
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> x, y = AutoDiff.create_r([5.0, 7.0])
-        >>> f = 4*x + y
-        >>> f.outer()
-        >>> print(f)
-        Reverse AutoDiff Object, value(s): [27.], gradient: 1.0
         '''
         return "Reverse AutoDiff Object, value(s): {0}, gradient: {1}".format(self.val, self.grad())
 
     def __eq__(self, other):
         '''
         Allow comparisons between two reverse autodiff objects
-    
-        Returns
-        --------------
-        out: True if two reverse autodiff objects match in terms of values and gradient
-
-        Example
-        --------------
-        >>> import AutoDiff
-        >>> a = AutoDiff.rAD(8.0)
-        >>> b = AutoDiff.rAD(8.0)
-        >>> c = AutoDiff.rAD(5.0)
-        >>> assert a == b
-        >>> assert (a == c) == False
         '''
         if self.val == other.val and self.der == other.der:
             return True
@@ -1308,10 +772,6 @@ class rAD:
     def __ne__(self, other):
         '''
         Allow comparisons between two reverse autodiff objects
-    
-        Returns
-        --------------
-        out: True if two reverse autodiff objects do not match in terms of values and gradient
         '''
         if self.val == other.val and self.der == other.der:
             return False
@@ -1345,17 +805,17 @@ def sin(x):
 
     Example
     --------------
-    >>> import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.sin(1.0)
     0.8414709848078965
     >>> b = AutoDiff.rAD(8.0)
     >>> c = AutoDiff.sin(b)
     >>> c.get_val()
-    0.9893582466233818
+    0.98935824662338179
     >>> x = AutoDiff.fAD(8.0)
     >>> y = AutoDiff.sin(x)
     >>> y.get_val()
-    0.9893582466233818
+    0.98935824662338179
     '''
     try: # x <- rAD
         ad = rAD(np.sin(x.val))
@@ -1384,9 +844,9 @@ def cos(x):
 
     Example
     --------------
-    >>> import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.cos(1.0)
-    0.5403023058681398
+    0.54030230586813977
     >>> b = AutoDiff.rAD(8.0)
     >>> c = AutoDiff.cos(b)
     >>> c.get_val()
@@ -1423,17 +883,17 @@ def arcsin(x):
 
     Example
     --------------
-    >>> import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.arcsin(1.0)
     1.5707963267948966
     >>> b = AutoDiff.rAD(-0.50)
     >>> c = AutoDiff.arcsin(b)
     >>> c.get_val()
-    -0.5235987755982988
+    -0.52359877559829893
     >>> x = AutoDiff.fAD(-0.50)
     >>> y = AutoDiff.arcsin(x)
     >>> y.get_val()
-    -0.5235987755982988
+    -0.52359877559829893
     '''
     try:
         #if x is an rAD object
@@ -1465,7 +925,7 @@ def arccos(x):
 
     Example
     --------------
-    >>> import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.arccos(1.0)
     0.0
     >>> b = AutoDiff.rAD(-0.50)
@@ -1507,17 +967,17 @@ def arctan(x):
 
     Example
     --------------
-    >>> import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.arctan(1.0)
-    0.7853981633974483
-    >>> b = AutoDiff.rAD(-0.50)
+    0.78539816339744828
+    >>> b = AutoDiff.rAD(1.0)
     >>> c = AutoDiff.arctan(b)
     >>> c.get_val()
-    -0.46364760900080615
-    >>> x = AutoDiff.fAD(-0.50)
+    0.78539816339744828
+    >>> x = AutoDiff.fAD(1.0)
     >>> y = AutoDiff.arctan(x)
     >>> y.get_val()
-    -0.46364760900080615
+    0.78539816339744828
     '''
     try:
         #if x is an rAD object
@@ -1549,17 +1009,17 @@ def sinh(x):
 
     Example
     --------------
-    >>> import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.sinh(1.0)
     1.1752011936438014
     >>> b = AutoDiff.rAD(-0.50)
     >>> c = AutoDiff.sinh(b)
     >>> c.get_val()
-    -0.5210953054937474
+    -0.52109530549374738
     >>> x = AutoDiff.fAD(-0.50)
     >>> y = AutoDiff.sinh(x)
     >>> y.get_val()
-    -0.5210953054937474
+    -0.52109530549374738
     '''
     try:
         #if x is an rAD object
@@ -1591,17 +1051,17 @@ def exp(x):
 
     Example
     --------------
-    >>> import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.exp(1.0)
-    2.718281828459045
-    >>> b = AutoDiff.rAD(-0.50)
+    2.7182818284590451
+    >>> b = AutoDiff.rAD(1.0)
     >>> c = AutoDiff.exp(b)
     >>> c.get_val()
-    0.6065306597126334
-    >>> x = AutoDiff.fAD(-0.50)
+    2.7182818284590451
+    >>> x = AutoDiff.fAD(1.0)
     >>> y = AutoDiff.exp(x)
     >>> y.get_val()
-    0.6065306597126334
+    2.7182818284590451
     '''
     try:  # x <- rAD
         ad = rAD(np.exp(x.val))
@@ -1630,17 +1090,17 @@ def log(x,base=np.e):
 
     Example
     --------------
-    >>> import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.log(1.0)
     0.0
-    >>> b = AutoDiff.rAD(0.50)
+    >>> b = AutoDiff.rAD(1.0)
     >>> c = AutoDiff.log(b)
     >>> c.get_val()
-    -0.6931471805599453
-    >>> x = AutoDiff.fAD(0.50)
+    0.0
+    >>> x = AutoDiff.fAD(1.0)
     >>> y = AutoDiff.log(x)
     >>> y.get_val()
-    -0.6931471805599453
+    0.0
     '''
     try: # x <- rAD
         if x.val <= 0:
@@ -1678,17 +1138,17 @@ def tan(x):
 
     Example
     --------------
-    >>> import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.tan(1.0)
-    1.557407724654902
-    >>> b = AutoDiff.rAD(0.50)
+    1.5574077246549023
+    >>> b = AutoDiff.rAD(1.0)
     >>> c = AutoDiff.tan(b)
     >>> c.get_val()
-    0.5463024898437905
-    >>> x = AutoDiff.fAD(0.50)
+    1.5574077246549023
+    >>> x = AutoDiff.fAD(1.0)
     >>> y = AutoDiff.tan(x)
     >>> y.get_val()
-    0.5463024898437905
+    1.5574077246549023
     '''
     try: #rAD
         ad = rAD(np.tan(x.val))
@@ -1717,7 +1177,7 @@ def cosh(x):
 
     Example
     --------------
-    >>> import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.cosh(1.0)
     1.5430806348152437
     >>> b = AutoDiff.rAD(0.50)
@@ -1759,9 +1219,9 @@ def tanh(x):
 
     Example
     --------------
-    >>> import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.tanh(1.0)
-    0.7615941559557649
+    0.76159415595576485
     >>> b = AutoDiff.rAD(0.50)
     >>> c = AutoDiff.tanh(b)
     >>> c.get_val()
@@ -1800,7 +1260,7 @@ def sqrt(x):
 
     Example
     --------------
-    >>> import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.sqrt(4.0)
     2.0
     >>> b =  AutoDiff.rAD(4.0)
@@ -1855,12 +1315,12 @@ def reset_der(rADs):
 
     Examples
     --------------
-    >>> import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> x = AutoDiff.rAD(8)
     >>> z = x**2
     >>> z.outer()
     >>> x.grad()
-    array([16.])
+    array([ 16.])
     >>> AutoDiff.reset_der(x)
     >>> x.der
     '''
@@ -1871,7 +1331,7 @@ def reset_der(rADs):
         for rAD in rADs:
             rAD.der = None
             rAD.children = []
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()
+##
+##if __name__ == '__main__':
+##    import doctest
+##    doctest.testmod()
