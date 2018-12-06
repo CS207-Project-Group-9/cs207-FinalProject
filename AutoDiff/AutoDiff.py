@@ -115,7 +115,7 @@ class fAD():
     >>> from AutoDiff import AutoDiff
     >>> a = fAD(5.0)
     >>> a.val
-    array([5.])
+    array([ 5.])
     >>> a.der
     array([[1]])
     '''   
@@ -362,8 +362,6 @@ class fAD():
         >>> f1 = 4*x + y
         >>> f2 = x**3 - y
         >>> f = AutoDiff.stack_f([f1, f2])
-        >>> f.get_val()
-        array([ 27., 118.])
         '''
         if np.shape(self.val)[0] == 1:
             return self.val[0]
@@ -424,9 +422,9 @@ def create_r(vals):
     >>> f = AutoDiff.sin(a)
     >>> f.outer()
     >>> f.get_val() #outputs function value
-    0.9092974268256817
+    0.90929742682568171
     >>> a.get_grad() #outputs df/da
-    -0.4161468365471424
+    -0.41614683654714241
     '''
     if np.array(vals).ndim == 0:
         return rAD(vals)
@@ -469,7 +467,7 @@ class rAD:
     >>> f.get_val() #output function value
     32.0
     >>> a.get_grad() #output df/da
-    22.18070977791825
+    22.180709777918249
     '''   
     def __init__(self, vals):
         # check dimension of 'value'
@@ -503,7 +501,7 @@ class rAD:
         >>> f = 4*a
         >>> f.outer()
         >>> a.grad()
-        array([4.])
+        array([ 4.])
         '''
         if self.der is None:
             self.der = sum(w*a.grad() for w,a in self.children)
@@ -556,9 +554,9 @@ class rAD:
         >>> f = 4*a + 3**b
         >>> f.outer()
         >>> a.get_grad()
-        array([4., 4.])
+        array([ 4.,  4.])
         >>> b.get_grad()
-        array([29.66253179, 88.98759538])
+        array([ 29.66253179,  88.98759538])
         '''
         grad = self.grad()
         if np.shape(grad)[0] == 1:
@@ -804,11 +802,11 @@ def sin(x):
     >>> b = AutoDiff.rAD(8.0)
     >>> c = AutoDiff.sin(b)
     >>> c.get_val()
-    0.9893582466233818
+    0.98935824662338179
     >>> x = AutoDiff.fAD(8.0)
     >>> y = AutoDiff.sin(x)
     >>> y.get_val()
-    0.9893582466233818
+    0.98935824662338179
     '''
     try: # x <- rAD
         ad = rAD(np.sin(x.val))
@@ -839,7 +837,7 @@ def cos(x):
     --------------
     >>> from AutoDiff import AutoDiff
     >>> AutoDiff.cos(1.0)
-    0.5403023058681398
+    0.54030230586813977
     >>> b = AutoDiff.rAD(8.0)
     >>> c = AutoDiff.cos(b)
     >>> c.get_val()
@@ -882,11 +880,11 @@ def arcsin(x):
     >>> b = AutoDiff.rAD(-0.50)
     >>> c = AutoDiff.arcsin(b)
     >>> c.get_val()
-    -0.5235987755982988
+    -0.52359877559829893
     >>> x = AutoDiff.fAD(-0.50)
     >>> y = AutoDiff.arcsin(x)
     >>> y.get_val()
-    -0.5235987755982988
+    -0.52359877559829893
     '''
     try:
         #if x is an rAD object
@@ -962,15 +960,15 @@ def arctan(x):
     --------------
     >>> from AutoDiff import AutoDiff
     >>> AutoDiff.arctan(1.0)
-    0.7853981633974483
-    >>> b = AutoDiff.rAD(-0.50)
+    0.78539816339744828
+    >>> b = AutoDiff.rAD(1.0)
     >>> c = AutoDiff.arctan(b)
     >>> c.get_val()
-    -0.46364760900080615
-    >>> x = AutoDiff.fAD(-0.50)
+    0.78539816339744828
+    >>> x = AutoDiff.fAD(1.0)
     >>> y = AutoDiff.arctan(x)
     >>> y.get_val()
-    -0.46364760900080615
+    0.78539816339744828
     '''
     try:
         #if x is an rAD object
@@ -1008,11 +1006,11 @@ def sinh(x):
     >>> b = AutoDiff.rAD(-0.50)
     >>> c = AutoDiff.sinh(b)
     >>> c.get_val()
-    -0.5210953054937474
+    -0.52109530549374738
     >>> x = AutoDiff.fAD(-0.50)
     >>> y = AutoDiff.sinh(x)
     >>> y.get_val()
-    -0.5210953054937474
+    -0.52109530549374738
     '''
     try:
         #if x is an rAD object
@@ -1046,15 +1044,15 @@ def exp(x):
     --------------
     >>> from AutoDiff import AutoDiff
     >>> AutoDiff.exp(1.0)
-    2.718281828459045
-    >>> b = AutoDiff.rAD(-0.50)
+    2.7182818284590451
+    >>> b = AutoDiff.rAD(1.0)
     >>> c = AutoDiff.exp(b)
     >>> c.get_val()
-    0.6065306597126334
-    >>> x = AutoDiff.fAD(-0.50)
+    2.7182818284590451
+    >>> x = AutoDiff.fAD(1.0)
     >>> y = AutoDiff.exp(x)
     >>> y.get_val()
-    0.6065306597126334
+    2.7182818284590451
     '''
     try:  # x <- rAD
         ad = rAD(np.exp(x.val))
@@ -1086,14 +1084,14 @@ def log(x,base=np.e):
     >>> from AutoDiff import AutoDiff
     >>> AutoDiff.log(1.0)
     0.0
-    >>> b = AutoDiff.rAD(0.50)
+    >>> b = AutoDiff.rAD(1.0)
     >>> c = AutoDiff.log(b)
     >>> c.get_val()
-    -0.6931471805599453
-    >>> x = AutoDiff.fAD(0.50)
+    0.0
+    >>> x = AutoDiff.fAD(1.0)
     >>> y = AutoDiff.log(x)
     >>> y.get_val()
-    -0.6931471805599453
+    0.0
     '''
     try: # x <- rAD
         if x.val <= 0:
@@ -1133,15 +1131,15 @@ def tan(x):
     --------------
     >>> from AutoDiff import AutoDiff
     >>> AutoDiff.tan(1.0)
-    1.557407724654902
-    >>> b = AutoDiff.rAD(0.50)
+    1.5574077246549023
+    >>> b = AutoDiff.rAD(1.0)
     >>> c = AutoDiff.tan(b)
     >>> c.get_val()
-    0.5463024898437905
-    >>> x = AutoDiff.fAD(0.50)
+    1.5574077246549023
+    >>> x = AutoDiff.fAD(1.0)
     >>> y = AutoDiff.tan(x)
     >>> y.get_val()
-    0.5463024898437905
+    1.5574077246549023
     '''
     try: #rAD
         ad = rAD(np.tan(x.val))
@@ -1214,7 +1212,7 @@ def tanh(x):
     --------------
     >>> from AutoDiff import AutoDiff
     >>> AutoDiff.tanh(1.0)
-    0.7615941559557649
+    0.76159415595576485
     >>> b = AutoDiff.rAD(0.50)
     >>> c = AutoDiff.tanh(b)
     >>> c.get_val()
@@ -1313,7 +1311,7 @@ def reset_der(rADs):
     >>> z = x**2
     >>> z.outer()
     >>> x.grad()
-    array([16.])
+    array([ 16.])
     >>> AutoDiff.reset_der(x)
     >>> x.der
     '''
