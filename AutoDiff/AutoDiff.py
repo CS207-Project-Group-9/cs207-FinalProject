@@ -21,33 +21,22 @@ def create_f(vals):
     
     Examples
     --------------
-    >>>> a = AutoDiff.create_f(3) #single variable, 0 dimension: 
-    >>>> a.val
-        array([3])
-    >>>> a.der
-        array([[1]])
-    >>>> a, b, c = AutoDiff.create_f([1, 2, 3]) #multiple variables, 1 dimension
-    >>>> a.val
-        array([1])
-    >>>> b.val
-        array([2])
-    >>>> c.val
-        array([3])
-    >>>> a.der
-        array([[1, 0, 0]])
-    >>>> b.der
-        array([[0, 1, 0]])
-    >>>> c.der
-        array([[0, 0, 1]])
-    >>>> a, b = AutoDiff.create_f([[1, 2],[3, 4]]) # multiple variables, 2 dimensions
-    >>>> a.val
-        array([1, 2])
-    >>>> b.val
-        array([3, 4])
-    >>>> a.der
-        array([[1, 0], [1, 0]])
-    >>>> b.der
-        array([[0, 1], [0, 1]])   
+    >>> import AutoDiff
+    >>> a = AutoDiff.create_f(3) #single variable, 0 dimension 
+    >>> a.val
+    array([3])
+    >>> a.der
+    array([[1]])
+
+    >>> a, b, c = AutoDiff.create_f([1, 2, 3]) #multiple variables, 1 dimension
+    >>> a.val
+    array([1])
+    >>> b.val
+    array([2])
+    >>> c.val
+    array([3])
+    >>> a.der
+    array([[1, 0, 0]])
     '''
     if np.array(vals).ndim == 0:
         return fAD(vals,[1])
@@ -93,24 +82,6 @@ def stack_f(ADs):
     out: a forward-mode autodiff object.
         Values of forward-mode autodiff objects are stacked and returned as a vector.
         Derivatives of the objects are returned in a matrix.
-
-    Examples
-    --------------
-    Functions to differentiate:
-    f1 = 2a + 3b + c
-    f2 = 5m * 2n + z
-
-    >>>> a, b, c = create_f([1, 2, 3])
-    >>>> m, n, z = create_f([4, 5, 6])
-    >>>> f1 = 2*a + 3*b + c
-    >>>> f2 = 5*m * 2*n + z
-
-    stack f1, f2
-    >>>> functions = stack_f([f1, f2])
-    >>>> functions.val
-        array([ 11, 206])
-    >>>> functions.der
-        array([[ 2,  3,  1], [50, 40,  1]])   
     '''
     new_val = []
     new_der = []
@@ -151,19 +122,12 @@ class fAD():
 
     Examples
     --------------
-    single value input:
-    >>>> a = fAD(5.0)
-    >>>> a.val
-        array([5.0])
-    >>>> a.der
-        array([[1]])
-
-    multiple values input:
-    >>>> a = fAD([1,5], [[1,0],[0,1]])
-    >>>> a.val
-        array([1, 5])
-    >>>> a.der
-        array([[1, 0], [0, 1]])
+    >>> import AutoDiff
+    >>> a = fAD(5.0)
+    >>> a.val
+    array([5.])
+    >>> a.der
+    array([[1]])
     '''   
     def __init__(self,val,der=1):
         ## process val
@@ -214,18 +178,19 @@ class fAD():
         
         Example
         --------------
-        >>>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>>> z = 3.0
-        >>>> s1 = x + y
-        >>>> s1.val
-            array([12.0])
-        >>>> s1.der
-            array([[1, 1]])
-        >>>> s2 = x + z
-        >>>> s2.val
-            array([8.0])
-        >>>> s2.der
-            array([[1, 0]])
+        >>> import AutoDiff
+        >>> x, y = AutoDiff.create_f([5.0, 7.0])
+        >>> z = 3.0
+        >>> s1 = x + y
+        >>> s1.val
+        array([12.])
+        >>> s1.der
+        array([[1, 1]])
+        >>> s2 = x + z
+        >>> s2.val
+        array([8.])
+        >>> s2.der
+        array([[1, 0]])
         '''
         try: # assume other is of AutoDiff type
             return fAD(self.val+other.val,self.der+other.der)
@@ -245,18 +210,19 @@ class fAD():
 
         Example
         --------------
-        >>>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>>> z = 3.0
-        >>>> s1 = y + x
-        >>>> s1.val
-            array([12.0])
-        >>>> s1.der
-            array([[1, 1]])
-        >>>> s2 = z + y
-        >>>> s2.val
-            array([10.0])
-        >>>> s2.der
-            array([[0, 1]])
+        >>> import AutoDiff
+        >>> x, y = AutoDiff.create_f([5.0, 7.0])
+        >>> z = 3.0
+        >>> s1 = y + x
+        >>> s1.val
+        array([12.])
+        >>> s1.der
+        array([[1, 1]])
+        >>> s2 = z + y
+        >>> s2.val
+        array([10.])
+        >>> s2.der
+        array([[0, 1]])
         '''
         try: # assume other is of AutoDiff type
             return fAD(self.val+other.val,self.der+other.der)
@@ -277,18 +243,19 @@ class fAD():
 
         Example
         --------------
-        >>>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>>> z = 3.0
-        >>>> s1 = y - x
-        >>>> s1.val
-            array([2.0])
-        >>>> s1.der
-            array([[-1, 1]])
-        >>>> s2 = x - z
-        >>>> s2.val
-            array([2.0])
-        >>>> s2.der
-            array([[1, 0]])
+        >>> import AutoDiff
+        >>> x, y = AutoDiff.create_f([5.0, 7.0])
+        >>> z = 3.0
+        >>> s1 = y - x
+        >>> s1.val
+        array([2.])
+        >>> s1.der
+        array([[-1,  1]])
+        >>> s2 = x - z
+        >>> s2.val
+        array([2.])
+        >>> s2.der
+        array([[1, 0]])
         '''
         try: # assume other is of AutoDiff type
             return fAD(self.val-other.val,self.der-other.der)
@@ -309,18 +276,19 @@ class fAD():
 
         Example
         --------------
-        >>>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>>> m = 10.0
-        >>>> s1 = y - x
-        >>>> s1.val
-            array([2.0])
-        >>>> s1.der
-            array([[-1, 1]])
-        >>>> s2 = m - x
-        >>>> s2.val
-            array([5.0])
-        >>>> s2.der
-            array([[-1, 0]])
+        >>> import AutoDiff
+        >>> x, y = AutoDiff.create_f([5.0, 7.0])
+        >>> m = 10.0
+        >>> s1 = y - x
+        >>> s1.val
+        array([2.])
+        >>> s1.der
+        array([[-1,  1]])
+        >>> s2 = m - x
+        >>> s2.val
+        array([5.])
+        >>> s2.der
+        array([[-1,  0]])
         '''
         try: # assume other is of AutoDiff type
             return fAD(other.val-self.val,other.der-self.der)
@@ -342,18 +310,19 @@ class fAD():
 
         Example
         --------------
-        >>>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>>> z = 3.0
-        >>>> m1 = x*y
-        >>>> m1.val
-            array([35.0])
-        >>>> m1.der
-            array([[7.0, 5.0]])
-        >>>> m2 = x*z
-        >>>> m2.val
-            array([15.0])
-        >>>> m2.der
-            array([[3.0, 0]])
+        >>> import AutoDiff
+        >>> x, y = AutoDiff.create_f([5.0, 7.0])
+        >>> z = 3.0
+        >>> m1 = x*y
+        >>> m1.val
+        array([35.])
+        >>> m1.der
+        array([[7., 5.]])
+        >>> m2 = x*z
+        >>> m2.val
+        array([15.])
+        >>> m2.der
+        array([[3., 0.]])
         '''
         try: # assume other is of AutoDiff type
              return fAD(self.val*other.val,mul_by_row(self.val,other.der)+mul_by_row(other.val,self.der))
@@ -374,18 +343,19 @@ class fAD():
 
         Example
         --------------
-        >>>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>>> z = 3.0
-        >>>> m1 = y*x
-        >>>> m1.val
-            array([35.0])
-        >>>> m1.der
-            array([[7.0, 5.0]])
-        >>>> m2 = z*y
-        >>>> m2.val
-            array([21.0])
-        >>>> m2.der
-            array([[0, 3.0]])
+        >>> import AutoDiff
+        >>> x, y = AutoDiff.create_f([5.0, 7.0])
+        >>> z = 3.0
+        >>> m1 = y*x
+        >>> m1.val
+        array([35.])
+        >>> m1.der
+        array([[7., 5.]])
+        >>> m2 = z*y
+        >>> m2.val
+        array([21.])
+        >>> m2.der
+        array([[0., 3.]])
         '''
         try: # assume other is of AutoDiff type
             return fAD(self.val*other.val,mul_by_row(self.val,other.der)+mul_by_row(other.val,self.der))
@@ -406,18 +376,19 @@ class fAD():
 
         Example
         --------------
-        >>>> x, y = AutoDiff.create_f([4.0, 8.0])
-        >>>> z = 2.0
-        >>>> d1 = y/x
-        >>>> d1.val
-            array([2.0])
-        >>>> d1.der
-            array([[-0.5, 0.25]])
-        >>>> d2 = x/z
-        >>>> d2.val
-            array([2.0])
-        >>>> d2.der
-            array([[0.5, 0]])
+        >>> import AutoDiff
+        >>> x, y = AutoDiff.create_f([4.0, 8.0])
+        >>> z = 2.0
+        >>> d1 = y/x
+        >>> d1.val
+        array([2.])
+        >>> d1.der
+        array([[-0.5 ,  0.25]])
+        >>> d2 = x/z
+        >>> d2.val
+        array([2.])
+        >>> d2.der
+        array([[0.5, 0. ]])
         '''
         try: # assume other is of AutoDiff type
              return fAD(self.val/other.val, mul_by_row(1/other.val,self.der)-mul_by_row(self.val/(other.val**2),other.der))
@@ -438,18 +409,19 @@ class fAD():
 
         Example
         --------------
-        >>>> x, y = AutoDiff.create_f([4.0, 8.0])
-        >>>> z = 2.0
-        >>>> d1 = y/x
-        >>>> d1.val
-            array([2.0])
-        >>>> d1.der
-            array([[-0.5, 0.25]])
-        >>>> d2 = z/y
-        >>>> d2.val
-            array([0.25])
-        >>>> d2.der
-            array([[0, -0.03125]])
+        >>> import AutoDiff
+        >>> x, y = AutoDiff.create_f([4.0, 8.0])
+        >>> z = 2.0
+        >>> d1 = y/x
+        >>> d1.val
+        array([2.])
+        >>> d1.der
+        array([[-0.5 ,  0.25]])
+        >>> d2 = z/y
+        >>> d2.val
+        array([0.25])
+        >>> d2.der
+        array([[-0.     , -0.03125]])
         '''
         try: # assume other is of AutoDiff type
             return fAD(other.val/self.val, mul_by_row(1/self.val,other.der)-mul_by_row(other.val/(self.val**2),self.der))
@@ -468,18 +440,19 @@ class fAD():
 
         Example
         --------------
-        >>>> x, y = AutoDiff.create_f([2.0, 3.0])
-        >>>> z = 5.0
-        >>>> p1 = (x*y)**z
-        >>>> p1.val
-            array([7776.0])
-        >>>> p1.der
-            array([[19440., 12960.]])
-        >>>> p2 = x**y
-        >>>> p2.val
-            array([8.0])
-        >>>> p2.der
-            array([[12., 5.54517744]])
+        >>> import AutoDiff
+        >>> x, y = AutoDiff.create_f([2.0, 3.0])
+        >>> z = 5.0
+        >>> p1 = (x*y)**z
+        >>> p1.val
+        array([7776.])
+        >>> p1.der
+        array([[19440., 12960.]])
+        >>> p2 = x**y
+        >>> p2.val
+        array([8.])
+        >>> p2.der
+        array([[12.        ,  5.54517744]])
         '''
         try: # assume exp is of AutoDiff type
         	return fAD(self.val**exp.val,
@@ -500,13 +473,14 @@ class fAD():
 
         Example
         --------------
-        >>>> x, y = AutoDiff.create_f(np.array([1.0, 2.0]))
-        >>>> z = 5.0
-        >>>> p1 = z ** (a*b)
-        >>>> p1.val
-            array([25.0])
-        >>>> p1.der
-            array([[80.47189562, 40.23594781]])
+        >>> import AutoDiff
+        >>> x, y = AutoDiff.create_f(np.array([1.0, 2.0]))
+        >>> z = 5.0
+        >>> p1 = z ** (x*y)
+        >>> p1.val
+        array([25.])
+        >>> p1.der
+        array([[80.47189562, 40.23594781]])
         '''
         try: # assume exp is of AutoDiff type
         	return fAD(base.val**self.val,
@@ -524,12 +498,13 @@ class fAD():
 
         Example
         --------------
-        >>>> x, y = AutoDiff.create_f([2.0, 8.0])
-        >>>> n1 = -(x/y)
-        >>>> n1.val
-            array([-0.25])
-        >>>> n1.der
-            array([[-0.125, 0.03125]])
+        >>> import AutoDiff
+        >>> x, y = AutoDiff.create_f([2.0, 8.0])
+        >>> n1 = -(x/y)
+        >>> n1.val
+        array([-0.25])
+        >>> n1.der
+        array([[-0.125  ,  0.03125]])
         '''
         return fAD(-self.val, -self.der)
 
@@ -541,12 +516,13 @@ class fAD():
 
         Example
         --------------
-        >>>> a = AutoDiff.fAD(-8,1)
-        >>>> b = abs(a)
-        >>>> b.val
-            array([8])
-        >>>> b.der
-            array([[-1.]])
+        >>> import AutoDiff
+        >>> a = AutoDiff.fAD(-8,1)
+        >>> b = abs(a)
+        >>> b.val
+        array([8])
+        >>> b.der
+        array([[-1.]])
         '''
         return fAD(abs(self.val), mul_by_row(self.val/abs(self.val),self.der))
 
@@ -559,10 +535,11 @@ class fAD():
 
         Example
         --------------
-        >>>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>>> f = 4*x + y
-        >>>> f
-            fAD(27.0,[4 1])
+        >>> import AutoDiff
+        >>> x, y = AutoDiff.create_f([5.0, 7.0])
+        >>> f = 4*x + y
+        >>> f
+        fAD(27.0,[4 1])
         '''
         return "{0}({1},{2})".format(self.__class__.__name__, self.get_val(), self.get_jac())
 
@@ -575,10 +552,11 @@ class fAD():
 
         Example
         --------------
-        >>>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>>> f = 4*x + y
-        >>>> f
-            'Forward-mode AutoDiff Object, value(s): 27.0, partial derivative(s): [4, 1]'
+        >>> import AutoDiff
+        >>> x, y = AutoDiff.create_f([5.0, 7.0])
+        >>> f = 4*x + y
+        >>> print(f)
+        Forward-mode AutoDiff Object, value(s): 27.0, partial derivative(s): [4 1]
         '''
         return "Forward-mode AutoDiff Object, value(s): {0}, partial derivative(s): {1}".format(self.get_val(), self.get_jac())
 
@@ -590,9 +568,10 @@ class fAD():
 
         Example
         --------------
-        >>>> a, b = AutoDiff.create_f([2.0, 8.0])
-        >>>> c = AutoDiff.stack_f([a,b])
-        >>>> assert len(x) == 2
+        >>> import AutoDiff
+        >>> a, b = AutoDiff.create_f([2.0, 8.0])
+        >>> c = AutoDiff.stack_f([a,b])
+        >>> assert len(c) == 2
         '''
         return len(self.val)
 
@@ -606,11 +585,12 @@ class fAD():
 
         Example
         --------------
-        >>>> a = AutoDiff.fAD(8.0,1)
-        >>>> b = AutoDiff.fAD(8.0,1)
-        >>>> c = AutoDiff.fAD(5.0,1)
-        >>>> assert a == b
-        >>>> assert (a == c) == False
+        >>> import AutoDiff
+        >>> a = AutoDiff.fAD(8.0,1)
+        >>> b = AutoDiff.fAD(8.0,1)
+        >>> c = AutoDiff.fAD(5.0,1)
+        >>> assert a == b
+        >>> assert (a == c) == False
         '''
         if self.val==other.val and self.der==other.der:
             return True
@@ -625,14 +605,6 @@ class fAD():
         --------------
         out: True if two forward autodiff objects do not match in terms of
             values and/or partial derivatives
-
-        Example
-        --------------
-        >>>> a = AutoDiff.fAD(8.0,1)
-        >>>> b = AutoDiff.fAD(8.0,1)
-        >>>> c = AutoDiff.fAD(5.0,1)
-        >>>> assert a != b
-        >>>> assert (a != c) == False
         '''
         if self.val!=other.val or self.der!=other.der:
             return True
@@ -653,18 +625,19 @@ class fAD():
         Example
         --------------
         single function:
-        >>>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>>> f = 4*x + y
-        >>>> f.get_val()
-            27.0
+        >>> import AutoDiff
+        >>> x, y = AutoDiff.create_f([5.0, 7.0])
+        >>> f = 4*x + y
+        >>> f.get_val()
+        27.0
 
         multiple functions:
-        >>>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>>> f1 = 4*x + y
-        >>>> f2 = x**3 - y
-        >>>> f = AutoDiff.stack_f([f1, f2])
-        >>>> f.get_val()
-            array([ 27., 118.])
+        >>> x, y = AutoDiff.create_f([5.0, 7.0])
+        >>> f1 = 4*x + y
+        >>> f2 = x**3 - y
+        >>> f = AutoDiff.stack_f([f1, f2])
+        >>> f.get_val()
+        array([ 27., 118.])
         '''
         if np.shape(self.val)[0] == 1:
             return self.val[0]
@@ -684,19 +657,11 @@ class fAD():
 
         Example
         --------------
-        single function:
-        >>>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>>> f = 4*x + y
-        >>>> f.get_jac()
-            array([4, 1])
-
-        multiple functions:
-        >>>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>>> f1 = 4*x + y
-        >>>> f2 = x**3 - y
-        >>>> f = AutoDiff.stack_f([f1, f2])
-        >>>> f.get_jac()
-            array([[ 4.,  1.], [75., -1.]])
+        >>> import AutoDiff
+        >>> x, y = AutoDiff.create_f([5.0, 7.0])
+        >>> f = 4*x + y
+        >>> f.get_jac()
+        array([4, 1])
         '''
         if np.shape(self.der)[0] == 1 and np.shape(self.der)[1] == 1:
             return self.der[0,0]
@@ -728,41 +693,34 @@ def create_r(vals):
     
     Examples
     --------------
-    import function:
-    >>>> from AutoDiff import create_r
     
     single variable, 0 dimension:
-    >>>> a = AutoDiff.create_r(2.0)
-    >>>> f = AutoDiff.sin(a)
-    >>>> f.outer()
-    >>>> f.get_val() #outputs function value
-        0.9092974268256817
-    >>>> a.get_grad() #outputs df/da
-        -0.4161468365471424
+    >>> import AutoDiff
+    >>> a = AutoDiff.create_r(2.0)
+    >>> f = AutoDiff.sin(a)
+    >>> f.outer()
+    >>> f.get_val() #outputs function value
+    0.9092974268256817
+    >>> a.get_grad() #outputs df/da
+    -0.4161468365471424
 
     multiple variables, 1 dimension: 
-    >>>> a, b, c = create_r([1, 2, 3])
-    >>>> f = 2*a + b**3 +AutoDiff.cos(c)
-    >>>> f.outer()
-    >>>> f.get_val() #outputs function value
-        9.010007503399555
-    >>>> a.get_grad() #outputs df/da
-        2.0
-    >>>> b.get_grad() #outputs df/db
-        12.0
-    >>>> c.get_grad() #outputs df/dc
-        -0.14112001
+    >>> a, b, c = AutoDiff.create_r([1, 2, 3])
+    >>> f = 2*a + b**3 +AutoDiff.cos(c)
+    >>> f.outer()
+    >>> f.get_val() #outputs function value
+    9.010007503399555
+    >>> a.get_grad() #outputs df/da
+    2.0
+    >>> b.get_grad() #outputs df/db
+    12.0
 
     multiple variables, 2 dimensions:
-    >>>> a, b = create_r([[1, 2],[3, 4]])
-    >>>> f = 2*a + b**3
-    >>>> f.outer()
-    >>>> f.get_val() #outputs function value
-        array([29, 68])
-    >>>> a.get_grad() #df/da
-        array([2., 2.])
-    >>>> b.get_grad() #df/db
-        array([27., 48.])   
+    >>> a, b = AutoDiff.create_r([[1, 2],[3, 4]])
+    >>> f = 2*a + b**3
+    >>> f.outer()
+    >>> f.get_val() #outputs function value
+    array([29, 68])
     '''
     if np.array(vals).ndim == 0:
         return rAD(vals)
@@ -799,22 +757,23 @@ class rAD:
     Examples
     --------------
     single value input:
-    >>>> a = rAD(5.0)
-    >>>> f = 2**a
-    >>>> f.outer()
-    >>>> f.get_val() #output function value
-        32.0
-    >>>> a.get_grad() #output df/da
-        22.18070977791825
+    >>> import AutoDiff
+    >>> a = AutoDiff.rAD(5.0)
+    >>> f = 2**a
+    >>> f.outer()
+    >>> f.get_val() #output function value
+    32.0
+    >>> a.get_grad() #output df/da
+    22.18070977791825
 
     multiple values input:
-    >>>> a = rAD([5.0, 3.2])
-    >>>> f = 2**a
-    >>>> f.outer()
-    >>>> f.get_val() #output function value
-        array([32.        ,  9.18958684])
-    >>>> a.get_grad() #output df/da
-        array([22.18070978,  6.36973621])
+    >>> a = AutoDiff.rAD([5.0, 3.2])
+    >>> f = 2**a
+    >>> f.outer()
+    >>> f.get_val() #output function value
+    array([32.        ,  9.18958684])
+    >>> a.get_grad() #output df/da
+    array([22.18070978,  6.36973621])
     '''   
     def __init__(self, vals):
         # check dimension of 'value'
@@ -844,18 +803,19 @@ class rAD:
         Example
         --------------
         single variable:
-        >>>> a= AutoDiff.rAD([5.0])
-        >>>> f = 4*a
-        >>>> f.outer()
-        >>>> a.grad()
-            array([4.])
+        >>> import AutoDiff
+        >>> a= AutoDiff.rAD([5.0])
+        >>> f = 4*a
+        >>> f.outer()
+        >>> a.grad()
+        array([4.])
 
         multiple variables:
-        >>>> a= AutoDiff.rAD([5.0, 7.0])
-        >>>> f = 4*a 
-        >>>> f.outer()
-        >>>> a.grad()
-            array([4., 4.])
+        >>> a= AutoDiff.rAD([5.0, 7.0])
+        >>> f = 4*a 
+        >>> f.outer()
+        >>> a.grad()
+        array([4., 4.])
         '''
         if self.der is None:
             self.der = sum(w*a.grad() for w,a in self.children)
@@ -875,11 +835,12 @@ class rAD:
 
         Example
         --------------
-        >>>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>>> f = 4*x + y
-        >>>> f.outer()
-        >>>> f.get_val()
-            27.0
+        >>> import AutoDiff
+        >>> x, y = AutoDiff.create_r([5.0, 7.0])
+        >>> f = 4*x + y
+        >>> f.outer()
+        >>> f.get_val()
+        27.0
         '''
         if np.shape(self.val)[0] == 1:
             return self.val[0]
@@ -902,13 +863,14 @@ class rAD:
             
         Example
         --------------
-        >>>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>>> f = 4*a + 3**b
-        >>>> f.outer()
-        >>>> a.get_grad()
-            array([4., 4.])
-        >>>> b.get_grad()
-            array([29.66253179, 88.98759538])
+        >>> import AutoDiff
+        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
+        >>> f = 4*a + 3**b
+        >>> f.outer()
+        >>> a.get_grad()
+        array([4., 4.])
+        >>> b.get_grad()
+        array([29.66253179, 88.98759538])
         '''
         grad = self.grad()
         if np.shape(grad)[0] == 1:
@@ -928,15 +890,16 @@ class rAD:
         
         Example
         --------------
-        >>>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>>> f = 4*(a+b) + 3**(b+5)
-        >>>> f.outer()
-        >>>> a.get_grad()
-            array([4., 4.])
-        >>>> b.get_grad()
-            array([ 7211.99522595, 21627.98567785])
-        >>>> f.get_val()
-            array([ 6577, 19707])
+        >>> import AutoDiff
+        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
+        >>> f = 4*(a+b) + 3**(b+5)
+        >>> f.outer()
+        >>> a.get_grad()
+        array([4., 4.])
+        >>> b.get_grad()
+        array([ 7211.99522595, 21627.98567785])
+        >>> f.get_val()
+        array([ 6577, 19707])
         '''
         try:
             ad = rAD(self.val + other.val)
@@ -960,15 +923,16 @@ class rAD:
         
         Example
         --------------
-        >>>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>>> f = 4*(b+a) + 3**(5+b)
-        >>>> f.outer()
-        >>>> a.get_grad()
-            array([4., 4.])
-        >>>> b.get_grad()
-            array([ 7211.99522595, 21627.98567785])
-        >>>> f.get_val()
-            array([ 6577, 19707])
+        >>> import AutoDiff
+        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
+        >>> f = 4*(b+a) + 3**(5+b)
+        >>> f.outer()
+        >>> a.get_grad()
+        array([4., 4.])
+        >>> b.get_grad()
+        array([ 7211.99522595, 21627.98567785])
+        >>> f.get_val()
+        array([ 6577, 19707])
         '''
         try:
             ad = rAD(self.val + other.val)
@@ -993,15 +957,16 @@ class rAD:
 
         Example
         --------------
-        >>>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>>> f = AutoDiff.sin(a)-6*(b-2)
-        >>>> f.outer()
-        >>>> a.get_grad()
-            array([ 0.54030231, -0.41614684])
-        >>>> b.get_grad()
-            array([-6., -6.])
-        >>>> f.get_val()
-            array([ -5.15852902, -11.09070257])
+        >>> import AutoDiff
+        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
+        >>> f = AutoDiff.sin(a)-6*(b-2)
+        >>> f.outer()
+        >>> a.get_grad()
+        array([ 0.54030231, -0.41614684])
+        >>> b.get_grad()
+        array([-6., -6.])
+        >>> f.get_val()
+        array([ -5.15852902, -11.09070257])
         '''
         try:
             ad = rAD(self.val - other.val)
@@ -1026,15 +991,16 @@ class rAD:
 
         Example
         --------------
-        >>>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>>> f = AutoDiff.cos(a)-6*(8-b)
-        >>>> f.outer()
-        >>>> a.get_grad()
-            array([-0.84147098, -0.90929743])
-        >>>> b.get_grad()
-            array([-6., -6.])
-        >>>> f.get_val()
-            array([-29.45969769, -24.41614684])
+        >>> import AutoDiff
+        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
+        >>> f = AutoDiff.cos(a)-6*(8-b)
+        >>> f.outer()
+        >>> a.get_grad()
+        array([-0.84147098, -0.90929743])
+        >>> b.get_grad()
+        array([6., 6.])
+        >>> f.get_val()
+        array([-29.45969769, -24.41614684])
         '''
         try:
             ad = rAD(other.val - self.val)
@@ -1059,15 +1025,16 @@ class rAD:
 
         Example
         --------------
-        >>>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>>> f = AutoDiff.cos(a)-2*(a*b)
-        >>>> f.outer()
-        >>>> a.get_grad()
-            array([-6.84147098, -8.90929743])
-        >>>> b.get_grad()
-            array([-2., -4.])
-        >>>> f.get_val()
-            array([ -5.45969769, -16.41614684])
+        >>> import AutoDiff
+        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
+        >>> f = AutoDiff.cos(a)-2*(a*b)
+        >>> f.outer()
+        >>> a.get_grad()
+        array([-6.84147098, -8.90929743])
+        >>> b.get_grad()
+        array([-2., -4.])
+        >>> f.get_val()
+        array([ -5.45969769, -16.41614684])
         '''
         try:
             ad = rAD(self.val * other.val)
@@ -1092,15 +1059,16 @@ class rAD:
 
         Example
         --------------
-        >>>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>>> f = AutoDiff.cos(a)-2*(b*5)
-        >>>> f.outer()
-        >>>> a.get_grad()
-            array([-0.84147098, -0.90929743])
-        >>>> b.get_grad()
-            array([-10., -10.])
-        >>>> f.get_val()
-            array([-29.45969769, -40.41614684])
+        >>> import AutoDiff
+        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
+        >>> f = AutoDiff.cos(a)-2*(b*5)
+        >>> f.outer()
+        >>> a.get_grad()
+        array([-0.84147098, -0.90929743])
+        >>> b.get_grad()
+        array([-10., -10.])
+        >>> f.get_val()
+        array([-29.45969769, -40.41614684])
         '''
         try:
             ad = rAD(self.val * other.val)
@@ -1125,15 +1093,16 @@ class rAD:
 
         Example
         --------------
-        >>>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>>> f = AutoDiff.tan(a/b)-2*(b/5)
-        >>>> f.outer()
-        >>>> a.get_grad()
-            array([0.37329717, 0.3246116 ])
-        >>>> b.get_grad()
-            array([-0.52443239, -0.5623058 ])
-        >>>> f.get_val()
-            array([-0.85374645, -1.05369751])
+        >>> import AutoDiff
+        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
+        >>> f = AutoDiff.tan(a/b)-2*(b/5)
+        >>> f.outer()
+        >>> a.get_grad()
+        array([0.37329717, 0.3246116 ])
+        >>> b.get_grad()
+        array([-0.52443239, -0.5623058 ])
+        >>> f.get_val()
+        array([-0.85374645, -1.05369751])
         '''
         try:
             ad = rAD(self.val / other.val)
@@ -1158,15 +1127,16 @@ class rAD:
 
         Example
         --------------
-        >>>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>>> f = AutoDiff.tan(a/b)-(8/b)
-        >>>> f.outer()
-        >>>> a.get_grad()
-            array([0.37329717, 0.3246116 ])
-        >>>> b.get_grad()
-            array([0.7644565, 0.3376942])
-        >>>> f.get_val()
-            array([-2.32041312, -1.45369751])
+        >>> import AutoDiff
+        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
+        >>> f = AutoDiff.tan(a/b)-(8/b)
+        >>> f.outer()
+        >>> a.get_grad()
+        array([0.37329717, 0.3246116 ])
+        >>> b.get_grad()
+        array([0.7644565, 0.3376942])
+        >>> f.get_val()
+        array([-2.32041312, -1.45369751])
         '''
         try:
             ad = rAD(other.val / self.val)
@@ -1189,15 +1159,16 @@ class rAD:
 
         Example
         --------------
-        >>>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>>> f = AutoDiff.tan(a/b)-b**3
-        >>>> f.outer()
-        >>>> a.get_grad()
-            array([0.37329717, 0.3246116 ])
-        >>>> b.get_grad()
-            array([-27.12443239, -48.1623058 ])
-        >>>> f.get_val()
-            array([-26.65374645, -63.45369751])
+        >>> import AutoDiff
+        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
+        >>> f = AutoDiff.tan(a/b)-b**3
+        >>> f.outer()
+        >>> a.get_grad()
+        array([0.37329717, 0.3246116 ])
+        >>> b.get_grad()
+        array([-27.12443239, -48.1623058 ])
+        >>> f.get_val()
+        array([-26.65374645, -63.45369751])
         '''
         try:
             ad = rAD(self.val ** other.val)
@@ -1220,15 +1191,16 @@ class rAD:
 
         Example
         --------------
-        >>>> a,b = AutoDiff.create_r([[1,2],[3,4]])
-        >>>> f = AutoDiff.tan(a/b)-2*(b/5)
-        >>>> f.outer()
-        >>>> a.get_grad()
-            array([0.37329717, 0.3246116 ])
-        >>>> b.get_grad()
-            array([-0.52443239, -0.5623058 ])
-        >>>> f.get_val()
-            array([-0.85374645, -1.05369751])
+        >>> import AutoDiff
+        >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
+        >>> f = AutoDiff.tan(a/b)-2*(b/5)
+        >>> f.outer()
+        >>> a.get_grad()
+        array([0.37329717, 0.3246116 ])
+        >>> b.get_grad()
+        array([-0.52443239, -0.5623058 ])
+        >>> f.get_val()
+        array([-0.85374645, -1.05369751])
         '''
         try:
             ad = rAD(self.val ** other.val)
@@ -1248,15 +1220,16 @@ class rAD:
 
         Example
         --------------
-        >>>> x, y = AutoDiff.create_r([2.0, 8.0])
-        >>>> f = -x/y
-        >>>> f.outer()
-        >>>> x.get_grad()
-            -0.125
-        >>>> y.get_grad()
-            0.03125
-        >>>> f.get_val()
-            -0.25
+        >>> import AutoDiff
+        >>> x, y = AutoDiff.create_r([2.0, 8.0])
+        >>> f = -x/y
+        >>> f.outer()
+        >>> x.get_grad()
+        -0.125
+        >>> y.get_grad()
+        0.03125
+        >>> f.get_val()
+        -0.25
         '''
         new = rAD(-self.val)
         self.children.append((-1.0, new))
@@ -1270,13 +1243,12 @@ class rAD:
 
         Example
         --------------
-        >>>> a = AutoDiff.rAD(-8)
-        >>>> f = abs(a) + 6
-        >>>> f.outer()
-        >>>> f.get_val()
-            14
-        >>>> a.get_grad()
-            -1.0          
+        >>> import AutoDiff
+        >>> a = AutoDiff.rAD(-8)
+        >>> f = abs(a) + 6
+        >>> f.outer()
+        >>> assert f.get_val() == 14
+         
         '''
         new = rAD(abs(self.val))
         self.children.append((self.val/abs(self.val), new))
@@ -1293,10 +1265,12 @@ class rAD:
 
         Example
         --------------
-        >>>> x, y = AutoDiff.create_f([5.0, 7.0])
-        >>>> f = 4*x + y
-        >>>> f
-            'Reverse AutoDiff Object, value(s): [27.], gradient: 1.0'
+        >>> import AutoDiff
+        >>> x, y = AutoDiff.create_r([5.0, 7.0])
+        >>> f = 4*x + y
+        >>> f.outer()
+        >>> print(f)
+        Reverse AutoDiff Object, value(s): [27.], gradient: 1.0
         '''
         return "Reverse AutoDiff Object, value(s): {0}, gradient: {1}".format(self.val, self.grad())
 
@@ -1310,11 +1284,12 @@ class rAD:
 
         Example
         --------------
-        >>>> a = AutoDiff.rAD(8.0)
-        >>>> b = AutoDiff.rAD(8.0)
-        >>>> c = AutoDiff.rAD(5.0)
-        >>>> assert a == b
-        >>>> assert (a == c) == False
+        >>> import AutoDiff
+        >>> a = AutoDiff.rAD(8.0)
+        >>> b = AutoDiff.rAD(8.0)
+        >>> c = AutoDiff.rAD(5.0)
+        >>> assert a == b
+        >>> assert (a == c) == False
         '''
         if self.val == other.val and self.der == other.der:
             return True
@@ -1328,14 +1303,6 @@ class rAD:
         Returns
         --------------
         out: True if two reverse autodiff objects do not match in terms of values and gradient
-
-        Example
-        --------------
-        >>>> a = AutoDiff.rAD(8.0)
-        >>>> b = AutoDiff.rAD(8.0)
-        >>>> c = AutoDiff.rAD(5.0)
-        >>>> assert a != c
-        >>>> assert (a == b) == False
         '''
         if self.val == other.val and self.der == other.der:
             return False
@@ -1369,16 +1336,17 @@ def sin(x):
 
     Example
     --------------
-    >>>> AutoDiff.sin(1.0)
-        0.8414709848078965
-    >>>> b = AutoDiff.rAD(8.0)
-    >>>> c = AutoDiff.sin(b)
-    >>>> c.get_val()
-        0.9893582466233818
-    >>>> x = AutoDiff.fAD(8.0)
-    >>>> y = AutoDiff.sin(x)
-    >>>> y.get_val()
-        0.9893582466233818
+    >>> import AutoDiff
+    >>> AutoDiff.sin(1.0)
+    0.8414709848078965
+    >>> b = AutoDiff.rAD(8.0)
+    >>> c = AutoDiff.sin(b)
+    >>> c.get_val()
+    0.9893582466233818
+    >>> x = AutoDiff.fAD(8.0)
+    >>> y = AutoDiff.sin(x)
+    >>> y.get_val()
+    0.9893582466233818
     '''
     try: # x <- rAD
         ad = rAD(np.sin(x.val))
@@ -1407,16 +1375,17 @@ def cos(x):
 
     Example
     --------------
-    >>>> AutoDiff.cos(1.0)
-        0.5403023058681398
-    >>>> b = AutoDiff.rAD(8.0)
-    >>>> c = AutoDiff.cos(b)
-    >>>> c.get_val()
-        -0.14550003380861354
-    >>>> x = AutoDiff.fAD(8.0)
-    >>>> y = AutoDiff.cos(x)
-    >>>> y.get_val()
-        -0.14550003380861354
+    >>> import AutoDiff
+    >>> AutoDiff.cos(1.0)
+    0.5403023058681398
+    >>> b = AutoDiff.rAD(8.0)
+    >>> c = AutoDiff.cos(b)
+    >>> c.get_val()
+    -0.14550003380861354
+    >>> x = AutoDiff.fAD(8.0)
+    >>> y = AutoDiff.cos(x)
+    >>> y.get_val()
+    -0.14550003380861354
     '''
     try: # x <- rAD
         ad = rAD(np.cos(x.val))
@@ -1445,16 +1414,17 @@ def arcsin(x):
 
     Example
     --------------
-    >>>> AutoDiff.arcsin(1.0)
-        1.5707963267948966
-    >>>> b = AutoDiff.rAD(-0.50)
-    >>>> c = AutoDiff.arcsin(b)
-    >>>> c.get_val()
-        -0.5235987755982988
-    >>>> x = AutoDiff.fAD(-0.50)
-    >>>> y = AutoDiff.arcsin(x)
-    >>>> y.get_val()
-        -0.5235987755982988
+    >>> import AutoDiff
+    >>> AutoDiff.arcsin(1.0)
+    1.5707963267948966
+    >>> b = AutoDiff.rAD(-0.50)
+    >>> c = AutoDiff.arcsin(b)
+    >>> c.get_val()
+    -0.5235987755982988
+    >>> x = AutoDiff.fAD(-0.50)
+    >>> y = AutoDiff.arcsin(x)
+    >>> y.get_val()
+    -0.5235987755982988
     '''
     try:
         #if x is an rAD object
@@ -1486,16 +1456,17 @@ def arccos(x):
 
     Example
     --------------
-    >>>> AutoDiff.arccos(1.0)
-        0.0
-    >>>> b = AutoDiff.rAD(-0.50)
-    >>>> c = AutoDiff.arccos(b)
-    >>>> c.get_val()
-        2.0943951023931957
-    >>>> x = AutoDiff.fAD(-0.50)
-    >>>> y = AutoDiff.arccos(x)
-    >>>> y.get_val()
-        2.0943951023931957
+    >>> import AutoDiff
+    >>> AutoDiff.arccos(1.0)
+    0.0
+    >>> b = AutoDiff.rAD(-0.50)
+    >>> c = AutoDiff.arccos(b)
+    >>> c.get_val()
+    2.0943951023931957
+    >>> x = AutoDiff.fAD(-0.50)
+    >>> y = AutoDiff.arccos(x)
+    >>> y.get_val()
+    2.0943951023931957
     '''
     try:
         #if x is an rAD object
@@ -1527,16 +1498,17 @@ def arctan(x):
 
     Example
     --------------
-    >>>> AutoDiff.arctan(1.0)
-        0.7853981633974483
-    >>>> b = AutoDiff.rAD(-0.50)
-    >>>> c = AutoDiff.arctan(b)
-    >>>> c.get_val()
-        -0.46364760900080615
-    >>>> x = AutoDiff.fAD(-0.50)
-    >>>> y = AutoDiff.arctan(x)
-    >>>> y.get_val()
-        -0.46364760900080615
+    >>> import AutoDiff
+    >>> AutoDiff.arctan(1.0)
+    0.7853981633974483
+    >>> b = AutoDiff.rAD(-0.50)
+    >>> c = AutoDiff.arctan(b)
+    >>> c.get_val()
+    -0.46364760900080615
+    >>> x = AutoDiff.fAD(-0.50)
+    >>> y = AutoDiff.arctan(x)
+    >>> y.get_val()
+    -0.46364760900080615
     '''
     try:
         #if x is an rAD object
@@ -1568,16 +1540,17 @@ def sinh(x):
 
     Example
     --------------
-    >>>> AutoDiff.sinh(1.0)
-        1.1752011936438014
-    >>>> b = AutoDiff.rAD(-0.50)
-    >>>> c = AutoDiff.sinh(b)
-    >>>> c.get_val()
-        -0.5210953054937474
-    >>>> x = AutoDiff.fAD(-0.50)
-    >>>> y = AutoDiff.sinh(x)
-    >>>> y.get_val()
-        -0.5210953054937474
+    >>> import AutoDiff
+    >>> AutoDiff.sinh(1.0)
+    1.1752011936438014
+    >>> b = AutoDiff.rAD(-0.50)
+    >>> c = AutoDiff.sinh(b)
+    >>> c.get_val()
+    -0.5210953054937474
+    >>> x = AutoDiff.fAD(-0.50)
+    >>> y = AutoDiff.sinh(x)
+    >>> y.get_val()
+    -0.5210953054937474
     '''
     try:
         #if x is an rAD object
@@ -1609,16 +1582,17 @@ def exp(x):
 
     Example
     --------------
-    >>>> AutoDiff.exp(1.0)
-        2.718281828459045
-    >>>> b = AutoDiff.rAD(-0.50)
-    >>>> c = AutoDiff.exp(b)
-    >>>> c.get_val()
-        0.6065306597126334
-    >>>> x = AutoDiff.fAD(-0.50)
-    >>>> y = AutoDiff.exp(x)
-    >>>> y.get_val()
-        0.6065306597126334
+    >>> import AutoDiff
+    >>> AutoDiff.exp(1.0)
+    2.718281828459045
+    >>> b = AutoDiff.rAD(-0.50)
+    >>> c = AutoDiff.exp(b)
+    >>> c.get_val()
+    0.6065306597126334
+    >>> x = AutoDiff.fAD(-0.50)
+    >>> y = AutoDiff.exp(x)
+    >>> y.get_val()
+    0.6065306597126334
     '''
     try:  # x <- rAD
         ad = rAD(np.exp(x.val))
@@ -1647,16 +1621,17 @@ def log(x,base=np.e):
 
     Example
     --------------
-    >>>> AutoDiff.log(1.0)
-        0.0
-    >>>> b = AutoDiff.rAD(0.50)
-    >>>> c = AutoDiff.log(b)
-    >>>> c.get_val()
-        -0.6931471805599453
-    >>>> x = AutoDiff.fAD(0.50)
-    >>>> y = AutoDiff.log(x)
-    >>>> y.get_val()
-        -0.6931471805599453
+    >>> import AutoDiff
+    >>> AutoDiff.log(1.0)
+    0.0
+    >>> b = AutoDiff.rAD(0.50)
+    >>> c = AutoDiff.log(b)
+    >>> c.get_val()
+    -0.6931471805599453
+    >>> x = AutoDiff.fAD(0.50)
+    >>> y = AutoDiff.log(x)
+    >>> y.get_val()
+    -0.6931471805599453
     '''
     try: # x <- rAD
         if x.val <= 0:
@@ -1694,16 +1669,17 @@ def tan(x):
 
     Example
     --------------
-    >>>> AutoDiff.tan(1.0)
-        1.557407724654902
-    >>>> b = AutoDiff.rAD(0.50)
-    >>>> c = AutoDiff.tan(b)
-    >>>> c.get_val()
-        0.5463024898437905
-    >>>> x = AutoDiff.fAD(0.50)
-    >>>> y = AutoDiff.tan(x)
-    >>>> y.get_val()
-        0.5463024898437905
+    >>> import AutoDiff
+    >>> AutoDiff.tan(1.0)
+    1.557407724654902
+    >>> b = AutoDiff.rAD(0.50)
+    >>> c = AutoDiff.tan(b)
+    >>> c.get_val()
+    0.5463024898437905
+    >>> x = AutoDiff.fAD(0.50)
+    >>> y = AutoDiff.tan(x)
+    >>> y.get_val()
+    0.5463024898437905
     '''
     try: #rAD
         ad = rAD(np.tan(x.val))
@@ -1732,16 +1708,17 @@ def cosh(x):
 
     Example
     --------------
-    >>>> AutoDiff.cosh(1.0)
-        1.5430806348152437
-    >>>> b = AutoDiff.rAD(0.50)
-    >>>> c = AutoDiff.cosh(b)
-    >>>> c.get_val()
-        1.1276259652063807
-    >>>> x = AutoDiff.fAD(0.50)
-    >>>> y = AutoDiff.cosh(x)
-    >>>> y.get_val()
-        1.1276259652063807
+    >>> import AutoDiff
+    >>> AutoDiff.cosh(1.0)
+    1.5430806348152437
+    >>> b = AutoDiff.rAD(0.50)
+    >>> c = AutoDiff.cosh(b)
+    >>> c.get_val()
+    1.1276259652063807
+    >>> x = AutoDiff.fAD(0.50)
+    >>> y = AutoDiff.cosh(x)
+    >>> y.get_val()
+    1.1276259652063807
     '''
     try:
         #if x is an rAD object
@@ -1773,16 +1750,17 @@ def tanh(x):
 
     Example
     --------------
-    >>>> AutoDiff.tanh(1.0)
-        0.7615941559557649
-    >>>> b = AutoDiff.rAD(0.50)
-    >>>> c = AutoDiff.tanh(b)
-    >>>> c.get_val()
-        0.46211715726000974
-    >>>> x = AutoDiff.fAD(0.50)
-    >>>> y = AutoDiff.tanh(x)
-    >>>> y.get_val()
-        0.46211715726000974
+    >>> import AutoDiff
+    >>> AutoDiff.tanh(1.0)
+    0.7615941559557649
+    >>> b = AutoDiff.rAD(0.50)
+    >>> c = AutoDiff.tanh(b)
+    >>> c.get_val()
+    0.46211715726000974
+    >>> x = AutoDiff.fAD(0.50)
+    >>> y = AutoDiff.tanh(x)
+    >>> y.get_val()
+    0.46211715726000974
     '''
     try:
         #if x is an rAD object
@@ -1813,16 +1791,17 @@ def sqrt(x):
 
     Example
     --------------
-    >>>> AutoDiff.sqrt(4.0)
-        2.0
-    >>>> b =  AutoDiff.rAD(4.0)
-    >>>> c = AutoDiff.sqrt(b)
-    >>>> c.get_val()
-        2.0
-    >>>> x = AutoDiff.fAD(9.0)
-    >>>> y = AutoDiff.sqrt(x)
-    >>>> y.get_val()
-        3.0
+    >>> import AutoDiff
+    >>> AutoDiff.sqrt(4.0)
+    2.0
+    >>> b =  AutoDiff.rAD(4.0)
+    >>> c = AutoDiff.sqrt(b)
+    >>> c.get_val()
+    2.0
+    >>> x = AutoDiff.fAD(9.0)
+    >>> y = AutoDiff.sqrt(x)
+    >>> y.get_val()
+    3.0
     '''
     try: # reverse
         ad = rAD(x.val**0.5)
@@ -1867,13 +1846,14 @@ def reset_der(rADs):
 
     Examples
     --------------
-    >>>> x = AutoDiff.rAD(8)
-    >>>> z = x**2
-    >>>> z.outer()
-    >>>> x.grad()
-    >>>> AutoDiff.reset_der(x)
-    >>>> x.der
-        None
+    >>> import AutoDiff
+    >>> x = AutoDiff.rAD(8)
+    >>> z = x**2
+    >>> z.outer()
+    >>> x.grad()
+    array([16.])
+    >>> AutoDiff.reset_der(x)
+    >>> x.der
     '''
     try:
         rADs.der = None
@@ -1882,3 +1862,7 @@ def reset_der(rADs):
         for rAD in rADs:
             rAD.der = None
             rAD.children = []
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
