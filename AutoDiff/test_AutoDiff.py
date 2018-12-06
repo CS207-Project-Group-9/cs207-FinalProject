@@ -475,7 +475,7 @@ def test_combined_tan():
     a.grad()
     num = 10/np.cos(25)**2
     assert(y.val[0] == np.tan(25))
-    assert_approx_equal(y.der[0][0] == num)
+    assert_approx_equal(y.der[0][0], num)
     assert(b.val == np.tan(25))
     assert_array_almost_equal(a.der,np.array(num))  
     assert(AutoDiff.tan(3) == np.tan(3))
