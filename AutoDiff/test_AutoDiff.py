@@ -233,7 +233,7 @@ def test_fAD_ne():
 def test_rAD_create_r():
     a, b, c = AutoDiff.create_r([1,2,3])
     f1 = 2*a + b**3 +AutoDiff.cos(c)
-    x, y, z = AutoDiff.create_f[1,2,3])
+    x, y, z = AutoDiff.create_f([1,2,3])
     f2 = 2*a + b**3 +AutoDiff.cos(c)
     assert a.get_grad() == 2.0
     assert b.get_grad() == 12.0
