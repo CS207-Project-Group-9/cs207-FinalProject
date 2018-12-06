@@ -424,7 +424,7 @@ def create_r(vals):
     >>> f.get_val() #outputs function value
     0.90929742682568171
     >>> a.get_grad() #outputs df/da
-    -0.4161468365471424
+    -0.41614683654714241
     '''
     if np.array(vals).ndim == 0:
         return rAD(vals)
@@ -556,7 +556,7 @@ class rAD:
         >>> a.get_grad()
         array([ 4.,  4.])
         >>> b.get_grad()
-        array([29.66253179, 88.98759538])
+        array([ 29.66253179,  88.98759538])
         '''
         grad = self.grad()
         if np.shape(grad)[0] == 1:
@@ -961,14 +961,14 @@ def arctan(x):
     >>> from AutoDiff import AutoDiff
     >>> AutoDiff.arctan(1.0)
     0.78539816339744828
-    >>> b = AutoDiff.rAD(-0.50)
+    >>> b = AutoDiff.rAD(1.0)
     >>> c = AutoDiff.arctan(b)
     >>> c.get_val()
-    -0.46364760900080615
-    >>> x = AutoDiff.fAD(-0.50)
+    0.78539816339744828
+    >>> x = AutoDiff.fAD(1.0)
     >>> y = AutoDiff.arctan(x)
     >>> y.get_val()
-    -0.46364760900080615
+    0.78539816339744828
     '''
     try:
         #if x is an rAD object
@@ -1045,14 +1045,14 @@ def exp(x):
     >>> from AutoDiff import AutoDiff
     >>> AutoDiff.exp(1.0)
     2.7182818284590451
-    >>> b = AutoDiff.rAD(-0.50)
+    >>> b = AutoDiff.rAD(1.0)
     >>> c = AutoDiff.exp(b)
     >>> c.get_val()
-    0.6065306597126334
-    >>> x = AutoDiff.fAD(-0.50)
+    2.7182818284590451
+    >>> x = AutoDiff.fAD(1.0)
     >>> y = AutoDiff.exp(x)
     >>> y.get_val()
-    0.6065306597126334
+    2.7182818284590451
     '''
     try:  # x <- rAD
         ad = rAD(np.exp(x.val))
@@ -1084,14 +1084,14 @@ def log(x,base=np.e):
     >>> from AutoDiff import AutoDiff
     >>> AutoDiff.log(1.0)
     0.0
-    >>> b = AutoDiff.rAD(0.50)
+    >>> b = AutoDiff.rAD(1.0)
     >>> c = AutoDiff.log(b)
     >>> c.get_val()
-    -0.6931471805599453
-    >>> x = AutoDiff.fAD(0.50)
+    0.0
+    >>> x = AutoDiff.fAD(1.0)
     >>> y = AutoDiff.log(x)
     >>> y.get_val()
-    -0.69314718055994529
+    0.0
     '''
     try: # x <- rAD
         if x.val <= 0:
@@ -1132,14 +1132,14 @@ def tan(x):
     >>> from AutoDiff import AutoDiff
     >>> AutoDiff.tan(1.0)
     1.5574077246549023
-    >>> b = AutoDiff.rAD(0.50)
+    >>> b = AutoDiff.rAD(1.0)
     >>> c = AutoDiff.tan(b)
     >>> c.get_val()
-    0.5463024898437905
-    >>> x = AutoDiff.fAD(0.50)
+    1.5574077246549023
+    >>> x = AutoDiff.fAD(1.0)
     >>> y = AutoDiff.tan(x)
     >>> y.get_val()
-    0.5463024898437905
+    1.5574077246549023
     '''
     try: #rAD
         ad = rAD(np.tan(x.val))
