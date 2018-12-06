@@ -204,6 +204,15 @@ def create_r(vals):
         ADs = [rAD(val) for val in vals]
         return ADs
 
+def stack_r(vals,functions):
+    jac = []
+    for f in functions:
+        vars = [rAD(val) for val in vals]
+        f(*vars).outer()
+        grad = [var.get_grad() for var in vars]
+        jac.append(grad)
+    return jac
+
 class rAD:
     def __init__(self, vals):
         # check dimension of 'value'
