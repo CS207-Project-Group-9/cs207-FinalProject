@@ -50,7 +50,7 @@ def test_fAD_constructor_init():
     assert_array_equal(b.val, np.array([5.0]))
     assert_array_equal(b.der, np.array([[1]]))
     assert_array_equal(b.get_val(), np.array([5.0])) #test get_val()
-    assert_array_equal(b.get_der(), np.array([[1]])) #test get_der()
+    assert_array_equal(b.get_jac(), np.array([[1]])) #test get_der()
     assert_array_equal(c.val, np.array([1, 5]))
     assert_array_equal(c.der, np.array([[1, 0], [0, 1]]))
     #inputs ought not to be type other than scaler, list or array of numbers
@@ -200,7 +200,7 @@ def test_fAD_print():
     a, b = AutoDiff.create_f([5.0, 7.0])
     f = 4*a + b
     assert f.get_val() == 27.0
-    assert f.get_jac() == [4, 1]
+    assert_array_equal(f.get_jac(), np.array([4, 1]))
     assert 'Forward-mode AutoDiff Object' in str(f)
     assert 'value(s)' in str(f)
     assert 'partial derivative(s)' in str(f)
@@ -233,8 +233,10 @@ def test_fAD_ne():
 def test_rAD_create_r():
     a, b, c = AutoDiff.create_r([1,2,3])
     f1 = 2*a + b**3 +AutoDiff.cos(c)
+    f1.outer()
     x, y, z = AutoDiff.create_f([1,2,3])
     f2 = 2*a + b**3 +AutoDiff.cos(c)
+    f2.outer()
     assert a.get_grad() == 2.0
     assert b.get_grad() == 12.0
     assert_array_almost_equal(np.array(c.get_grad()), np.array(-0.1411200080598672))
@@ -398,7 +400,7 @@ def test_rAD_pow():
     pow1.outer()
     assert pow1.val == 8.0
     assert_array_almost_equal(np.array([x.grad(), y.grad()]),
-        np.array([12., 5.54517744]))
+        np.array([[12.], [5.54517744]]))
     AutoDiff.reset_der([x,y])
     #rAD**number
     pow2 = (x * y) ** z
@@ -477,10 +479,11 @@ def test_combined_tan():
     b = AutoDiff.tan(a**2)
     b.outer()
     a.grad()
+    num = 10/np.cos(25)**2
     assert(y.val[0] == np.tan(25))
-    assert(y.der[0][0] == 10/np.cos(25)**2)
+    assert y.der[0][0] == num
     assert(b.val == np.tan(25))
-    assert_array_almost_equal(a.der,10/np.cos(25)**2)  
+    assert_array_almost_equal(a.der,np.array(num))  
     assert(AutoDiff.tan(3) == np.tan(3))
 
 #Test inverse sine
