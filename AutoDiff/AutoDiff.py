@@ -21,18 +21,13 @@ def create_f(vals):
     
     Examples
     --------------
-    import function:
-    >>>> from AutoDiff import create_f
-    
-    single variable, 0 dimension: 
-    >>>> a = create_f(3)
+    >>>> from AutoDiff import create_f #import function
+    >>>> a = create_f(3) #single variable, 0 dimension: 
     >>>> a.val
         array([3])
     >>>> a.der
         array([[1]])
-
-    multiple variables, 1 dimension: 
-    >>>> a, b, c = create_f([1, 2, 3])
+    >>>> a, b, c = create_f([1, 2, 3]) #multiple variables, 1 dimension
     >>>> a.val
         array([1])
     >>>> b.val
@@ -45,9 +40,7 @@ def create_f(vals):
         array([[0, 1, 0]])
     >>>> c.der
         array([[0, 0, 1]])
-
-    multiple variables, 2 dimensions:
-    >>>> a, b = create_f([[1, 2],[3, 4]])
+    >>>> a, b = create_f([[1, 2],[3, 4]]) # multiple variables, 2 dimensions
     >>>> a.val
         array([1, 2])
     >>>> b.val
