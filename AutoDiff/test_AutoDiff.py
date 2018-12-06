@@ -27,25 +27,32 @@ def test_AD_create_f():
     assert_array_equal(a.der, np.array([[1,0],[1,0]]))
     assert_array_equal(b.val, np.array([3,4]))
     assert_array_equal(b.der, np.array([[0,1],[0,1]]))
+    with pytest.raises(ValueError):
+        AutoDiff.create_f([[[1,2],[1,2]], [[3,4],[3,4]]])
 
 #AD_stack takes in multiple AD instances
 #in the form of numpy arrays, returns 
 #values as a vector and derivatives as a matrix
-def test_AD_stack():
+def test_AD_stack_f():
     a, b, c = AutoDiff.create_f([1, 2, 3])
-    c = AutoDiff.stack([a, b, c])
+    c = AutoDiff.stack_f([a, b, c])
     assert_array_equal(c.val, np.array([1,2,3]))
     assert_array_equal(c.der, np.array([[1,0,0],[0,1,0],[0,0,1]]))
 
 #Test whether constructor of AutoDiff class 
 #returns proper values, derivatives, and errors
 def test_fAD_constructor_init():
+    #test single value input
     a = 5.0
     b = AutoDiff.fAD(a,1)
+    #test multiple value input
+    c = AutoDiff.fAD([1,5], [[1,0],[0,1]])
     assert_array_equal(b.val, np.array([5.0]))
     assert_array_equal(b.der, np.array([[1]]))
     assert_array_equal(b.get_val(), np.array([5.0])) #test get_val()
-    assert_array_equal(b.get_jac(), np.array([[1]])) #test get_der()
+    assert_array_equal(b.get_der(), np.array([[1]])) #test get_der()
+    assert_array_equal(c.val, np.array([1, 5]))
+    assert_array_equal(c.der, np.array([[1, 0], [0, 1]]))
     #inputs ought not to be type other than scaler, list or array of numbers
     with pytest.raises(TypeError):
         AutoDiff.fAD('hello','friend')
@@ -190,11 +197,14 @@ def test_fAD_abs():
         
 #Test __str__ and __repr__
 def test_fAD_print():
-    a, b = AutoDiff.create_f([2.0, 8.0])
-    assert 'fAD Object' in str(a)
-    assert 'fAD' in repr(b)
-#     assert str(a) == 'AutoDiff Object, val: [2.], der: [[1 0]]'
-#     assert repr(b) == 'AutoDiff([8.],[[0 1]])'
+    a, b = AutoDiff.create_f([5.0, 7.0])
+    f = 4*a + b
+    assert f.get_val() == 27.0
+    assert f.get_jac() == [4, 1]
+    assert 'Forward-mode AutoDiff Object' in str(f)
+    assert 'value(s)' in str(f)
+    assert 'partial derivative(s)' in str(f)
+    assert 'fAD' in repr(f)
 
 #Test __len__
 def test_fAD_len():
@@ -219,6 +229,20 @@ def test_fAD_ne():
     assert (a != b) == False
 
 
+#Test create_r()
+def test_rAD_create_r():
+    a, b, c = AutoDiff.create_r([1,2,3])
+    f1 = 2*a + b**3 +AutoDiff.cos(c)
+    x, y, z = AutoDiff.create_f([1,2,3])
+    f2 = 2*a + b**3 +AutoDiff.cos(c)
+    assert a.get_grad() == 2.0
+    assert b.get_grad() == 12.0
+    assert_array_almost_equal(np.array(c.get_grad()), np.array(-0.1411200080598672))
+    assert_array_almost_equal(np.array(f1.get_val()), np. array(9.010007503399555))
+    assert_array_almost_equal(np.array(f1.get_val()), np.array(f2.get_val()))
+    assert a.get_grad() == f2.get_jac()[0]
+    assert b.get_grad() == f2.get_jac()[1]
+    
 #Test whether constructor of rAD class returns proper
 #values, children, derivatives, and errors
 def test_rAD_constructor_init():
@@ -263,19 +287,19 @@ def test_rAD_add():
     #rAD+rAD
     sum1 = x + y
     sum1.outer()
-    assert sum1.val == 12.0
+    assert sum1.get_val() == 12.0
     assert x.grad() == 1
     assert y.grad() == 1
     AutoDiff.reset_der([x,y])
     #rAD+number
     sum2 = x + z
     sum2.outer()
-    assert sum2.val == 8.0
+    assert sum2.get_val() == 8.0
     assert x.grad() == 1
     #number+rAD <- test __radd__
     sum3 = z + y
     sum3.outer()
-    assert sum3.val == 10.0
+    assert sum3.get_val() == 10.0
     assert y.grad() == 1
     #rAD cannot be added to non-rAD and non-numeric types
     with pytest.raises(TypeError):
@@ -290,19 +314,19 @@ def test_rAD_sub():
     #rAD-rAD
     sub1 = y - x
     sub1.outer()
-    assert sub1.val == 2.0
+    assert sub1.get_val() == 2.0
     assert x.grad() == -1
     assert y.grad() == 1
     AutoDiff.reset_der([x,y])
     #rAD+number
     sub2 = x - z
     sub2.outer()
-    assert sub2.val == 2.0
+    assert sub2.get_val() == 2.0
     assert x.grad() == 1
     #number+rAD <- test __rsub__
     sub3 = z - y
     sub3.outer()
-    assert sub3.val == -4.0
+    assert sub3.get_val() == -4.0
     assert y.grad() == -1
     #rAD cannot subtract or be subtracted by non-rAD and non-numeric types
     with pytest.raises(TypeError):
@@ -417,7 +441,7 @@ def test_rAD_abs():
 #Test str() of rAD
 def test_rAD_str():
     x = AutoDiff.rAD(-6.5)
-    assert str(x) == 'rAD Object, val: -6.5, der: 0'
+    assert str(x) == 'Reverse AutoDiff Object, value(s): [-6.5], gradient: 0'
 
 #Test whether taking the sine of AD instance returns the correct value
 #Test whether the sin() function also apply to integers
@@ -444,7 +468,8 @@ def test_combined_cos():
     x = 5.0
     y = AutoDiff.cos(x)
     assert y == pytest.approx(0.2836621854632263)
-    
+
+#Test whether taking the tangent of AD instance returns the correct value
 def test_combined_tan():
     x = AutoDiff.fAD(5)
     y = AutoDiff.tan(x**2)    
