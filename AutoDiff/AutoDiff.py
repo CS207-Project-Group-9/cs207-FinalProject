@@ -448,6 +448,8 @@ def stack_r(vals, functions):
     functions: array_like
         input functions for differentiation
         *functions must share an equal number of variables for differentiation*
+        *functions must only contain computations supported by reverse-mode
+        autodiff objects*
                 
     Returns
     --------------
@@ -473,7 +475,7 @@ def stack_r(vals, functions):
         f(*vars).outer()
         grad = [var.get_grad() for var in vars]
         jac.append(grad)
-    return jac
+    return np.array(jac)
 
 class rAD:
     '''
