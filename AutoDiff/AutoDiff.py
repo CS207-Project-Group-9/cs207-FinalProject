@@ -454,7 +454,7 @@ def stack_r(vals, functions):
 
     Examples
     --------------
-    >>> From AutoDiff import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> def f1(x, y):
                 return 2*x + y
     >>> def f2(x, y):
