@@ -447,6 +447,7 @@ def stack_r(vals, functions):
 
     functions: array_like
         input functions for differentiation
+        *functions must share an equal number of variables for differentiation*
                 
     Returns
     --------------
