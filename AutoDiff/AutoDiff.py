@@ -464,9 +464,9 @@ def stack_r(vals, functions):
     ...  return 3*x + 2*y
     >>> f = AutoDiff.stack_r([1, 3], [f1, f2])
     >>> f[0]
-    [2.0, 1.0]
+    array([ 2., 1.])
     >>> f[1]
-    [3.0, 2.0]
+    array([ 3., 2.])
     
     '''
     jac = []
