@@ -7,7 +7,7 @@
 #import unit testing packages pytest and numpy testing
 import pytest
 import numpy as np
-from numpy.testing import assert_array_equal, assert_array_almost_equal
+from numpy.testing import assert_array_equal, assert_array_almost_equal, assert_approx_equal
 
 try:
     from AutoDiff import AutoDiff
@@ -50,7 +50,7 @@ def test_fAD_constructor_init():
     assert_array_equal(b.val, np.array([5.0]))
     assert_array_equal(b.der, np.array([[1]]))
     assert_array_equal(b.get_val(), np.array([5.0])) #test get_val()
-    assert_array_equal(b.get_der(), np.array([[1]])) #test get_der()
+    assert_array_equal(b.get_jac(), np.array([[1]])) #test get_der()
     assert_array_equal(c.val, np.array([1, 5]))
     assert_array_equal(c.der, np.array([[1, 0], [0, 1]]))
     #inputs ought not to be type other than scaler, list or array of numbers
@@ -200,7 +200,7 @@ def test_fAD_print():
     a, b = AutoDiff.create_f([5.0, 7.0])
     f = 4*a + b
     assert f.get_val() == 27.0
-    assert f.get_jac() == [4, 1]
+    assert_array_equal(f.get_jac(), np.array([4, 1]))
     assert 'Forward-mode AutoDiff Object' in str(f)
     assert 'value(s)' in str(f)
     assert 'partial derivative(s)' in str(f)
@@ -233,15 +233,22 @@ def test_fAD_ne():
 def test_rAD_create_r():
     a, b, c = AutoDiff.create_r([1,2,3])
     f1 = 2*a + b**3 +AutoDiff.cos(c)
-    x, y, z = AutoDiff.create_f([1,2,3])
-    f2 = 2*a + b**3 +AutoDiff.cos(c)
+    f1.outer()
     assert a.get_grad() == 2.0
     assert b.get_grad() == 12.0
     assert_array_almost_equal(np.array(c.get_grad()), np.array(-0.1411200080598672))
     assert_array_almost_equal(np.array(f1.get_val()), np. array(9.010007503399555))
-    assert_array_almost_equal(np.array(f1.get_val()), np.array(f2.get_val()))
-    assert a.get_grad() == f2.get_jac()[0]
-    assert b.get_grad() == f2.get_jac()[1]
+
+#Test stack_r()
+def test_rAD_stack_r():
+    def f1(x, y):
+        return 2*x + y
+    def f2(x, y):
+        return 3*x + 2*y
+    f = AutoDiff.stack_r([1, 3], [f1, f2])
+    assert_array_equal(f[0], np.array([2.0, 1.0]))
+    assert_array_equal(f[1], np.array([3.0, 2.0]))
+    
     
 #Test whether constructor of rAD class returns proper
 #values, children, derivatives, and errors
@@ -398,20 +405,20 @@ def test_rAD_pow():
     pow1.outer()
     assert pow1.val == 8.0
     assert_array_almost_equal(np.array([x.grad(), y.grad()]),
-        np.array([12., 5.54517744]))
+        np.array([[12.], [5.54517744]]))
     AutoDiff.reset_der([x,y])
     #rAD**number
     pow2 = (x * y) ** z
     pow2.outer()
     assert pow2.val == 7776.0
     assert_array_almost_equal(np.array([x.grad(), y.grad()]),
-        np.array([19440., 12960.]))
+        np.array([[19440.], [12960.]]))
     #number**rAD <- test __rpow__
     pow3 = z ** (a * b)
     pow3.outer()
     assert pow3.val == 25.0
     assert_array_almost_equal(np.array([a.grad(), b.grad()]),
-        np.array([80.47189562, 40.23594781]))
+        np.array([[80.47189562], [40.23594781]]))
     #user cannot compute power between rAD with non-rAD and non-numeric types
     with pytest.raises(TypeError):
         x / 'hello'
@@ -477,10 +484,11 @@ def test_combined_tan():
     b = AutoDiff.tan(a**2)
     b.outer()
     a.grad()
+    num = 10/np.cos(25)**2
     assert(y.val[0] == np.tan(25))
-    assert(y.der[0][0] == 10/np.cos(25)**2)
+    assert_approx_equal(y.der[0][0], num)
     assert(b.val == np.tan(25))
-    assert_array_almost_equal(a.der,10/np.cos(25)**2)  
+    assert_array_almost_equal(a.der,np.array(num))  
     assert(AutoDiff.tan(3) == np.tan(3))
 
 #Test inverse sine
@@ -630,40 +638,41 @@ def test_combined_exp():
     assert b == 148.4131591025766
     # rAD
 
-## if __name__ == "__main__" :
-####     import AutoDiff
-##     test_AD_create_f()
-##     test_AD_stack()
-##     test_fAD_constructor_init()
-##     test_fAD_add()
-##     test_fAD_sub()
-##     test_fAD_mul()
-##     test_fAD_div()
-##     test_fAD_pow()
-##     test_fAD_neg()
-##     test_fAD_abs()
-##     test_fAD_print()
-##     test_fAD_len()
-##     test_fAD_eq()
-##     test_fAD_ne()
-##     test_rAD_constructor_init()
-##     test_rAD_reset_der()
-##     test_rAD_add()
-##     test_rAD_sub()
-##     test_rAD_mul()
-##     test_rAD_div()
-##     test_rAD_pow()
-##     test_rAD_neg()
-##     test_rAD_abs()
-##     test_rAD_str()
-##     test_combined_sin()
-##     test_combined_cos()
-##     test_combined_log()
-##     test_combined_exp()
-##     test_combined_arcsin()
-##     test_combined_arccos()
-##     test_combined_arctan()
-##     test_combined_sinh()
+if __name__ == "__main__" :
+    import AutoDiff
+    test_AD_create_f()
+    test_AD_stack_f()
+    test_fAD_constructor_init()
+    test_fAD_add()
+    test_fAD_sub()
+    test_fAD_mul()
+    test_fAD_div()
+    test_fAD_pow()
+    test_fAD_neg()
+    test_fAD_abs()
+    test_fAD_print()
+    test_fAD_len()
+    test_fAD_eq()
+    test_fAD_ne()
+    test_rAD_constructor_init()
+    test_rAD_reset_der()
+    test_rAD_add()
+    test_rAD_sub()
+    test_rAD_mul()
+    test_rAD_div()
+    test_rAD_pow()
+    test_rAD_neg()
+    test_rAD_abs()
+    test_rAD_str()
+    test_combined_sin()
+    test_combined_cos()
+    test_combined_log()
+    test_combined_exp()
+    test_combined_arcsin()
+    test_combined_arccos()
+    test_combined_arctan()
+    test_combined_sinh()
+    test_rAD_create_r()
 
 
 
