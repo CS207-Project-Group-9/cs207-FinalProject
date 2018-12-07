@@ -238,6 +238,17 @@ def test_rAD_create_r():
     assert b.get_grad() == 12.0
     assert_array_almost_equal(np.array(c.get_grad()), np.array(-0.1411200080598672))
     assert_array_almost_equal(np.array(f1.get_val()), np. array(9.010007503399555))
+
+#Test stack_r()
+def test_rAD_stack_r():
+    def f1(x, y):
+        return 2*x + y
+    def f2(x, y):
+        return 3*x + 2*y
+    f = AutoDiff.stack_r([1, 3], [f1, f2])
+    assert_array_equal(f[0], np.array([2.0, 1.0]))
+    assert_array_equal(f[1], np.array([3.0, 2.0]))
+    
     
 #Test whether constructor of rAD class returns proper
 #values, children, derivatives, and errors

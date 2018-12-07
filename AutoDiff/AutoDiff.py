@@ -434,6 +434,44 @@ def create_r(vals):
         ADs = [rAD(val) for val in vals]
         return ADs
 
+def stack_r(vals, functions):
+    '''
+    stack_r(vals，functions)
+    
+    Initiate vector of functions for differentiation.
+    
+    Parameters
+    --------------
+    vals: array_like
+        input reverse-mode autodiff variable values
+
+    functions: array_like
+        input functions for differentiation
+                
+    Returns
+    --------------
+    out: Jacobian matrix of partial derivatives
+
+    Examples
+    --------------
+    >>> From AutoDiff import AutoDiff
+    >>> def f1(x, y): return 2*x + y
+    >>> def f2(x, y): return 3*x + 2*y
+    >>> f = AutoDiff.stack_r([1, 3], [f1, f2])
+    >>> f[0]
+    [2., 1. ]
+    >>> f[1]
+    [3. , 2. ]
+    
+    '''
+    jac = []
+    for f in functions:
+        vars = [rAD(val) for val in vals]
+        f(*vars).outer()
+        grad = [var.get_grad() for var in vars]
+        jac.append(grad)
+    return jac
+
 class rAD:
     '''
     rAD(value)
@@ -1322,7 +1360,7 @@ def reset_der(rADs):
         for rAD in rADs:
             rAD.der = None
             rAD.children = []
-##
-##if __name__ == '__main__':
-##    import doctest
-##    doctest.testmod()
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
