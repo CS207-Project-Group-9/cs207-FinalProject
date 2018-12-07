@@ -456,9 +456,9 @@ def stack_r(vals, functions):
     --------------
     >>> from AutoDiff import AutoDiff
     >>> def f1(x, y):
-    ..           return 2*x + y
+    ...  return 2*x + y
     >>> def f2(x, y):
-    ..           return 3*x + 2*y
+    ...  return 3*x + 2*y
     >>> f = AutoDiff.stack_r([1, 3], [f1, f2])
     >>> f[0]
     [2., 1. ]
