@@ -1125,14 +1125,14 @@ def logistic(x):
     Example
     --------------
     >>> from AutoDiff import AutoDiff
-    >>> AutoDiff.exp(1.0)
+    >>> AutoDiff.logistic(1.0)
     0.7310585786300049
     >>> b = AutoDiff.rAD(1.0)
-    >>> c = AutoDiff.exp(b)
+    >>> c = AutoDiff.logistic(b)
     >>> c.get_val()
     0.7310585786300049
     >>> x = AutoDiff.fAD(1.0)
-    >>> y = AutoDiff.exp(x)
+    >>> y = AutoDiff.logistic(x)
     >>> y.get_val()
     0.7310585786300049
     '''
