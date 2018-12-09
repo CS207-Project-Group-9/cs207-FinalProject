@@ -53,6 +53,8 @@ def test_fAD_constructor_init():
     assert_array_equal(b.get_jac(), np.array([[1]])) #test get_der()
     assert_array_equal(c.val, np.array([1, 5]))
     assert_array_equal(c.der, np.array([[1, 0], [0, 1]]))
+    assert_array_equal(c.get_val(), np.array([1, 5])) #test get_val()
+    assert_array_equal(c.get_jac(), np.array([[1, 0], [0, 1]])) #test get_der()
     #inputs ought not to be type other than scaler, list or array of numbers
     with pytest.raises(TypeError):
         AutoDiff.fAD('hello','friend')
@@ -68,17 +70,18 @@ def test_fAD_constructor_init():
         AutoDiff.fAD([1], [[1],[2]])
     with pytest.raises(ValueError):
         AutoDiff.fAD([1,2], [1,2,3,4])
-
+    with pytest.raises(ValueError):
+        AutoDiff.fAD([1,2,3],[[1,2,3],[1,2]])
+    with pytest.raises(ValueError):
+        AutoDiff.fAD([1,2,3],[[1,0,0],[0,1,0]])
+    with pytest.raises(ValueError):
+        AutoDiff.fAD([])
     #check variable type
     with pytest.raises(TypeError):
         AutoDiff.fAD([1,2], [['a','b','c'],['d','e','f']])
     with pytest.raises(TypeError):
         AutoDiff.fAD(['a'], [[1,2]])
 
-    with pytest.raises(ValueError):
-        AutoDiff.fAD([1,2,3],[[1,2,3],[1,2]])
-    with pytest.raises(ValueError):
-        AutoDiff.fAD([1,2,3],[[1,0,0],[0,1,0]])
         
 #Test whether addition works between AD instances, 
 #and between AD instance and number, regardless of order
@@ -237,7 +240,10 @@ def test_rAD_create_r():
     assert a.get_grad() == 2.0
     assert b.get_grad() == 12.0
     assert_array_almost_equal(np.array(c.get_grad()), np.array(-0.1411200080598672))
-    assert_array_almost_equal(np.array(f1.get_val()), np. array(9.010007503399555))
+    assert_array_almost_equal(np.array(f1.get_val()), np.array(9.010007503399555))
+    #check dimension
+    with pytest.raises(ValueError):
+        AutoDiff.create_r([[1],[2]])
 
 #Test stack_r()
 def test_rAD_stack_r():
@@ -450,6 +456,22 @@ def test_rAD_str():
     x = AutoDiff.rAD(-6.5)
     assert str(x) == 'Reverse AutoDiff Object, value(s): [-6.5], gradient: 0'
 
+#Test __eq__
+def test_rAD_eq():
+    a = AutoDiff.rAD(8.0)
+    b = AutoDiff.rAD(8.0)
+    c = AutoDiff.rAD(5.0)
+    assert a == b
+    assert (a == c) == False
+
+#Test __ne__
+def test_rAD_ne():
+    a = AutoDiff.rAD(8.0)
+    b = AutoDiff.rAD(8.0)
+    c = AutoDiff.rAD(5.0)
+    assert a != c
+    assert (a != b) == False
+
 #Test whether taking the sine of AD instance returns the correct value
 #Test whether the sin() function also apply to integers
 def test_combined_sin():
@@ -661,12 +683,15 @@ def test_combined_logistic():
     assert_array_almost_equal(z.get_val(), np.array([0.88079708, 0.95257413]))
     assert_array_almost_equal(x.get_grad(), np.array([0.10499359, 0.04517666]))
 
+#Test mul_by_row()
+def test_mul_by_row():
+    assert AutoDiff.mul_by_row(2,1) == 2
 
 if __name__ == "__main__" :
     import AutoDiff
     # test_AD_create_f()
     # test_AD_stack_f()
-    # test_fAD_constructor_init()
+    test_fAD_constructor_init()
     # test_fAD_add()
     # test_fAD_sub()
     # test_fAD_mul()
@@ -696,9 +721,12 @@ if __name__ == "__main__" :
     # test_combined_arccos()
     # test_combined_arctan()
     # test_combined_sinh()
-    # test_rAD_create_r()
+    test_rAD_create_r()
     # test_combined_exp()
     # test_combined_logistic()
+    test_rAD_eq()
+    test_rAD_ne()
+    test_mul_by_row()
 
 
 

@@ -428,7 +428,7 @@ def create_r(vals):
     '''
     if np.array(vals).ndim == 0:
         return rAD(vals)
-    elif np.array(vals).ndim > 2:
+    elif np.array(vals).ndim >= 2:
         raise ValueError('Input is at most 2D.')
     else:
         ADs = [rAD(val) for val in vals]
