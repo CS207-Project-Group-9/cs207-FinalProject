@@ -11,10 +11,6 @@ from numpy.testing import assert_array_equal, assert_array_almost_equal, assert_
 
 from AutoDiff import AutoDiff
 
-# try:
-#     from AutoDiff import AutoDiff
-# except ImportError: pass
-
 #AD_create_f allows for simultaneous assignment 
 #of AD instances
 def test_AD_create_f():
@@ -711,7 +707,7 @@ def test_mul_by_row():
 #     test_rAD_sub()
 #     test_rAD_mul()
 #     test_rAD_div()
-#     test_rAD_pow()
+#   test_rAD_pow()
 #     test_rAD_neg()
 #     test_rAD_abs()
 #     test_rAD_str()

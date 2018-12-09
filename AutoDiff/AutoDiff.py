@@ -629,16 +629,16 @@ class rAD:
         1. reverse autodiff objects
         2. a number and a reverse autodiff object
         '''
-        try:
-            return self + other
-            # ad = rAD(self.val + other.val)
-            # self.children.append((np.array([1.0]*len(self.val)), ad))
-            # other.children.append((np.array([1.0]*len(self.val)), ad))
-            # return ad
-        except AttributeError:
-            ad = rAD(self.val + other)
-            self.children.append((np.array([1.0]*len(self.val)), ad))
-            return ad
+        return self + other
+        # try:
+        #     ad = rAD(self.val + other.val)
+        #     self.children.append((np.array([1.0]*len(self.val)), ad))
+        #     other.children.append((np.array([1.0]*len(self.val)), ad))
+        #     return ad
+        # except AttributeError:
+        #     ad = rAD(self.val + other)
+        #     self.children.append((np.array([1.0]*len(self.val)), ad))
+        #     return ad
 
     def __sub__(self, other):
         '''
@@ -662,16 +662,16 @@ class rAD:
         1. reverse autodiff objects
         2. a number and a reverse autodiff object
         '''
-        try:
-            return - self + other
-            # ad = rAD(other.val - self.val)
-            # self.children.append((np.array([-1.0]*len(self.val)), ad))
-            # other.children.append((np.array([1.0]*len(self.val)), ad))
-            # return ad
-        except AttributeError:
-            ad = rAD(other - self.val)
-            self.children.append((np.array([-1.0]*len(self.val)), ad))
-            return ad
+        return - self + other
+        # try:
+        #     ad = rAD(other.val - self.val)
+        #     self.children.append((np.array([-1.0]*len(self.val)), ad))
+        #     other.children.append((np.array([1.0]*len(self.val)), ad))
+        #     return ad
+        # except AttributeError:
+        #     ad = rAD(other - self.val)
+        #     self.children.append((np.array([-1.0]*len(self.val)), ad))
+        #     return ad
 
     def __mul__(self, other):
         '''
@@ -695,16 +695,16 @@ class rAD:
         1. reverse autodiff objects
         2. a number and a reverse autodiff object
         '''
-        try:
-            return self * other
-            # ad = rAD(self.val * other.val)
-            # self.children.append((other.val, ad))
-            # other.children.append((self.val, ad))
-            # return ad
-        except AttributeError:
-            ad = rAD(self.val * other)
-            self.children.append((np.array([other]*len(self.val)), ad))
-            return ad
+        return self * other
+        # try:
+        #     ad = rAD(self.val * other.val)
+        #     self.children.append((other.val, ad))
+        #     other.children.append((self.val, ad))
+        #     return ad
+        # except AttributeError:
+        #     ad = rAD(self.val * other)
+        #     self.children.append((np.array([other]*len(self.val)), ad))
+        #     return ad
 
     def __truediv__(self, other):
         '''
@@ -728,16 +728,16 @@ class rAD:
         1. reverse autodiff objects
         2. a number and a reverse division between
         '''
-        try:
-            return self**(-1) * other
-            # ad = rAD(other.val / self.val)
-            # self.children.append((-other.val/(self.val**2), ad))
-            # other.children.append((1/self.val, ad))
-            # return ad
-        except AttributeError:
-            ad = rAD(other / self.val)
-            self.children.append((-other/(self.val**2), ad))
-            return ad
+        return self**(-1) * other
+        # try:
+        #     ad = rAD(other.val / self.val)
+        #     self.children.append((-other.val/(self.val**2), ad))
+        #     other.children.append((1/self.val, ad))
+        #     return ad
+        # except AttributeError:
+        #     ad = rAD(other / self.val)
+        #     self.children.append((-other/(self.val**2), ad))
+        #     return ad
 
     def __pow__(self, other):
         '''
@@ -774,7 +774,7 @@ class rAD:
         out: the negative, or the opposite, of the autodiff object as a reverse autodiff object
         '''
         new = rAD(-self.val)
-        self.children.append((-1.0, new))
+        self.children.append((np.array([-1.0]*len(self.val)), new))
         return new
 
     def __abs__(self):
