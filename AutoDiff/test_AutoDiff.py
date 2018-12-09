@@ -250,7 +250,7 @@ def test_rAD_stack_r():
     def f2(x, y):
         return 3*x + 2*y
     v,j = AutoDiff.stack_r([1, 3], [f1, f2])
-    assert_array_equal(v[0], np.array([5.0, 9.0]))
+    assert_array_equal(v, np.array([5.0, 9.0]))
     assert_array_equal(j[0], np.array([2.0, 1.0]))
     assert_array_equal(j[1], np.array([3.0, 2.0]))
     
