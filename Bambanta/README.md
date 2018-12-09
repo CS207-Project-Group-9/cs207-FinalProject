@@ -2,7 +2,7 @@
 
 [![Coverage Status](https://coveralls.io/repos/github/CS207-Project-Group-9/cs207-FinalProject/badge.svg?branch=master)](https://coveralls.io/github/CS207-Project-Group-9/cs207-FinalProject?branch=master)
 
-# project_repo
+# Bambanta
 
 CS207 Project Group 9:
 
