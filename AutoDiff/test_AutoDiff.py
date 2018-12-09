@@ -615,64 +615,92 @@ def test_combined_log():
     assert_array_equal(AutoDiff.log(b).der, np.array([[0, 0.125]]))
     assert_array_almost_equal(AutoDiff.log(b,new_base).val, np.array([0.90308998]), decimal = 6)
     assert_array_almost_equal(AutoDiff.log(b,new_base).der, np.array([[0, 0.05428681]]), decimal = 6)
-    with pytest.raises(ValueError):
-        AutoDiff.log(a)
     # numeric
     x = 5.0
-    y = -4.0
     assert AutoDiff.log(x) == 1.6094379124341003
-    with pytest.raises(ValueError):
-        AutoDiff.log(y)
     # rAD
+    x = AutoDiff.rAD([2,3])
+    z = AutoDiff.log(x,2)
+    z.outer()
+    assert_array_almost_equal(z.get_val(), np.array([1. , 1.5849625]))
+    assert_array_almost_equal(x.get_grad(), np.array([0.72134752, 0.48089835]))
 
 #Test exp()
 def test_combined_exp():
     # fAD
-    x, y = AutoDiff.create_f([2.0, 3.0])
+    x,y = AutoDiff.create_f([2, 3])
     z = AutoDiff.exp(x)
+    assert_array_almost_equal(z.val, np.array([7.3890561]))
+    assert_array_almost_equal(z.der, np.array([[7.3890561, 0. ]]))
     # numeric
     a = 5.0
     b = AutoDiff.exp(a)
-    assert_array_almost_equal(z.val, np.array([7.3890561]))
-    assert_array_almost_equal(z.der, np.array([[7.3890561, 0. ]]))
     assert b == 148.4131591025766
     # rAD
+    x = AutoDiff.rAD([2, 3])
+    z = AutoDiff.exp(x)
+    z.outer()
+    assert_array_almost_equal(z.get_val(), np.array([7.3890561 , 20.08553692]))
+    assert_array_almost_equal(x.get_grad(), np.array([7.3890561 , 20.08553692]))
+
+#Test exp()
+def test_combined_logistic():
+    # fAD
+    x,y = AutoDiff.create_f([2, 3])
+    z = AutoDiff.logistic(x)
+    assert_array_almost_equal(z.val, np.array([0.88079708]))
+    assert_array_almost_equal(z.der, np.array([[0.10499359, 0. ]]))
+    # numeric
+    a = 5.0
+    b = AutoDiff.logistic(a)
+    assert b == 0.9933071490757153
+    # rAD
+    x = AutoDiff.rAD([2, 3])
+    z = AutoDiff.logistic(x)
+    z.outer()
+    assert_array_almost_equal(z.get_val(), np.array([0.88079708, 0.95257413]))
+    assert_array_almost_equal(x.get_grad(), np.array([0.10499359, 0.04517666]))
+
 
 if __name__ == "__main__" :
     import AutoDiff
-    test_AD_create_f()
-    test_AD_stack_f()
-    test_fAD_constructor_init()
-    test_fAD_add()
-    test_fAD_sub()
-    test_fAD_mul()
-    test_fAD_div()
-    test_fAD_pow()
-    test_fAD_neg()
-    test_fAD_abs()
-    test_fAD_print()
-    test_fAD_len()
-    test_fAD_eq()
-    test_fAD_ne()
-    test_rAD_constructor_init()
-    test_rAD_reset_der()
-    test_rAD_add()
-    test_rAD_sub()
-    test_rAD_mul()
-    test_rAD_div()
-    test_rAD_pow()
-    test_rAD_neg()
-    test_rAD_abs()
-    test_rAD_str()
-    test_combined_sin()
-    test_combined_cos()
-    test_combined_log()
-    test_combined_exp()
-    test_combined_arcsin()
-    test_combined_arccos()
-    test_combined_arctan()
-    test_combined_sinh()
-    test_rAD_create_r()
+    # test_AD_create_f()
+    # test_AD_stack_f()
+    # test_fAD_constructor_init()
+    # test_fAD_add()
+    # test_fAD_sub()
+    # test_fAD_mul()
+    # test_fAD_div()
+    # test_fAD_pow()
+    # test_fAD_neg()
+    # test_fAD_abs()
+    # test_fAD_print()
+    # test_fAD_len()
+    # test_fAD_eq()
+    # test_fAD_ne()
+    # test_rAD_constructor_init()
+    # test_rAD_reset_der()
+    # test_rAD_add()
+    # test_rAD_sub()
+    # test_rAD_mul()
+    # test_rAD_div()
+    # test_rAD_pow()
+    # test_rAD_neg()
+    # test_rAD_abs()
+    # test_rAD_str()
+    # test_combined_sin()
+    # test_combined_cos()
+    # test_combined_log()
+    # test_combined_exp()
+    # test_combined_arcsin()
+    # test_combined_arccos()
+    # test_combined_arctan()
+    # test_combined_sinh()
+    # test_rAD_create_r()
+    # test_combined_exp()
+    # test_combined_logistic()
+
+
 
 
 

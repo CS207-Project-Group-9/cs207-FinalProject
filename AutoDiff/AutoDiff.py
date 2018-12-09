@@ -1107,6 +1107,46 @@ def exp(x):
         except AttributeError: # x <- numeric
             return np.exp(x)
 
+def logistic(x):
+    '''
+    logistic(object)
+    
+    Return the standard logistic of the input object.
+
+    Parameters
+    --------------
+    object: a number, or an autodiff object, whether forward-, or reverse-mode.  
+
+    Returns
+    --------------
+    out: the standard logistic of the input object.
+        Numeric if input is a number, or an autodiff object if input is an autodiff object.
+
+    Example
+    --------------
+    >>> from AutoDiff import AutoDiff
+    >>> AutoDiff.exp(1.0)
+    0.7310585786300049
+    >>> b = AutoDiff.rAD(1.0)
+    >>> c = AutoDiff.exp(b)
+    >>> c.get_val()
+    0.7310585786300049
+    >>> x = AutoDiff.fAD(1.0)
+    >>> y = AutoDiff.exp(x)
+    >>> y.get_val()
+    0.7310585786300049
+    '''
+    try:  # x <- rAD
+        ad = rAD(1/(1+np.exp(-x.val)))
+        x.children.append((np.exp(-x.val)/((np.exp(-x.val)+1)**2),ad))
+        return ad
+    except AttributeError: 
+        try: # x <- fAD
+            return fAD(1/(1+np.exp(-x.val)), 
+                mul_by_row(np.exp(-x.val)/((np.exp(-x.val)+1)**2),x.der))
+        except AttributeError: # x <- numeric
+            return 1/(1+np.exp(-x))
+
 def log(x,base=np.e):
     '''
     log(object)
@@ -1137,23 +1177,14 @@ def log(x,base=np.e):
     0.0
     '''
     try: # x <- rAD
-        if x.val <= 0:
-            raise ValueError("Cannot take log of negative value")
-        else:
-            ad = rAD(math.log(x.val,base))
-            x.children.append((1/(x.val*math.log(base)),ad))
-            return ad
+        ad = rAD(np.log(x.val)/np.log(base))
+        x.children.append((1/(x.val*np.log(base)),ad))
+        return ad
     except AttributeError:
         try: # x <- fAD
-            if x.val <= 0:
-                raise ValueError("Cannot take log of negative value")
-            else:
-                return fAD(math.log(x.val,base), mul_by_row(1/(x.val*math.log(base)),x.der))
+            return fAD(np.log(x.val)/np.log(base), mul_by_row(1/(x.val*np.log(base)),x.der))
         except AttributeError: # x <- numeric
-            if x <= 0:
-                raise ValueError("Cannot take log of negative value")
-            else:
-                return np.log(x)
+            return np.log(x)
     
 def tan(x):
     '''
