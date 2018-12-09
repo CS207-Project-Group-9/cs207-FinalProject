@@ -358,7 +358,7 @@ class fAD():
         27.0
 
         multiple functions:
-        >>> x, y = Bambanta.AutoDiff.create_f([5.0, 7.0])
+        >>> x, y = AutoDiff.create_f([5.0, 7.0])
         >>> f1 = 4*x + y
         >>> f2 = x**3 - y
         >>> f = AutoDiff.stack_f([f1, f2])
