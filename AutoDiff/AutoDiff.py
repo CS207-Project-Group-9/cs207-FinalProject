@@ -630,10 +630,11 @@ class rAD:
         2. a number and a reverse autodiff object
         '''
         try:
-            ad = rAD(self.val + other.val)
-            self.children.append((np.array([1.0]*len(self.val)), ad))
-            other.children.append((np.array([1.0]*len(self.val)), ad))
-            return ad
+            return self + other
+            # ad = rAD(self.val + other.val)
+            # self.children.append((np.array([1.0]*len(self.val)), ad))
+            # other.children.append((np.array([1.0]*len(self.val)), ad))
+            # return ad
         except AttributeError:
             ad = rAD(self.val + other)
             self.children.append((np.array([1.0]*len(self.val)), ad))
@@ -662,10 +663,11 @@ class rAD:
         2. a number and a reverse autodiff object
         '''
         try:
-            ad = rAD(other.val - self.val)
-            self.children.append((np.array([-1.0]*len(self.val)), ad))
-            other.children.append((np.array([1.0]*len(self.val)), ad))
-            return ad
+            return - self + other
+            # ad = rAD(other.val - self.val)
+            # self.children.append((np.array([-1.0]*len(self.val)), ad))
+            # other.children.append((np.array([1.0]*len(self.val)), ad))
+            # return ad
         except AttributeError:
             ad = rAD(other - self.val)
             self.children.append((np.array([-1.0]*len(self.val)), ad))
@@ -694,10 +696,11 @@ class rAD:
         2. a number and a reverse autodiff object
         '''
         try:
-            ad = rAD(self.val * other.val)
-            self.children.append((other.val, ad))
-            other.children.append((self.val, ad))
-            return ad
+            return self * other
+            # ad = rAD(self.val * other.val)
+            # self.children.append((other.val, ad))
+            # other.children.append((self.val, ad))
+            # return ad
         except AttributeError:
             ad = rAD(self.val * other)
             self.children.append((np.array([other]*len(self.val)), ad))
@@ -726,10 +729,11 @@ class rAD:
         2. a number and a reverse division between
         '''
         try:
-            ad = rAD(other.val / self.val)
-            self.children.append((-other.val/(self.val**2), ad))
-            other.children.append((1/self.val, ad))
-            return ad
+            return self**(-1) * other
+            # ad = rAD(other.val / self.val)
+            # self.children.append((-other.val/(self.val**2), ad))
+            # other.children.append((1/self.val, ad))
+            # return ad
         except AttributeError:
             ad = rAD(other / self.val)
             self.children.append((-other/(self.val**2), ad))
@@ -1397,6 +1401,6 @@ def reset_der(rADs):
             rAD.der = None
             rAD.children = []
 
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()
+# if __name__ == '__main__':
+#     import doctest
+#     doctest.testmod()

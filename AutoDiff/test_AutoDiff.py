@@ -9,9 +9,11 @@ import pytest
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal, assert_approx_equal
 
-try:
-    from AutoDiff import AutoDiff
-except ImportError: pass
+from AutoDiff import AutoDiff
+
+# try:
+#     from AutoDiff import AutoDiff
+# except ImportError: pass
 
 #AD_create_f allows for simultaneous assignment 
 #of AD instances
@@ -687,46 +689,46 @@ def test_combined_logistic():
 def test_mul_by_row():
     assert AutoDiff.mul_by_row(2,1) == 2
 
-if __name__ == "__main__" :
-    import AutoDiff
-    test_AD_create_f()
-    test_AD_stack_f()
-    test_fAD_constructor_init()
-    test_fAD_add()
-    test_fAD_sub()
-    test_fAD_mul()
-    test_fAD_div()
-    test_fAD_pow()
-    test_fAD_neg()
-    test_fAD_abs()
-    test_fAD_print()
-    test_fAD_len()
-    test_fAD_eq()
-    test_fAD_ne()
-    test_rAD_constructor_init()
-    test_rAD_reset_der()
-    test_rAD_add()
-    test_rAD_sub()
-    test_rAD_mul()
-    test_rAD_div()
-    test_rAD_pow()
-    test_rAD_neg()
-    test_rAD_abs()
-    test_rAD_str()
-    test_combined_sin()
-    test_combined_cos()
-    test_combined_log()
-    test_combined_exp()
-    test_combined_arcsin()
-    test_combined_arccos()
-    test_combined_arctan()
-    test_combined_sinh()
-    test_rAD_create_r()
-    test_combined_exp()
-    test_combined_logistic()
-    test_rAD_eq()
-    test_rAD_ne()
-    test_mul_by_row()
+# if __name__ == "__main__" :
+#     import AutoDiff
+#     test_AD_create_f()
+#     test_AD_stack_f()
+#     test_fAD_constructor_init()
+#     test_fAD_add()
+#     test_fAD_sub()
+#     test_fAD_mul()
+#     test_fAD_div()
+#     test_fAD_pow()
+#     test_fAD_neg()
+#     test_fAD_abs()
+#     test_fAD_print()
+#     test_fAD_len()
+#     test_fAD_eq()
+#     test_fAD_ne()
+#     test_rAD_constructor_init()
+#     test_rAD_reset_der()
+#     test_rAD_add()
+#     test_rAD_sub()
+#     test_rAD_mul()
+#     test_rAD_div()
+#     test_rAD_pow()
+#     test_rAD_neg()
+#     test_rAD_abs()
+#     test_rAD_str()
+#     test_combined_sin()
+#     test_combined_cos()
+#     test_combined_log()
+#     test_combined_exp()
+#     test_combined_arcsin()
+#     test_combined_arccos()
+#     test_combined_arctan()
+#     test_combined_sinh()
+#     test_rAD_create_r()
+#     test_combined_exp()
+#     test_combined_logistic()
+#     test_rAD_eq()
+#     test_rAD_ne()
+#     test_mul_by_row()
 
 
 
