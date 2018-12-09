@@ -470,12 +470,15 @@ def stack_r(vals, functions):
     
     '''
     jac = []
+    f_vals = []
     for f in functions:
         vars = [rAD(val) for val in vals]
-        f(*vars).outer()
+        f_obj = f(*vars)
+        f_obj.outer()
+        f_vals.append(f_obj.get_val())
         grad = [var.get_grad() for var in vars]
         jac.append(grad)
-    return np.array(jac)
+    return np.array(f_vals), np.array(jac)
 
 class rAD:
     '''
