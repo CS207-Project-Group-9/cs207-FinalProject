@@ -464,18 +464,23 @@ def stack_r(vals, functions):
     ...  return 3*x + 2*y
     >>> f = AutoDiff.stack_r([1, 3], [f1, f2])
     >>> f[0]
+    array([5, 9])
+    >>> f[1][0]
     array([ 2.,  1.])
-    >>> f[1]
+    >>> f[1][1]
     array([ 3.,  2.])
     
     '''
     jac = []
+    f_vals = []
     for f in functions:
         vars = [rAD(val) for val in vals]
-        f(*vars).outer()
+        f_obj = f(*vars)
+        f_obj.outer()
+        f_vals.append(f_obj.get_val())
         grad = [var.get_grad() for var in vars]
         jac.append(grad)
-    return np.array(jac)
+    return np.array(f_vals), np.array(jac)
 
 class rAD:
     '''
