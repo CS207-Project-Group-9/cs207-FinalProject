@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(name='Bambanta',
-	version='0.1.3',
+	version='0.1.4',
 	description='An automatic differentiation package',
 	author='Karina Huang, Rong Liu, Rory Maizels',
 	long_description=long_description,
