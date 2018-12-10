@@ -1,0 +1,27 @@
+Metadata-Version: 2.1
+Name: Bambanta
+Version: 0.1.1
+Summary: An automatic differentiation package
+Home-page: https://github.com/CS207-Project-Group-9/cs207-FinalProject
+Author: Karina Huang, Rong Liu, Rory Maizels
+License: MIT
+Description: [![Build Status](https://travis-ci.org/CS207-Project-Group-9/cs207-FinalProject.svg?branch=master)](https://travis-ci.org/CS207-Project-Group-9/cs207-FinalProject)
+        
+        [![Coverage Status](https://coveralls.io/repos/github/CS207-Project-Group-9/cs207-FinalProject/badge.svg?branch=master)](https://coveralls.io/github/CS207-Project-Group-9/cs207-FinalProject?branch=master)
+        
+        # Bambanta
+        
+        CS207 Project Group 9:
+        
+        Qiansha (Karina) Huang
+        Rong Liu
+        Rory Maizels
+        
+        
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown

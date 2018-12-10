@@ -1,0 +1,7 @@
+README.md
+setup.cfg
+setup.py
+Bambanta/Bambanta.egg-info/PKG-INFO
+Bambanta/Bambanta.egg-info/SOURCES.txt
+Bambanta/Bambanta.egg-info/dependency_links.txt
+Bambanta/Bambanta.egg-info/top_level.txt
