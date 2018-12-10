@@ -4,10 +4,27 @@
 
 # Bambanta
 
-CS207 Project Group 9:
+### CS207 Project Group 9:
 
-Qiansha (Karina) Huang
-Rong Liu
-Rory Maizels
+**Authors:** Qiansha (Karina) Huang, Rong Liu, Rory Maizels
 
+**Project Page:** https://pypi.org/project/Bambanta/
+
+This automatic differentiation package `Bambanta` performs both forward-mode and reverse-mode automatic differentiation. For details about the project, please consult the [documentation](https://github.com/CS207-Project-Group-9/cs207-FinalProject/blob/master/docs/Final.ipynb).
+
+### Installation Guide
+
+We recommend installing our package in a virtual environment. Please ensure that a version of `virtualenv` is already installed in your machine, and follow the steps:
+
+```
+virtualenv env
+
+source env/bin/activate
+
+pip install Bambanta
+```
+
+# Testing `Bambanta`
+
+Our module may be tested using `pytest` on `AutoDiff.py`, or using `doctest` on `test_AutoDiff.py`.
 

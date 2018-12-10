@@ -4,15 +4,14 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(name='Bambanta',
-	version='0.1.1',
+	version='0.1.3',
 	description='An automatic differentiation package',
 	author='Karina Huang, Rong Liu, Rory Maizels',
 	long_description=long_description,
 	long_description_content_type="text/markdown",
 	packages=['Bambanta'],
 	install_requires=[
-	  'numpy',
-	  'math',
+	  'numpy'
 	],
 	classifiers=[
 		"Development Status :: 5 - Production/Stable",
