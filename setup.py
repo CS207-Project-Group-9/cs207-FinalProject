@@ -13,10 +13,5 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/CS207-Project-Group-9/cs207-FinalProject",
     packages=setuptools.find_packages("Bambanta"),
-    package_dir = {"":"Bambanta"},
-    classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-    ],
+    package_dir = {"":"Bambanta"}
 )
