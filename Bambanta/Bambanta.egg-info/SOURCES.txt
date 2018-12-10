@@ -1,9 +1,0 @@
-README.md
-setup.py
-AutoDiff/AutoDiff.py
-AutoDiff/__init__.py
-AutoDiff/test_AutoDiff.py
-Bambanta.egg-info/PKG-INFO
-Bambanta.egg-info/SOURCES.txt
-Bambanta.egg-info/dependency_links.txt
-Bambanta.egg-info/top_level.txt
