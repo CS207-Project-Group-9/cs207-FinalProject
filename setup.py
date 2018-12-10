@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="Bambanta",
-    version="0.0.4",
+    version="0.0.6",
     author="Karina Huang, Rong Liu, Rory Maizels",
     author_email="qhuang@g.harvard.edu, rongliu@g.harvard.edu, rorymaizels@g.harvard.edu",
     description="An automatic differentiation package",
