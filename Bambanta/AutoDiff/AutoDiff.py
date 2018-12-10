@@ -21,7 +21,7 @@ def create_f(vals):
     
     Examples
     --------------
-    >>> from Bambanta.AutoDiff import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> a = AutoDiff.create_f(3) 
     >>> a.val
     array([3])
@@ -112,7 +112,7 @@ class fAD():
 
     Examples
     --------------
-    >>> from Bambanta.AutoDiff import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> a = fAD(5.0)
     >>> a.val
     array([ 5.])
@@ -351,7 +351,7 @@ class fAD():
         Example
         --------------
         single function:
-        >>> from Bambanta.AutoDiff import AutoDiff
+        >>> from AutoDiff import AutoDiff
         >>> x, y = AutoDiff.create_f([5.0, 7.0])
         >>> f = 4*x + y
         >>> f.get_val()
@@ -381,7 +381,7 @@ class fAD():
 
         Example
         --------------
-        >>> from Bambanta.AutoDiff import AutoDiff
+        >>> from AutoDiff import AutoDiff
         >>> x, y = AutoDiff.create_f([5.0, 7.0])
         >>> f = 4*x + y
         >>> f.get_jac()
@@ -417,7 +417,7 @@ def create_r(vals):
     
     Examples
     --------------
-    >>> from Bambanta.AutoDiff import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> a = AutoDiff.create_r(2.0)
     >>> f = AutoDiff.sin(a)
     >>> f.outer()
@@ -457,7 +457,7 @@ def stack_r(vals, functions):
 
     Examples
     --------------
-    >>> from Bambanta.AutoDiff import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> def f1(x, y):
     ...  return 2*x + y
     >>> def f2(x, y):
@@ -508,7 +508,7 @@ class rAD:
 
     Examples
     --------------
-    >>> from Bambanta.AutoDiff import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> a = AutoDiff.rAD(5.0)
     >>> f = 2**a
     >>> f.outer()
@@ -544,7 +544,7 @@ class rAD:
  
         Example
         --------------
-        >>> from Bambanta.AutoDiff import AutoDiff
+        >>> from AutoDiff import AutoDiff
         >>> a= AutoDiff.rAD([5.0])
         >>> f = 4*a
         >>> f.outer()
@@ -569,7 +569,7 @@ class rAD:
 
         Example
         --------------
-        >>> from Bambanta.AutoDiff import AutoDiff
+        >>> from AutoDiff import AutoDiff
         >>> x, y = AutoDiff.create_r([5.0, 7.0])
         >>> f = 4*x + y
         >>> f.outer()
@@ -597,7 +597,7 @@ class rAD:
             
         Example
         --------------
-        >>> from Bambanta.AutoDiff import AutoDiff
+        >>> from AutoDiff import AutoDiff
         >>> a,b = AutoDiff.create_r([[1,2],[3,4]])
         >>> f = 4*a + 3**b
         >>> f.outer()
@@ -848,7 +848,7 @@ def sin(x):
 
     Example
     --------------
-    >>> from Bambanta.AutoDiff import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.sin(1.0)
     0.8414709848078965
     >>> b = AutoDiff.rAD(8.0)
@@ -887,7 +887,7 @@ def cos(x):
 
     Example
     --------------
-    >>> from Bambanta.AutoDiff import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.cos(1.0)
     0.54030230586813977
     >>> b = AutoDiff.rAD(8.0)
@@ -926,7 +926,7 @@ def arcsin(x):
 
     Example
     --------------
-    >>> from Bambanta.AutoDiff import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.arcsin(1.0)
     1.5707963267948966
     >>> b = AutoDiff.rAD(-0.50)
@@ -968,7 +968,7 @@ def arccos(x):
 
     Example
     --------------
-    >>> from Bambanta.AutoDiff import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.arccos(1.0)
     0.0
     >>> b = AutoDiff.rAD(-0.50)
@@ -1010,7 +1010,7 @@ def arctan(x):
 
     Example
     --------------
-    >>> from Bambanta.AutoDiff import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.arctan(1.0)
     0.78539816339744828
     >>> b = AutoDiff.rAD(1.0)
@@ -1052,7 +1052,7 @@ def sinh(x):
 
     Example
     --------------
-    >>> from Bambanta.AutoDiff import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.sinh(1.0)
     1.1752011936438014
     >>> b = AutoDiff.rAD(-0.50)
@@ -1094,7 +1094,7 @@ def exp(x):
 
     Example
     --------------
-    >>> from Bambanta.AutoDiff import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.exp(1.0)
     2.7182818284590451
     >>> b = AutoDiff.rAD(1.0)
@@ -1133,7 +1133,7 @@ def logistic(x):
 
     Example
     --------------
-    >>> from Bambanta.AutoDiff import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.logistic(1.0)
     0.7310585786300049
     >>> b = AutoDiff.rAD(1.0)
@@ -1173,7 +1173,7 @@ def log(x,base=np.e):
 
     Example
     --------------
-    >>> from Bambanta.AutoDiff import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.log(1.0)
     0.0
     >>> b = AutoDiff.rAD(1.0)
@@ -1212,7 +1212,7 @@ def tan(x):
 
     Example
     --------------
-    >>> from Bambanta.AutoDiff import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.tan(1.0)
     1.5574077246549023
     >>> b = AutoDiff.rAD(1.0)
@@ -1251,7 +1251,7 @@ def cosh(x):
 
     Example
     --------------
-    >>> from Bambanta.AutoDiff import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.cosh(1.0)
     1.5430806348152437
     >>> b = AutoDiff.rAD(0.50)
@@ -1293,7 +1293,7 @@ def tanh(x):
 
     Example
     --------------
-    >>> from Bambanta.AutoDiff import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.tanh(1.0)
     0.76159415595576485
     >>> b = AutoDiff.rAD(0.50)
@@ -1334,7 +1334,7 @@ def sqrt(x):
 
     Example
     --------------
-    >>> from Bambanta.AutoDiff import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> AutoDiff.sqrt(4.0)
     2.0
     >>> b =  AutoDiff.rAD(4.0)
@@ -1389,7 +1389,7 @@ def reset_der(rADs):
 
     Examples
     --------------
-    >>> from Bambanta.AutoDiff import AutoDiff
+    >>> from AutoDiff import AutoDiff
     >>> x = AutoDiff.rAD(8)
     >>> z = x**2
     >>> z.outer()
