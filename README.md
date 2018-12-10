@@ -24,7 +24,7 @@ source env/bin/activate
 pip install Bambanta
 ```
 
-# Testing `Bambanta`
+### Testing `Bambanta`
 
 Our module may be tested using `pytest` on `AutoDiff.py`, or using `doctest` on `test_AutoDiff.py`.
 
