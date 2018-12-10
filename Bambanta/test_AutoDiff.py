@@ -9,7 +9,7 @@ import pytest
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal, assert_approx_equal
 
-from Bambanta.AutoDiff import AutoDiff
+from Bambanta import AutoDiff
 
 #AD_create_f allows for simultaneous assignment 
 #of AD instances
